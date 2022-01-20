@@ -1,3 +1,3 @@
 FROM mongo
 
-COPY ourscript.js /docker-entrypoint-initdb.d/
+COPY setup.js /docker-entrypoint-initdb.d/
