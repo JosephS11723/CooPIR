@@ -1,1 +1,3 @@
-this is a testy westy
+FROM mongo
+
+COPY ourscript.js /docker-entrypoint-initdb.d/
