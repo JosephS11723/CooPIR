@@ -10,4 +10,6 @@ RUN go mod vendor
 
 RUN go build -o api_main
 
+EXPOSE 8080
+
 CMD ["./api_main"]
