@@ -1,4 +1,4 @@
 
 db.createCollection(
-    "test"
+    "Users", "Cases"
 );
