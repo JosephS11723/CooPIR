@@ -1,1 +1,1 @@
-# Senior-Capstone
+# CooPIR
