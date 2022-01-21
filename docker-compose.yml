@@ -23,7 +23,7 @@ services:
 
   api_server:
     container_name: api_server
-    build: ./api
+    build: ./src/api
     networks:
       network1:
         ipv4_address: 10.10.10.4
