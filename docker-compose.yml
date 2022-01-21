@@ -10,6 +10,8 @@ services:
   ftpd_server:
     container_name: pure-ftpd
     build: ./ftp
+    networks:
+      - network1
     environment:
       PUBLICHOST: "localhost"
       FTP_USER_NAME: username
