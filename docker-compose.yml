@@ -21,6 +21,13 @@ services:
       FTP_USER_PASS: mypass
       FTP_USER_HOME: /home/username
 
+  api_server:
+    container_name: api_server
+    build: ./api
+    networks:
+      network1:
+        ipv4_address: 10.10.10.4
+
 volumes:
   mongodb-data:
   
