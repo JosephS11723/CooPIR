@@ -10,4 +10,4 @@ RUN go mod vendor
 
 RUN go build -o api_main
 
-RUN ./api_main
+CMD ["./api_main"]
