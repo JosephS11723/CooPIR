@@ -1,0 +1,4 @@
+
+db.createCollection(
+    "test"
+);
