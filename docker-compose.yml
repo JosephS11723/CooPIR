@@ -4,20 +4,14 @@ services:
   mongo:
     image: mongo
     container_name: mongoDB
-    working_dir: /mongo
-    restart: always
-    ports:
-      - 27017:27017
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
-    
+    build: ./mongo
+    networks:
+      - network1
+
   ftpd_server:
     image: stilliard/pure-ftpd
     container_name: pure-ftpd
-    ports:
-      - 21:21
-      - 30000-30009:30000-30009
+    build: ./ftp
     environment:
       PUBLICHOST: "localhost"
       FTP_USER_NAME: username
