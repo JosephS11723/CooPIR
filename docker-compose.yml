@@ -5,13 +5,16 @@ services:
     container_name: mongoDB
     build: ./mongo
     networks:
-      - network1
+      network1:
+        ipv4_address: 10.10.10.3
 
   ftpd_server:
     container_name: pure-ftpd
     build: ./ftp
     networks:
-      - network1
+      network1:
+        ipv4_address: 10.10.10.2
+
     environment:
       PUBLICHOST: "localhost"
       FTP_USER_NAME: username
