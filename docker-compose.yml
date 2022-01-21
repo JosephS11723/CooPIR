@@ -2,14 +2,12 @@ version: "3.8"
 
 services:
   mongo:
-    image: mongo
     container_name: mongoDB
     build: ./mongo
     networks:
       - network1
 
   ftpd_server:
-    image: stilliard/pure-ftpd
     container_name: pure-ftpd
     build: ./ftp
     environment:
