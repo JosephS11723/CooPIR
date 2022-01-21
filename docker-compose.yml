@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  mongo:
+    image: mongo
+    container_name: mongoDB
+    working_dir: /mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    
+  ftpd_server:
+    image: stilliard/pure-ftpd
+    container_name: pure-ftpd
+    ports:
+      - 21:21
+      - 30000-30009:30000-30009
+    environment:
+      PUBLICHOST: "localhost"
+      FTP_USER_NAME: username
+      FTP_USER_PASS: mypass
+      FTP_USER_HOME: /home/username
+
+volumes:
+  mongodb-data:
+  
+
+networks:
+  network1:
+    internal: true
+    ipam:
+      config: 
+        - subnet: 10.10.10.0/24
