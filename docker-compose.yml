@@ -1,6 +1,7 @@
 version: "3.8"
 
 services:
+  # mongo database
   mongo:
     container_name: mongoDB
     build: ./mongo
@@ -8,8 +9,9 @@ services:
       network1:
         ipv4_address: 10.10.10.3
 
+  # ftp server
   ftp_server:
-    container_name: ftp_server
+    container_name: ftp
     build: ./ftp
     ports:
       - "21:21"
@@ -21,6 +23,7 @@ services:
         ipv4_address: 10.10.10.2
 
 
+  # go api
   api_server:
     container_name: api_server
     build: ./src/api
@@ -36,6 +39,7 @@ services:
         ipv4_address: 10.10.10.4
 
 volumes:
+  # mongodb persistant storage
   mongodb-data:
   
 
