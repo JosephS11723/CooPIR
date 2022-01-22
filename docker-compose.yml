@@ -11,7 +11,7 @@ services:
 
   # ftp server
   ftp_server:
-    container_name: ftp
+    container_name: ftp_server
     build: ./ftp
     ports:
       - "21:21"
