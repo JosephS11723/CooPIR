@@ -8,18 +8,18 @@ services:
       network1:
         ipv4_address: 10.10.10.3
 
-  ftpd_server:
-    container_name: pure-ftpd
+  ftp_server:
+    container_name: ftp_server
     build: ./ftp
+    ports:
+      - "21:21"
+      - "21000-21010:21000-21010"
+    environment:
+      - USERS= "one|1234"
     networks:
       network1:
         ipv4_address: 10.10.10.2
 
-    environment:
-      PUBLICHOST: "localhost"
-      FTP_USER_NAME: username
-      FTP_USER_PASS: mypass
-      FTP_USER_HOME: /home/username
 
   api_server:
     container_name: api_server
