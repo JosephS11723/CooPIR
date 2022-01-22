@@ -1,6 +1,7 @@
 version: "3.8"
 
 services:
+  # mongo database
   mongo:
     container_name: mongoDB
     build: ./mongo
@@ -8,6 +9,7 @@ services:
       network1:
         ipv4_address: 10.10.10.3
 
+  # ftp server
   ftpd_server:
     container_name: pure-ftpd
     build: ./ftp
@@ -21,6 +23,7 @@ services:
       FTP_USER_PASS: mypass
       FTP_USER_HOME: /home/username
 
+  # go api
   api_server:
     container_name: api_server
     build: ./src/api
@@ -36,6 +39,7 @@ services:
         ipv4_address: 10.10.10.4
 
 volumes:
+  # mongodb persistant storage
   mongodb-data:
   
 
