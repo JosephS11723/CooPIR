@@ -1,7 +1,7 @@
 package routers
 
 import (
-	"github.com/JosephS11723/CooPIR/src/api/handlers"
+	"github.com/JosephS11723/CooPIR/src/api/handlers/debug"
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,7 +10,7 @@ func InitRouter() *gin.Engine {
 	r := gin.Default()
 
 	// debug ping challenge
-	r.GET("/ping", handlers.PingPong)
+	r.GET("/ping", debug.PingPong)
 
 	// return handler router to main()
 	return r
