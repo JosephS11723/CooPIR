@@ -1,7 +1,5 @@
 package dbtypes
 
-import "bytes"
-
 type Client struct {
 	UUID  	string
 	Name  	string
