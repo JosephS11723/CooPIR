@@ -24,7 +24,14 @@ services:
   api_server:
     container_name: api_server
     build: ./src/api
+    ports:
+      - target: 8080
+        published: 8080
+        protocol: tcp
+
     networks:
+      hostnetwork:
+        ipv4_address: 20.20.20.4
       network1:
         ipv4_address: 10.10.10.4
 
@@ -33,6 +40,14 @@ volumes:
   
 
 networks:
+  # this is for the api to communicate with the outside world
+  hostnetwork:
+    internal: false
+    ipam:
+      config: 
+        - subnet: 20.20.20.0/24
+  
+  # this is for the api to communicate with the internal services
   network1:
     internal: true
     ipam:
