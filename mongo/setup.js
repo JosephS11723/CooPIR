@@ -1,4 +1,9 @@
+use Users;
 
-db.createCollection(
-    "Users", "Cases"
-);
+db.createCollection("User");
+
+db.createCollection("Authentication");
+
+use Cases;
+
+db.createCollection("Case");
