@@ -1,6 +1,8 @@
 package debug
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 // Response to ping-pong challenge
 func PingPong(c *gin.Context) {

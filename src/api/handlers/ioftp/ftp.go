@@ -63,6 +63,8 @@ func FtpDelete(c *gin.Context) {
 	// connect to server
 	client := ftpinterface.FtpConnect()
 
+	ftpinterface.DeleteFile(client, "test.txt")
+
 	// ensure connection close
 	defer ftpinterface.FtpClose(client)
 }
