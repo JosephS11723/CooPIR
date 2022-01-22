@@ -1,6 +1,6 @@
 package dbtypes
 
-type Client struct {
+type User struct {
 	UUID  string
 	Name  string
 	Email string
