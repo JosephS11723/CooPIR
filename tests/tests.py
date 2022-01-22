@@ -34,36 +34,72 @@ def pingTest():
 def uploadTest():
     """Attempts to upload a file to the server
     """
-    # print function name
-    print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
+    try:
+        # print function name
+        print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
-    # contents of test file
-    file = {"file":open("test.txt",'rb')}
+        # contents of test file
+        file = {"file":open("test.txt",'rb')}
 
-    # upload file
-    r = requests.post(url = "http://localhost:8080/file", files=file)
+        # upload file
+        r = requests.post(url = "http://localhost:8080/file", files=file)
 
-    # check if good request
-    if r.status_code != 200:
-        error(r.status_code)
-        pprint(requests.post(url = "http://localhost:8080/file", files=file).request.body)
-    else:
-        success()
-
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+        else:
+            success()
+    except Exception as e:
+        error(e)
+        
 def downloadTest():
-    """Attemps to download the file we just uploaded
+    """Attempts to download the file we just uploaded
     """
-    # print function name
-    print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
+    try:
+        # print function name
+        print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
+        
+        url = 'http://localhost:8080/file/test.txt'
+
+        # download file
+        r = requests.get(url)
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+        else:
+            success()
+        
+    except Exception as e:
+        error(e)
     
-    url = 'http://localhost:8080/file/test.txt'
-
-    myfile = requests.get(url)
-    print(myfile.content.decode())
-    print(myfile.status_code)
 
 
-tests = [pingTest, uploadTest, downloadTest]
+def deleteTest():
+    """Attempts to delete a file from the server and then test to see if it exists
+    """
+    try:
+        # print function name
+        print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
+
+        url = 'http://localhost:8080/file/test.txt'
+
+        # request to delete file
+        r = requests.delete(url)
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+        else:
+            success()
+
+    except Exception as e:
+        error(e)
+    
+    
+
+
+tests = [pingTest, uploadTest, downloadTest, deleteTest]
 
 def runAllTests():
     for test in tests:

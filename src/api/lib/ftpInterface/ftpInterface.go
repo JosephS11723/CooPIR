@@ -16,8 +16,8 @@ import (
 func FtpConnect() *goftp.Client {
 	// connection configuration information
 	ftpConfig := goftp.Config{
-		User:               "root",
-		Password:           "root",
+		User:               "api",
+		Password:           "password",
 		ConnectionsPerHost: 1,
 		Timeout:            10 * time.Second,
 	}
