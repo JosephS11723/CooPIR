@@ -8,7 +8,7 @@ import (
 func main() {
 	// set log to print line numbers
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	
+
 	// initialize router with handlers
 	r := routers.InitRouter()
 

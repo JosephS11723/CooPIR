@@ -1,9 +1,8 @@
 package ioftp
 
 import (
-	"fmt"
 	"log"
-	"mime/multipart"
+	//"mime/multipart"
 	"net/http"
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/ftpInterface"
@@ -11,23 +10,18 @@ import (
 )
 
 func FtpUpload(c *gin.Context) {
-	// connect to server
-	client := ftpinterface.FtpConnect()
-
-	// ensure connection close
-	defer ftpinterface.FtpClose(client)
-
 	// get file multipart stream
-	file, err := c.FormFile("Filename")
+	filestream, _, err := c.Request.FormFile("file")
 	if err != nil {
-		log.Fatal(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no file received",})
+		log.Println(err)
+		return
 	}
 
-	var filestream multipart.File
-
-	filestream, err = file.Open()
 	if err != nil {
-		log.Fatal(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "upload error",})
+		log.Println(err)
+		return
 	}
 
 	// get hash for filename
@@ -35,20 +29,31 @@ func FtpUpload(c *gin.Context) {
 	// DO NOT LET THIS STAY IN THE FINAL RELEASE. IT IS NOT PRACTICAL AND WILL GET IN THE WAY
 	filename := "test.txt"
 
+	// connect to server
+	client := ftpinterface.FtpConnect()
+
+	// ensure connection close
+	defer ftpinterface.FtpClose(client)
+
 	// upload file
 	err = ftpinterface.WriteFile(client, filename, filestream)
 	if err != nil {
 		// upload failed
-		c.String(http.StatusUnprocessableEntity, fmt.Sprintf("'%s' upload failed", file.Filename))
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "upload error",})
+		log.Println(err)
 	} else {
 		// upload succeeded
-		c.String(http.StatusOK, fmt.Sprintf("'%s' upload succeeded", file.Filename))
+		c.String(http.StatusOK, "upload succeeded")
+		log.Println(err)
 	}
 }
 
 func FtpDownload(c *gin.Context) {
 	// connect to server
 	client := ftpinterface.FtpConnect()
+
+	// TEST CODE. SHOULD ONLY RETURN THE ONE FILE
+	ftpinterface.ReadFile(client, "test.txt", c.Writer)
 
 	// ensure connection close
 	defer ftpinterface.FtpClose(client)

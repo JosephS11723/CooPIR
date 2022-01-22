@@ -21,7 +21,7 @@ func InitRouter() *gin.Engine {
 
 	// FTP TEST CODE
 	r.GET("/file/:filename", ioftp.FtpDownload)
-	r.POST("/file/", ioftp.FtpUpload)
+	r.POST("/file", ioftp.FtpUpload)
 	r.DELETE("/file/:filename", ioftp.FtpDelete)
 
 	// MONGO-DB

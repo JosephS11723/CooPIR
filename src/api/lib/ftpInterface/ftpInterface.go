@@ -16,8 +16,8 @@ import (
 func FtpConnect() *goftp.Client {
 	// connection configuration information
 	ftpConfig := goftp.Config{
-		User:               "anonymous",
-		Password:           "anonymous",
+		User:               "root",
+		Password:           "root",
 		ConnectionsPerHost: 1,
 		Timeout:            10 * time.Second,
 	}
@@ -25,7 +25,7 @@ func FtpConnect() *goftp.Client {
 	// dial the server and login
 	client, err := goftp.DialConfig(ftpConfig, config.FtpIP)
 	if err != nil {
-		log.Fatal(err)
+		log.Panicln(err)
 	}
 
 	// return the client pointer
@@ -35,7 +35,7 @@ func FtpConnect() *goftp.Client {
 // Closes the ftp server connection
 func FtpClose(c *goftp.Client) {
 	if err := c.Close(); err != nil {
-		log.Fatal(err)
+		log.Panicln(err)
 	}
 }
 
@@ -50,7 +50,7 @@ func ReadFile(c *goftp.Client, filename string, w io.Writer) {
 	// attempt file connection retreive
 	err := c.Retrieve(filename, w)
 	if err != nil {
-		log.Fatal(err)
+		log.Panicln(err)
 	}
 }
 
@@ -65,7 +65,7 @@ func WriteFile(c *goftp.Client, filename string, r io.Reader) error {
 	// attempt file store
 	err := c.Store(filename, r)
 	if err != nil {
-		log.Fatal(err)
+		log.Panicln(err)
 		return err
 	}
 
@@ -84,7 +84,7 @@ func DeleteFile(c *goftp.Client, filename string) {
 	// delete file
 	err := c.Delete(filename)
 	if err != nil {
-		log.Fatal(err)
+		log.Panicln(err)
 	}
 
 }
