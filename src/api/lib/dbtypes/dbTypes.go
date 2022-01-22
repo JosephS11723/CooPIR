@@ -1,6 +1,20 @@
 package dbtypes
 
+import "bytes"
+
 type Client struct {
-	Name  string
-	ID	  int
+	UUID  	string
+	Name  	string
+	Email 	string
+	Role  	string
+	Cases 	[]Case
+}
+
+type Case struct {
+}
+
+type Authentication struct {
+	UUID 	string
+	Salt 	string
+	Pass 	string
 }
