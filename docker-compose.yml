@@ -1,6 +1,7 @@
 version: "3.8"
 
 services:
+  # mongo database
   mongo:
     container_name: mongoDB
     build: ./mongo
@@ -8,31 +9,49 @@ services:
       network1:
         ipv4_address: 10.10.10.3
 
-  ftpd_server:
-    container_name: pure-ftpd
+  # ftp server
+  ftp_server:
+    container_name: ftp_server
     build: ./ftp
+    ports:
+      - "21:21"
+      - "21000-21010:21000-21010"
+    environment:
+      - USERS=api|password
     networks:
       network1:
         ipv4_address: 10.10.10.2
 
-    environment:
-      PUBLICHOST: "localhost"
-      FTP_USER_NAME: username
-      FTP_USER_PASS: mypass
-      FTP_USER_HOME: /home/username
 
+  # go api
   api_server:
     container_name: api_server
     build: ./src/api
+    ports:
+      - target: 8080
+        published: 8080
+        protocol: tcp
+
     networks:
+      hostnetwork:
+        ipv4_address: 20.20.20.4
       network1:
         ipv4_address: 10.10.10.4
 
 volumes:
+  # mongodb persistant storage
   mongodb-data:
   
 
 networks:
+  # this is for the api to communicate with the outside world
+  hostnetwork:
+    internal: false
+    ipam:
+      config: 
+        - subnet: 20.20.20.0/24
+  
+  # this is for the api to communicate with the internal services
   network1:
     internal: true
     ipam:
