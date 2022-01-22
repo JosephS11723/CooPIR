@@ -1,11 +1,10 @@
 conn = new Mongo();
 
-db = conn.getDB("myDatabase");
+db = conn.getDB("Users");
 
-db.createCollection("test");
+db.createCollection("User");
+db.createCollection("Authentication");
 
-//db.createCollection("Authentication");
+db = conn.getDB("Cases");
 
-//use Cases;
-
-//db.createCollection("Case");
+db.createCollection("Case");
