@@ -16,10 +16,10 @@ func DbTest(c *gin.Context) {
 		log.Panicln(err)
 	}
 
-	// Ping mongoDB with Ping method
-	dbInterface.DbPing(client, ctx)
-
 	// Release resource when the main
 	// function is returned.
 	defer dbInterface.DbClose(client, ctx, cancel)
+
+	// Ping mongoDB with Ping method
+	dbInterface.DbPing(client, ctx)
 }
