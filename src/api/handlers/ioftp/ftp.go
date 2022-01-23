@@ -13,13 +13,13 @@ func FtpUpload(c *gin.Context) {
 	// get file multipart stream
 	filestream, _, err := c.Request.FormFile("file")
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no file received",})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no file received"})
 		log.Println(err)
 		return
 	}
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "upload error",})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "upload error"})
 		log.Println(err)
 		return
 	}
@@ -39,7 +39,7 @@ func FtpUpload(c *gin.Context) {
 	err = ftpinterface.WriteFile(client, filename, filestream)
 	if err != nil {
 		// upload failed
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "upload error",})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "upload error"})
 		log.Println(err)
 	} else {
 		// upload succeeded
