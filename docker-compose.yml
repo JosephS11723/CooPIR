@@ -1,10 +1,41 @@
 version: "3.8"
 
 services:
+
+  # Allows quick access to the mongo database
+  # REMOVE BEFORE DEPLOYMENT
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongoDB
+      # ME_CONFIG_BASICAUTH_USERNAME: admin
+      # ME_CONFIG_BASICAUTH_PASSWORD: q
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_MONGODB_ADMINUSERNAME: test
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+    links:
+      - mongo-db
+    networks:
+      hostnetwork:
+        ipv4_address: 20.20.20.20
+      network1:
+        ipv4_address: 10.10.10.20
+
   # mongo database
-  mongo:
+  mongo-db:
     container_name: mongoDB
     build: ./mongo
+    environment:
+      MONGO_INITDB_DATABASE: testingdb
+      MONGO_INITDB_ROOT_USERNAME: test
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb-data:/data/db
     networks:
       network1:
         ipv4_address: 10.10.10.3
