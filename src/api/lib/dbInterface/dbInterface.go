@@ -21,7 +21,6 @@ import (
 // context.Context will be used set deadlines for process.
 // context.CancelFunc will be used to cancel context and
 // resource associated with it.
-
 func DbConnect() (*mongo.Client, context.Context,
 	context.CancelFunc, error) {
 
