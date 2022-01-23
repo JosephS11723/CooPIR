@@ -51,7 +51,7 @@ func DbClose(client *mongo.Client, ctx context.Context,
 		// client.Disconnect method also has deadline.
 		// returns error if any,
 		if err := client.Disconnect(ctx); err != nil {
-			panic(err)
+			log.Panicln(err)
 		}
 	}()
 }
