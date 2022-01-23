@@ -2,6 +2,7 @@ package routers
 
 import (
 	"github.com/JosephS11723/CooPIR/src/api/handlers/debug"
+	"github.com/JosephS11723/CooPIR/src/api/handlers/iodb"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/ioftp"
 	"github.com/gin-gonic/gin"
 )
@@ -25,6 +26,7 @@ func InitRouter() *gin.Engine {
 	r.DELETE("/file/:filename", ioftp.FtpDelete)
 
 	// MONGO-DB
+	r.GET("/db/test", iodb.DbTest)
 
 	// TOKEN AUTHENTICATION HANDLING
 
