@@ -16,10 +16,10 @@ import (
 func FtpConnect() *goftp.Client {
 	// connection configuration information
 	ftpConfig := goftp.Config{
-		User:               "api",
-		Password:           "password",
-		ConnectionsPerHost: 1,
-		Timeout:            10 * time.Second,
+		User:               config.FtpUsername,
+		Password:           config.FtpPassword,
+		ConnectionsPerHost: config.FtpConnectionsPerHost,
+		Timeout:            time.Duration(config.FtpTimeout) * time.Second,
 	}
 
 	// dial the server and login
