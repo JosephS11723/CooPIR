@@ -12,3 +12,6 @@ var FtpPassword string = "password"
 // ftp config
 var FtpConnectionsPerHost int = 1
 var FtpTimeout int = 100 // seconds
+
+// mongo config
+var MongoConnectionTimeout int = 30

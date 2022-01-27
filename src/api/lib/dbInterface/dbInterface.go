@@ -29,7 +29,7 @@ func DbConnect() (*mongo.Client, context.Context,
 	// ctx will be used to set deadline for process, here
 	// deadline will of 30 seconds.
 	ctx, cancel := context.WithTimeout(context.Background(),
-		30*time.Second)
+		time.Duration(config.MongoConnectionTimeout)*time.Second)
 
 	// mongo.Connect return mongo.Client method
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
