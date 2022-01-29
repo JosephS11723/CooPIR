@@ -54,6 +54,6 @@ func DbUploadTest(c *gin.Context) {
 
 	result := dbInterface.DbSingleInsert(client, ctx, dbName, dbCollection, testUser)
 
-	log.Printf("[DEBUG] Inserted document with _id: ObjectID(%v)\n", result.InsertedID)
+	log.Printf("[DEBUG] Inserted document with _id: %v\n", result.InsertedID)
 
 }
