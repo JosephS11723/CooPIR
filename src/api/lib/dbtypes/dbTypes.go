@@ -6,6 +6,7 @@ type User struct {
 	Email string
 	Role  string
 	Cases []string
+	Auth  []Authentication
 }
 
 type Case struct {
@@ -32,7 +33,6 @@ type Access struct {
 }
 
 type Authentication struct {
-	UUID string
 	Salt string
 	Pass string
 }
