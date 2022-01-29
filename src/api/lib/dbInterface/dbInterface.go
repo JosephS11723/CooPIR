@@ -25,7 +25,17 @@ import (
 func DbConnect() (*mongo.Client, context.Context,
 	context.CancelFunc, error) {
 
-	uri := config.DBIP
+	var uri string = config.DBIP
+
+	// Set client options
+	credential := options.Credential{
+		AuthMechanism: "SCRAM-SHA-256",
+		AuthSource:    "admin",
+		Username:      "api",
+		Password:      "bingusmalingus",
+	}
+	clientOpts := options.Client().ApplyURI(uri).
+		SetAuth(credential)
 
 	// ctx will be used to set deadline for process, here
 	// deadline will of 30 seconds.
@@ -33,7 +43,7 @@ func DbConnect() (*mongo.Client, context.Context,
 		30*time.Second)
 
 	// mongo.Connect return mongo.Client method
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
+	client, err := mongo.Connect(ctx, clientOpts)
 	return client, ctx, cancel, err
 }
 

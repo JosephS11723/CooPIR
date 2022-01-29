@@ -35,8 +35,8 @@ func DbUploadTest(c *gin.Context) {
 
 	defer dbInterface.DbClose(client, ctx, cancel)
 
-	var dbName string = "testingdb"
-	var dbCollection string = "Users"
+	var dbName string = "Users"
+	var dbCollection string = "User"
 
 	var testUser dbtypes.User = dbtypes.User{
 		UUID:  "testuser",
