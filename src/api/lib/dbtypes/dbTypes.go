@@ -1,38 +1,38 @@
 package dbtypes
 
 type User struct {
-	UUID  string
-	Name  string
-	Email string
-	Role  string
-	Cases []string
+	UUID  string           `json:"uuid"`
+	Name  string           `json:"name"`
+	Email string           `json:"email"`
+	Role  string           `json:"role"`
+	Cases []string         `json:"cases"`
+	Auth  []Authentication `json:"auth"`
 }
 
 type Case struct {
-	UUID         string
-	Name         string
-	Date_created string
-	View_access  string
-	Edit_access  string
-	Colaborators []string
-	Files        []File
+	UUID         string		`json:"uuid"`
+	Name         string		`json:"name"`
+	Date_created string		`json:"dateCreated"`
+	View_access  string		`json:"viewAccess"`
+	Edit_access  string		`json:"editAccess"`
+	Colaborators []string	`json:"collabs"`
+	Files        []File		`json:"files"`
 }
 
 type File struct {
-	Hash        string
-	Filename    string
-	File_dir    string
-	Upload_date string
-	Last_access []Access
+	Hash        string		`json:"hash"`
+	Filename    string		`json:"filename"`
+	File_dir    string		`json:"fileDir"`
+	Upload_date string		`json:"uploadDate"`
+	Last_access []Access	`json:"lastAccess"`
 }
 
 type Access struct {
-	Date string
-	User string
+	User string		`json:"user"`
+	Date string		`json:"date"`
 }
 
 type Authentication struct {
-	UUID string
-	Salt string
-	Pass string
+	Salt string 	`json:"salt"`
+	Pass string 	`json:"pass"`
 }

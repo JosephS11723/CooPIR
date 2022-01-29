@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/JosephS11723/CooPIR/src/api/config"
+	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -24,7 +25,17 @@ import (
 func DbConnect() (*mongo.Client, context.Context,
 	context.CancelFunc, error) {
 
-	uri := config.DBIP
+	var uri string = config.DBIP
+
+	// Set client options
+	credential := options.Credential{
+		AuthMechanism: "SCRAM-SHA-256",
+		AuthSource:    "admin",
+		Username:      "api",
+		Password:      "bingusmalingus",
+	}
+	clientOpts := options.Client().ApplyURI(uri).
+		SetAuth(credential)
 
 	// ctx will be used to set deadline for process, here
 	// deadline will of 30 seconds.
@@ -32,7 +43,7 @@ func DbConnect() (*mongo.Client, context.Context,
 		time.Duration(config.MongoConnectionTimeout)*time.Second)
 
 	// mongo.Connect return mongo.Client method
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
+	client, err := mongo.Connect(ctx, clientOpts)
 	return client, ctx, cancel, err
 }
 
@@ -70,4 +81,18 @@ func DbPing(client *mongo.Client, ctx context.Context) error {
 	}
 	log.Println("connected successfully")
 	return nil
+}
+
+func DbSingleInsert(client *mongo.Client, ctx context.Context, dbname string,
+	collection string, data dbtypes.User) *mongo.InsertOneResult {
+
+	coll := client.Database(dbname).Collection(collection)
+
+	result, err := coll.InsertOne(ctx, data)
+
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	return result
 }
