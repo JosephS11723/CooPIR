@@ -1,12 +1,12 @@
 package dbtypes
 
 type User struct {
-	UUID  string
-	Name  string
-	Email string
-	Role  string
-	Cases []string
-	Auth  []Authentication
+	UUID  string           `json:"uuid"`
+	Name  string           `json:"name"`
+	Email string           `json:"email"`
+	Role  string           `json:"role"`
+	Cases []string         `json:"cases"`
+	Auth  []Authentication `json:"auth"`
 }
 
 type Case struct {
@@ -33,6 +33,6 @@ type Access struct {
 }
 
 type Authentication struct {
-	Salt string
-	Pass string
+	Salt string `json:"salt"`
+	Pass string `json:"pass"`
 }
