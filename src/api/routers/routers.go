@@ -26,7 +26,8 @@ func InitRouter() *gin.Engine {
 	r.DELETE("/file/:filename", ioftp.FtpDelete)
 
 	// MONGO-DB
-	r.GET("/db/test", iodb.DbTest)
+	r.GET("/db/test", iodb.DbPingTest)
+	r.POST("/db/test", iodb.DbUploadTest)
 
 	// TOKEN AUTHENTICATION HANDLING
 

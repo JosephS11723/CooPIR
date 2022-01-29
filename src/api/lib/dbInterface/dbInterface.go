@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/JosephS11723/CooPIR/src/api/config"
+	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -70,4 +71,18 @@ func DbPing(client *mongo.Client, ctx context.Context) error {
 	}
 	log.Println("connected successfully")
 	return nil
+}
+
+func DbSingleInsert(client *mongo.Client, ctx context.Context, dbname string,
+	collection string, data dbtypes.User) *mongo.InsertOneResult {
+
+	coll := client.Database(dbname).Collection(collection)
+
+	result, err := coll.InsertOne(ctx, data)
+
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	return result
 }
