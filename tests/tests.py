@@ -95,11 +95,55 @@ def deleteTest():
 
     except Exception as e:
         error(e)
-    
-    
+
+def dbPingTest():
+    """Attempts to add a User document into the database
+    """
+    try:
+        # print function name
+        print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
+
+        # request ping page
+        r = requests.get(url="http://localhost:8080/db/test")
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+        else:
+            success()
+            
+    except Exception as e:
+        error(e)
+
+def dbInsertTest():
+    """Attempts to add a User document into the database
+    """
+    try:
+        # print function name
+        print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
+
+        # request ping page
+        r = requests.post(url="http://localhost:8080/db/test")
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+        else:
+            success()
+            
+    except Exception as e:
+        error(e)
 
 
-tests = [pingTest, uploadTest, downloadTest, deleteTest]
+tests = [pingTest, uploadTest, downloadTest, deleteTest, dbPingTest, dbInsertTest]
 
 def runAllTests():
     for test in tests:
