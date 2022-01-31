@@ -53,6 +53,31 @@ db.createRole(
     }
  )
 
+coll = db.getCollection("Aggregations");
+
+coll.insert(
+    {
+      "name":"GetFiles",
+
+      "aggregation":[
+        {
+          "$sort":{
+            "$size":"$collaborators"
+          }
+        },
+        {
+          "$project":{
+            "name":true,
+            "number_of_collaborators":{"$size": "$collaborators"},
+            "collaborators":true
+          }
+        }
+      ]
+    }
+  )
+
+
+
 //-----------------------------------------------
 
 db = conn.getDB("admin");
