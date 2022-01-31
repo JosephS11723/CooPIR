@@ -7,7 +7,7 @@ docker service ls
 ::push the image to the registry
 docker-compose push
 
-::deploy the stack to the swarm (named stackdemo)
+::deploy the stack to the swarm (named CooPIR)
 docker stack deploy --compose-file docker-compose.yml CooPIR
 
 ::check that it is running
