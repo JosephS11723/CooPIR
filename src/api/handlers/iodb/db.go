@@ -38,22 +38,37 @@ func DbUploadTest(c *gin.Context) {
 	var dbName string = "Users"
 	var dbCollection string = "User"
 
-	var testUser dbtypes.User = dbtypes.User{
-		UUID:  "testuser",
-		Name:  "testuser",
-		Email: "example@example.com",
-		Role:  "admin",
-		Cases: []string{"testcase1, testcase2"},
-		Auth: []dbtypes.Authentication{
-			{
-				Salt: "salt",
-				Pass: "pass",
-			},
-		},
-	}
+	// Create a new user
+	var testUser dbtypes.User = dbInterface.MakeUser("testuser", "test@test.com", "supervisor", []string{"testcase", "thiscasedoesnotexist"}, "password")
 
 	result := dbInterface.DbSingleInsert(client, ctx, dbName, dbCollection, testUser)
 
-	log.Printf("[DEBUG] Inserted document with _id: %v\n", result.InsertedID)
+	log.Printf("[DEBUG] Inserted user document with _id: %v\n", result.InsertedID)
 
+	// Set to Cases db
+	dbName = "Cases"
+
+	// Create a new case
+	dbCollection = "Case"
+	var testCase dbtypes.Case = dbInterface.MakeCase("testcase", "1/1/1976", "responder", "supervisor", []string{"testuser, anotheruser, Brandon"})
+
+	result = dbInterface.DbSingleInsert(client, ctx, dbName, dbCollection, testCase)
+
+	log.Printf("[DEBUG] Inserted case document with _id: %v\n", result.InsertedID)
+
+	// Create a new file
+	dbCollection = "File"
+	var testfile dbtypes.File = dbInterface.MakeFile("d5bb3ed1ccde75691e54f8f2da83a2fbf7eb9f0891ea141e67dd7f2b889ac479", "testfile", "test/dir", "1/1/1976", "supervisor", "admin")
+
+	result = dbInterface.DbSingleInsert(client, ctx, dbName, dbCollection, testfile)
+
+	log.Printf("[DEBUG] Inserted file document with _id: %v\n", result.InsertedID)
+
+	// Create a new log
+	dbCollection = "Log"
+	var testLog dbtypes.Access = dbInterface.MakeAccess("testfile", "testuse", "1/1/1976")
+
+	result = dbInterface.DbSingleInsert(client, ctx, dbName, dbCollection, testLog)
+
+	log.Printf("[DEBUG] Inserted access document with _id: %v\n", result.InsertedID)
 }

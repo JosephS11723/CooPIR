@@ -8,6 +8,8 @@ import (
 	// _ "sync"
 	"time"
 
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/JosephS11723/CooPIR/src/api/config"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 
@@ -84,15 +86,150 @@ func DbPing(client *mongo.Client, ctx context.Context) error {
 }
 
 func DbSingleInsert(client *mongo.Client, ctx context.Context, dbname string,
-	collection string, data dbtypes.User) *mongo.InsertOneResult {
+	collection string, data interface{}) *mongo.InsertOneResult {
 
-	coll := client.Database(dbname).Collection(collection)
+	switch t := data.(type) {
 
-	result, err := coll.InsertOne(ctx, data)
+	case dbtypes.Access:
+		if collection != "Log" {
+			log.Panicf("[ERROR] Cannot insert data type %s into Log collection", t)
+		} else {
 
+			data := data.(dbtypes.Access)
+
+			coll := client.Database(dbname).Collection(collection)
+
+			result, err := coll.InsertOne(ctx, data)
+
+			if err != nil {
+				log.Panicln(err)
+			}
+
+			return result
+		}
+
+	case dbtypes.Case:
+		if collection != "Case" {
+			log.Panicf("[ERROR] Cannot insert data type %s into Case collection", t)
+		} else {
+
+			data := data.(dbtypes.Case)
+
+			coll := client.Database(dbname).Collection(collection)
+
+			result, err := coll.InsertOne(ctx, data)
+
+			if err != nil {
+				log.Panicln(err)
+			}
+
+			return result
+		}
+
+	case dbtypes.File:
+		if collection != "File" {
+			log.Panicf("[ERROR] Cannot insert data type %s into File collection", t)
+		} else {
+
+			data := data.(dbtypes.File)
+
+			coll := client.Database(dbname).Collection(collection)
+
+			result, err := coll.InsertOne(ctx, data)
+
+			if err != nil {
+				log.Panicln(err)
+			}
+
+			return result
+		}
+
+	case dbtypes.User:
+		if collection != "User" {
+			log.Panicf("[ERROR] Cannot insert data type %s into User collection", t)
+		} else {
+
+			data := data.(dbtypes.User)
+
+			coll := client.Database(dbname).Collection(collection)
+
+			result, err := coll.InsertOne(ctx, data)
+
+			if err != nil {
+				log.Panicln(err)
+			}
+
+			return result
+		}
+
+	default:
+		log.Panic("[ERROR] Unknown type for db intsert!")
+	}
+
+	return nil
+}
+
+func PassHash(password string) string {
+
+	// Generate a salted hash of the password
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		log.Panicln(err)
 	}
 
-	return result
+	return string(hash)
+}
+
+func MakeUser(name string, email string, role string, cases []string, password string) dbtypes.User {
+
+	var saltedhash string = PassHash(password)
+
+	var NewUser = dbtypes.User{
+		Name:       name,
+		Email:      email,
+		Role:       role,
+		Cases:      cases,
+		SaltedHash: saltedhash,
+	}
+
+	return NewUser
+}
+
+func MakeCase(name string, dateCreated string, viewAccess string, editAccess string, collaborators []string) dbtypes.Case {
+
+	var NewCase = dbtypes.Case{
+		Name:          name,
+		Date_created:  dateCreated,
+		View_access:   viewAccess,
+		Edit_access:   editAccess,
+		Collaborators: collaborators,
+	}
+
+	return NewCase
+}
+
+func MakeFile(hash string, filename string, fileDir string, uploadDate string, viewAccess string, editAccess string) dbtypes.File {
+
+	var NewFile = dbtypes.File{
+		Hash:        hash,
+		Filename:    filename,
+		File_dir:    fileDir,
+		Upload_date: uploadDate,
+		View_access: viewAccess,
+		Edit_access: editAccess,
+	}
+
+	return NewFile
+}
+
+func MakeAccess(filename string, user string, date string) dbtypes.Access {
+
+	var NewAccess = dbtypes.Access{
+		Filename: filename,
+		User:     user,
+		Date:     date,
+	}
+
+	return NewAccess
+
 }
