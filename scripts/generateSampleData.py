@@ -46,7 +46,7 @@ coll.insert_many(Users)
 
 coll = conn["Cases"]["Case"]
 
-for i in range(0,20):
+for i in range(0,10000):
     coll.insert_one(
         {
             "name": "case"+str(i),
