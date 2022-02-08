@@ -142,8 +142,31 @@ def dbInsertTest():
     except Exception as e:
         error(e)
 
+def dbFindTest():
+    """Attempts to add a User document into the database
+    """
+    try:
+        # print function name
+        print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
-tests = [pingTest, uploadTest, downloadTest, deleteTest, dbPingTest, dbInsertTest]
+        # request ping page
+        r = requests.get(url="http://localhost:8080/db/test/find")
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+        else:
+            success()
+            
+    except Exception as e:
+        error(e)
+
+
+tests = [pingTest, uploadTest, downloadTest, deleteTest, dbPingTest, dbInsertTest, dbFindTest]
 
 def runAllTests():
     for test in tests:

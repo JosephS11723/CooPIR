@@ -13,17 +13,12 @@ import (
 	"github.com/JosephS11723/CooPIR/src/api/config"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-// This is a user defined method that returns mongo.Client,
-// context.Context, context.CancelFunc and error.
-// mongo.Client will be used for further database operation.
-// context.Context will be used set deadlines for process.
-// context.CancelFunc will be used to cancel context and
-// resource associated with it.
 func DbConnect() (*mongo.Client, context.Context,
 	context.CancelFunc, error) {
 
@@ -49,7 +44,6 @@ func DbConnect() (*mongo.Client, context.Context,
 	return client, ctx, cancel, err
 }
 
-// This is a user defined method to close resources.
 // This method closes mongoDB connection and cancel context.
 func DbClose(client *mongo.Client, ctx context.Context,
 	cancel context.CancelFunc) {
@@ -57,27 +51,17 @@ func DbClose(client *mongo.Client, ctx context.Context,
 	// CancelFunc to cancel to context
 	defer cancel()
 
-	// client provides a method to close
-	// a mongoDB connection.
 	defer func() {
 
-		// client.Disconnect method also has deadline.
-		// returns error if any,
 		if err := client.Disconnect(ctx); err != nil {
 			log.Panicln(err)
 		}
 	}()
 }
 
-// This is a user defined method that accepts
-// mongo.Client and context.Context
 // This method used to ping the mongoDB, return error if any.
 func DbPing(client *mongo.Client, ctx context.Context) error {
 
-	// mongo.Client has Ping to ping mongoDB, deadline of
-	// the Ping method will be determined by cxt
-	// Ping method return error if any occurred, then
-	// the error can be handled.
 	if err := client.Ping(ctx, readpref.Primary()); err != nil {
 		return err
 	}
@@ -208,11 +192,12 @@ func MakeCase(name string, dateCreated string, viewAccess string, editAccess str
 	return NewCase
 }
 
-func MakeFile(hash string, filename string, fileDir string, uploadDate string, viewAccess string, editAccess string) dbtypes.File {
+func MakeFile(hash string, filename string, caseName string, fileDir string, uploadDate string, viewAccess string, editAccess string) dbtypes.File {
 
 	var NewFile = dbtypes.File{
 		Hash:        hash,
 		Filename:    filename,
+		Case:        caseName,
 		File_dir:    fileDir,
 		Upload_date: uploadDate,
 		View_access: viewAccess,
@@ -232,4 +217,32 @@ func MakeAccess(filename string, user string, date string) dbtypes.Access {
 
 	return NewAccess
 
+}
+
+func FindDocsByFilter(client *mongo.Client, ctx context.Context, dbname string, collection string, filter bson.M) []string {
+
+	coll := client.Database(dbname).Collection(collection)
+
+	cur, err := coll.Find(ctx, filter)
+
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	var docList []string
+
+	for cur.Next(context.Background()) {
+		// To decode into a struct, use cursor.Decode()
+		result := struct {
+			Foo string
+			Bar int32
+		}{}
+		err := cur.Decode(&result)
+		if err != nil {
+			log.Panicln(err)
+		}
+		docList = append(docList, result.Foo)
+	}
+
+	return docList
 }

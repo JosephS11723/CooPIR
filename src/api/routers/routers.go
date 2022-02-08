@@ -28,6 +28,7 @@ func InitRouter() *gin.Engine {
 	// MONGO-DB
 	r.GET("/db/test", iodb.DbPingTest)
 	r.POST("/db/test", iodb.DbUploadTest)
+	r.GET("/db/test/find", iodb.DbFindTest)
 
 	// TOKEN AUTHENTICATION HANDLING
 
