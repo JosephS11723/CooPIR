@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3"
 
 services:
 
@@ -41,17 +41,17 @@ services:
         ipv4_address: 10.10.10.3
 
   # ftp server
-  ftp_server:
-    container_name: ftp_server
-    build: ./ftp
-    ports:
-      - "21:21"
-      - "21000-21010:21000-21010"
-    environment:
-      - USERS=api|password
-    networks:
-      network1:
-        ipv4_address: 10.10.10.2
+ # ftp_server:
+ #   container_name: ftp_server
+ #   build: ./ftp
+  #  ports:
+   #   - "21:21"
+    #  - "21000-21010:21000-21010"
+    #environment:
+     # - USERS=api|password
+    #networks:
+    #  network1:
+     #   ipv4_address: 10.10.10.2
 
 
   # go api
