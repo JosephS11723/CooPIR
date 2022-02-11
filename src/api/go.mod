@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/gin-gonic/gin v1.7.7
+	github.com/google/uuid v1.3.0
 	github.com/secsy/goftp v0.0.0-20200609142545-aa2de14babf4
 )
 

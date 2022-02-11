@@ -2,14 +2,23 @@ package seaweedInterface
 
 import (
 	"io"
+	"io/ioutil"
 	"log"
+	"mime/multipart"
 	"net/http"
+	"sync"
 
+	//"fmt"
+
+	"github.com/JosephS11723/CooPIR/src/api/config"
 	"github.com/gin-gonic/gin"
 )
 
+var filerAddress string = "http://filer"
+var filerPort string = "8888"
+
 // GETs a file from seaweed and streams it to the ctx writer
-func GetFile(filename string, ctx gin.Context) error {
+func GETFile(filename string, c *gin.Context) error {
 	// create http client
 	client := &http.Client{}
 
@@ -17,7 +26,7 @@ func GetFile(filename string, ctx gin.Context) error {
 	var resp *http.Response
 
 	// create request
-	req, err := http.NewRequest(http.MethodGet, "http://filer/" + filename, nil)
+	req, err := http.NewRequest(http.MethodGet, filerAddress+":"+filerPort+"/files/"+filename, nil)
 	if err != nil {
 		return err
 	}
@@ -25,47 +34,103 @@ func GetFile(filename string, ctx gin.Context) error {
 	// do request
 	resp, err = client.Do(req)
 
-	if err != nil || response.StatusCode != http.StatusOK {
+	if err != nil || resp.StatusCode != http.StatusOK {
 		return err
 	}
+
 	// defer closing body
 	defer resp.Body.Close()
 
-	ctx.Writer.Header().Set("Content-Disposition", "attachment; filename=" + filename)
-	//ctx.Writer.Header().Set("Content-Type", resp.Header.Get("Content-Type"))
-	io.Copy(ctx.Writer, resp.Body)
+	// set header
+	c.Writer.Header().Set("Content-Disposition", "attachment; filename="+filename)
+	c.Writer.Header().Set("Content-Type", resp.Header.Get("Content-Type"))
+
+	// copy file
+	io.Copy(c.Writer, resp.Body)
 
 	return nil
 }
 
 // PUTs a file to seaweed using the io reader passed
-func UploadFile(filename string, r io.Reader) {
-	client := &http.Client{}
+func POSTFile(filename string, r io.Reader, c *gin.Context, ss *sync.WaitGroup, errChan chan error) {
+	// defer job finish
+	defer ss.Done()
 
-	req, err := http.NewRequest(http.MethodDelete, "http://filer/" + filename, nil)
-	if err != nil {
-		log.Panicln(err)
+	var err error
+
+	rr, w := io.Pipe()
+	mpw := multipart.NewWriter(w)
+	go func() {
+		var part io.Writer
+		defer w.Close()
+
+		if part, err = mpw.CreateFormFile("file", filename); err != nil {
+			log.Println(err)
+			errChan <- err
+			return
+		}
+		part = io.MultiWriter(part)
+		if _, err = io.Copy(part, r); err != nil {
+			log.Println(err)
+			errChan <- err
+			return
+		}
+		if err = mpw.Close(); err != nil {
+			log.Println(err)
+			errChan <- err
+			return
+		}
+	}()
+
+	var fileStat string
+
+	// determine read-only status
+	if config.ReadOnlyFiles {
+		fileStat = "?mode=1555"
+	} else {
+		fileStat = "?mode=0777"
 	}
 
-	_, err = client.Do(req)
-
+	// create request
+	resp, err := http.Post(filerAddress+":"+filerPort+"/files/"+fileStat, mpw.FormDataContentType(), rr)
+	log.Println(filerAddress + ":" + filerPort + "/files/" + fileStat)
 	if err != nil {
-		log.Panicln(err)
+		log.Println(err)
+		errChan <- err
+		return
 	}
+	defer resp.Body.Close()
+	_, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Println(err)
+		errChan <- err
+		return
+	}
+	//fmt.Print(string(ret))
+
+	errChan <- nil
 }
 
 // DELETEs a file on seaweed given its name
-func DeleteFile(filename string) {
+func DELETEFile(filename string, c *gin.Context) error {
+	// create http agent
 	client := &http.Client{}
 
-	req, err := http.NewRequest(http.MethodDelete, "http://filer/" + filename, nil)
+	// create request
+	req, err := http.NewRequest(http.MethodDelete, filerAddress+":"+filerPort+"/files/"+filename, nil)
+
 	if err != nil {
-		log.Panicln(err)
+		log.Println(err)
+		return err
 	}
 
+	// do request
 	_, err = client.Do(req)
 
 	if err != nil {
-		log.Panicln(err)
+		log.Println(err)
+		return err
 	}
+
+	return nil
 }
