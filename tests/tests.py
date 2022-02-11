@@ -157,7 +157,7 @@ def deleteTest(filename : str = None):
 def parallelUploadTest():
     '''Attemps to upload files at the same time using threads and then download all the data back'''
     def printStatus(status):
-        print("\r{} [{}]             ".format(inspect.getframeinfo(inspect.currentframe()).function, status), end=" ", flush=True)
+        print("\r{} [{}]             ".format("parallelUploadTest", status), end=" ", flush=True)
 
     def parallelUploadAndGet(fileData, index : int):
         '''Uploads a file and adds the return value to the list'''
