@@ -12,3 +12,7 @@ var FtpPassword string = "password"
 // ftp config
 var FtpConnectionsPerHost int = 1
 var FtpTimeout int = 100 // seconds
+
+// seaweedfs config
+var UpTaskCount int = 5 // the number of tasks performed on a file when it is uploaded
+var DoUploadLogging bool = true // whether or not the upload process should be logged with hashes
