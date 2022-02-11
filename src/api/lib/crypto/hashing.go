@@ -10,6 +10,7 @@ import (
 	"sync"
 )
 
+// MD5FromReaderAsync returns the md5 hash of the data read from the reader
 func MD5FromReaderAsync(r io.Reader, ss *sync.WaitGroup, errChan chan error, outChan chan []byte) {
 	defer ss.Done()
 
@@ -37,6 +38,7 @@ func MD5FromReaderAsync(r io.Reader, ss *sync.WaitGroup, errChan chan error, out
 	outChan <- s.Sum(nil)
 }
 
+// Sha1FromReaderAsync returns the sha1 hash of the data read from the reader
 func Sha1FromReaderAsync(r io.Reader, ss *sync.WaitGroup, errChan chan error, outChan chan []byte) {
 	defer ss.Done()
 
@@ -64,6 +66,7 @@ func Sha1FromReaderAsync(r io.Reader, ss *sync.WaitGroup, errChan chan error, ou
 	outChan <- s.Sum(nil)
 }
 
+// Sha256FromReaderAsync returns the sha256 hash of the data read from the reader
 func Sha256FromReaderAsync(r io.Reader, ss *sync.WaitGroup, errChan chan error, outChan chan []byte) {
 	defer ss.Done()
 
@@ -91,6 +94,7 @@ func Sha256FromReaderAsync(r io.Reader, ss *sync.WaitGroup, errChan chan error, 
 	outChan <- s.Sum(nil)
 }
 
+// Sha512FromReaderAsync returns the sha512 hash of the data read from the reader
 func Sha512FromReaderAsync(r io.Reader, ss *sync.WaitGroup, errChan chan error, outChan chan []byte) {
 	defer ss.Done()
 
