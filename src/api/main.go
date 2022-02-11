@@ -12,6 +12,6 @@ func main() {
 	// initialize router with handlers
 	r := routers.InitRouter()
 
-	// run and server
+	// run and serve
 	r.Run("0.0.0.0:8080")
 }
