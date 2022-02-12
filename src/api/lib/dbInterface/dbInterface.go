@@ -172,12 +172,22 @@ func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.I
 // MakeUser creates a new User struct.
 func MakeUser(name string, email string, role string, cases []string, password string) *mongo.InsertOneResult {
 
+	// check if user email already exists
+	if doesEmailExist(email) {
+		log.Panic("[ERROR] Email already exists!")
+	}
+
+	// Hash password
 	var saltedhash string = security.HashPass(password)
+
+	// Set db types
 	var dbName string = "Users"
 	var dbCollection string = "User"
-	var id string = MakeUuid()
-	var result *mongo.InsertOneResult
 
+	// Make unique id
+	var id string = MakeUuid()
+
+	// Set user struct
 	var NewUser = dbtypes.User{
 		UUID:       id,
 		Name:       name,
@@ -187,7 +197,7 @@ func MakeUser(name string, email string, role string, cases []string, password s
 		SaltedHash: saltedhash,
 	}
 
-	result = DbSingleInsert(dbName, dbCollection, NewUser)
+	result := DbSingleInsert(dbName, dbCollection, NewUser)
 
 	return result
 }
@@ -390,6 +400,31 @@ func doesUuidExist(dbname string, collection string, uuid string) bool {
 	return result.Err() != mongo.ErrNoDocuments
 }
 
+// Function to check if user email exists in the database.
+// Returns true if the document exists.
+func doesEmailExist(email string) bool {
+
+	var dbName string = "Users"
+	var dbCollection string = "User"
+
+	// connect to db
+	client, ctx, cancel, err := dbConnect()
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	defer dbClose(client, ctx, cancel)
+
+	// get the collection
+	coll := client.Database(dbName).Collection(dbCollection)
+
+	// find the document
+	var result *mongo.SingleResult = coll.FindOne(ctx, bson.M{"email": email})
+
+	// return true if document exists
+	return result.Err() != mongo.ErrNoDocuments
+}
+
 // updateDoc modifies a single document's information in the database.
 func UpdateDoc(dbName string, dbCollection string, filter bson.M, updates bson.D) *mongo.UpdateResult {
 
@@ -413,4 +448,18 @@ func UpdateDoc(dbName string, dbCollection string, filter bson.M, updates bson.D
 	}
 
 	return result
+}
+
+func RetrieveHashByEmail(email string) string {
+
+	var dbName string = "Users"
+	var dbCollection string = "User"
+	var filter bson.M = bson.M{"email": email}
+
+	result := FindDocByFilter(dbName, dbCollection, filter)
+
+	var hash string
+	result.Decode(&hash)
+
+	return hash
 }
