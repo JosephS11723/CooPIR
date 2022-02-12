@@ -11,9 +11,6 @@ func (jq JobQueue) pop() {
 
 }
 
-/*
-func manage_queue(receiver <-chan interface{}) {
-
+func ManageQueue(receiver <-chan interface{}) {
 
 }
-*/
