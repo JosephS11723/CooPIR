@@ -219,7 +219,7 @@ func MakeAccess(filename string, user string, date string) dbtypes.Access {
 
 }
 
-func FindDocsByFilter(client *mongo.Client, ctx context.Context, dbname string, collection string, filter bson.M) []interface{} {
+func FindDocsByFilter(client *mongo.Client, ctx context.Context, dbname string, collection string, filter bson.M) []bson.M {
 
 	coll := client.Database(dbname).Collection(collection)
 
@@ -229,12 +229,15 @@ func FindDocsByFilter(client *mongo.Client, ctx context.Context, dbname string, 
 		log.Panicln(err)
 	}
 
-	var docList []interface{}
+	var docList []bson.M
 
 	for cur.Next(context.Background()) {
 		// Decode cur into a interface
-		var doc interface{}
+		var doc bson.M
 		err := cur.Decode(&doc)
+
+		// remove _id from doc
+		delete(doc, "_id")
 
 		if err != nil {
 			log.Panicln(err)

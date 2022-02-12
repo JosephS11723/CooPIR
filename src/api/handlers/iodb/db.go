@@ -98,11 +98,12 @@ func DbFindTest(c *gin.Context) {
 	// Find user by filter
 	result := dbInterface.FindDocsByFilter(client, ctx, dbName, dbCollection, filter)
 
-	for _, document := range result {
-		doc := document.(dbtypes.User)
-		log.Print("[DEBUG] Found user document with _id: ", doc.Name, " ", doc.Email, " ", doc.Role, " ", doc.Cases, " ", doc.SaltedHash, "\n")
-	}
+	for _, user := range result {
+		// un marshal the document into a user
+		// var user dbtypes.User
+		// err := bson.Unmarshal(document.(byte), &user)
 
-	log.Printf("[DEBUG] Found %v \n", result)
+		log.Print("[DEBUG] Found user document with _id: ", user["name"], " ", user["email"], " ", user["role"], " ", user["cases"], " ", user["saltedhash"], "\n")
+	}
 
 }
