@@ -1,8 +1,9 @@
 package security
 
 import (
-	"golang.org/x/crypto/bcrypt"
 	"log"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func HashPass(password string) string {
@@ -13,4 +14,10 @@ func HashPass(password string) string {
 	}
 
 	return string(hash)
+}
+
+func CheckPass(password string, hash string) bool {
+	// Check the password against the hash
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil // nil means no error
 }
