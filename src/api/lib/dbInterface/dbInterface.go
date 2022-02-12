@@ -75,11 +75,13 @@ func DbPing() error {
 // DbSingleInsert inserts a single document into a collection.
 func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.InsertOneResult {
 	client, ctx, cancel, err := dbConnect()
+
+	// defer closing db connection
+	defer dbClose(client, ctx, cancel)
+
 	if err != nil {
 		log.Panicln(err)
 	}
-
-	defer dbClose(client, ctx, cancel)
 
 	switch t := data.(type) {
 
@@ -173,7 +175,7 @@ func MakeUser(name string, email string, role string, cases []string, password s
 	var saltedhash string = security.HashPass(password)
 	var dbName string = "Users"
 	var dbCollection string = "User"
-	var id string = MakeUuid(dbName, dbCollection)
+	var id string = MakeUuid()
 	var result *mongo.InsertOneResult
 
 	var NewUser = dbtypes.User{
@@ -195,7 +197,7 @@ func MakeCase(name string, dateCreated string, viewAccess string, editAccess str
 
 	var dbName string = "Cases"
 	var dbCollection string = "Case"
-	var id string = MakeUuid(dbName, dbCollection)
+	var id string = MakeUuid()
 	var result *mongo.InsertOneResult
 
 	var NewCase = dbtypes.Case{
@@ -217,7 +219,7 @@ func MakeFile(hash string, filename string, caseName string, fileDir string, upl
 
 	var dbName string = "Cases"
 	var dbCollection string = "File"
-	var id string = MakeUuid(dbName, dbCollection)
+	var id string = MakeUuid()
 	var result *mongo.InsertOneResult
 
 	var NewFile = dbtypes.File{
@@ -241,7 +243,7 @@ func MakeAccess(filename string, user string, date string) *mongo.InsertOneResul
 
 	var dbName string = "Cases"
 	var dbCollection string = "Log"
-	var id string = MakeUuid(dbName, dbCollection)
+	var id string = MakeUuid()
 	var result *mongo.InsertOneResult
 
 	var NewAccess = dbtypes.Access{
@@ -261,12 +263,12 @@ func FindDocsByFilter(dbname string, collection string, filter bson.M) []bson.M 
 	// connect to db
 	client, ctx, cancel, err := dbConnect()
 
+	// defer closing db connection
+	defer dbClose(client, ctx, cancel)
+
 	if err != nil {
 		log.Panicln(err)
 	}
-
-	// defer closing db connection
-	defer dbClose(client, ctx, cancel)
 
 	// get collection
 	coll := client.Database(dbname).Collection(collection)
@@ -308,12 +310,12 @@ func FindDocByFilter(dbname string, collection string, filter bson.M) *mongo.Sin
 	// connect to db
 	client, ctx, cancel, err := dbConnect()
 
+	// defer closing db connection
+	defer dbClose(client, ctx, cancel)
+
 	if err != nil {
 		log.Panicln(err)
 	}
-
-	// defer closing db connection
-	defer dbClose(client, ctx, cancel)
 
 	// get the collection
 	coll := client.Database(dbname).Collection(collection)
@@ -329,18 +331,40 @@ func FindDocByFilter(dbname string, collection string, filter bson.M) *mongo.Sin
 	return result
 }
 
-func MakeUuid(dbName string, dbCollection string) string {
+func MakeUuid() string {
 
 	var id string
 	var exist bool
+	var Users []string = []string{"User"}
+	var Cases []string = []string{"Case", "File", "Log"}
+
 	// Loop that makes a uuid and checks if it already exists in the database.
 	// keep looping until it doesn't exist.
 	for {
 		id = uuid.New().String()
-		exist = doesUuidExist(dbName, dbCollection, id)
+
+		for _, collection := range Users {
+			exist = doesUuidExist("Users", collection, id)
+			if exist {
+				break
+			}
+		}
+
+		if exist {
+			continue
+		}
+
+		for _, collection := range Cases {
+			exist = doesUuidExist("Cases", collection, id)
+			if exist {
+				break
+			}
+		}
+
 		if !exist {
 			break
 		}
+
 	}
 
 	return id
@@ -364,4 +388,29 @@ func doesUuidExist(dbname string, collection string, uuid string) bool {
 
 	// return true if document exists
 	return result.Err() != mongo.ErrNoDocuments
+}
+
+// updateDoc modifies a single document's information in the database.
+func UpdateDoc(dbName string, dbCollection string, filter bson.M, updates bson.D) *mongo.UpdateResult {
+
+	// connect to db
+	client, ctx, cancel, err := dbConnect()
+
+	// defer closing db connection
+	defer dbClose(client, ctx, cancel)
+
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	// get collection
+	coll := client.Database(dbName).Collection(dbCollection)
+
+	result, err := coll.UpdateOne(ctx, filter, updates)
+
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	return result
 }

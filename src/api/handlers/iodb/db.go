@@ -62,3 +62,22 @@ func DbFindTest(c *gin.Context) {
 	}
 
 }
+
+func DbUpdateTest(c *gin.Context) {
+	log.Println("[DEBUG] iodb.DbUpdateTest()")
+
+	var dbName string = "Users"
+	var dbCollection string = "User"
+	var name string = "testuser2"
+
+	filter := bson.M{"email": "test@test.com"}
+	update := bson.D{{"$set",
+		bson.D{
+			{"name", name},
+		},
+	}}
+
+	result := dbInterface.UpdateDoc(dbName, dbCollection, filter, update)
+
+	log.Printf("[DEBUG] Updated user document with _id: %v\n", result.ModifiedCount)
+}

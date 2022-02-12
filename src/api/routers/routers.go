@@ -29,6 +29,7 @@ func InitRouter() *gin.Engine {
 	r.GET("/db/test", iodb.DbPingTest)
 	r.POST("/db/test", iodb.DbUploadTest)
 	r.GET("/db/test/find", iodb.DbFindTest)
+	r.POST("/db/test/find", iodb.DbUpdateTest)
 
 	// TOKEN AUTHENTICATION HANDLING
 
