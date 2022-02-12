@@ -288,7 +288,7 @@ func FindDocByFilter(dbname string, collection string, filter bson.M) *mongo.Sin
 	return result
 }
 
-// Check if UUID exists in the collection
+// Check if UUID exists in the collection. Returns true if the document exists.
 func DoesUuidExist(dbname string, collection string, uuid string) bool {
 
 	client, ctx, cancel, err := dbConnect()
