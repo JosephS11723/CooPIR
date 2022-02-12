@@ -19,7 +19,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-func DbConnect() (*mongo.Client, context.Context,
+func dbConnect() (*mongo.Client, context.Context,
 	context.CancelFunc, error) {
 
 	var uri string = config.DBIP
@@ -45,7 +45,7 @@ func DbConnect() (*mongo.Client, context.Context,
 }
 
 // This method closes mongoDB connection and cancel context.
-func DbClose(client *mongo.Client, ctx context.Context,
+func dbClose(client *mongo.Client, ctx context.Context,
 	cancel context.CancelFunc) {
 
 	// CancelFunc to cancel to context
@@ -60,7 +60,14 @@ func DbClose(client *mongo.Client, ctx context.Context,
 }
 
 // This method used to ping the mongoDB, return error if any.
-func DbPing(client *mongo.Client, ctx context.Context) error {
+func DbPing() error {
+
+	client, ctx, cancel, err := dbConnect()
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	defer dbClose(client, ctx, cancel)
 
 	if err := client.Ping(ctx, readpref.Primary()); err != nil {
 		return err
@@ -69,8 +76,14 @@ func DbPing(client *mongo.Client, ctx context.Context) error {
 	return nil
 }
 
-func DbSingleInsert(client *mongo.Client, ctx context.Context, dbname string,
-	collection string, data interface{}) *mongo.InsertOneResult {
+func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.InsertOneResult {
+
+	client, ctx, cancel, err := dbConnect()
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	defer dbClose(client, ctx, cancel)
 
 	switch t := data.(type) {
 
@@ -224,7 +237,14 @@ func MakeAccess(uuid string, filename string, user string, date string) dbtypes.
 }
 
 // Find multiple documents in a collection by a filter and RETURN a slice of documents (bson.m)
-func FindDocsByFilter(client *mongo.Client, ctx context.Context, dbname string, collection string, filter bson.M) []bson.M {
+func FindDocsByFilter(dbname string, collection string, filter bson.M) []bson.M {
+
+	client, ctx, cancel, err := dbConnect()
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	defer dbClose(client, ctx, cancel)
 
 	coll := client.Database(dbname).Collection(collection)
 
@@ -255,7 +275,14 @@ func FindDocsByFilter(client *mongo.Client, ctx context.Context, dbname string, 
 }
 
 // Find a single document in a collection by a filter and RETURN a document (*mongo.SingleResult)
-func FindDocByFilter(client *mongo.Client, ctx context.Context, dbname string, collection string, filter bson.M) *mongo.SingleResult {
+func FindDocByFilter(dbname string, collection string, filter bson.M) *mongo.SingleResult {
+
+	client, ctx, cancel, err := dbConnect()
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	defer dbClose(client, ctx, cancel)
 
 	// Get the collection
 	coll := client.Database(dbname).Collection(collection)
@@ -275,12 +302,12 @@ func FindDocByFilter(client *mongo.Client, ctx context.Context, dbname string, c
 // Check if UUID exists in the collection
 func DoesUuidExist(dbname string, collection string, uuid string) bool {
 
-	client, ctx, cancel, err := DbConnect()
+	client, ctx, cancel, err := dbConnect()
 	if err != nil {
 		log.Panicln(err)
 	}
 
-	defer DbClose(client, ctx, cancel)
+	defer dbClose(client, ctx, cancel)
 
 	// Get the collection
 	coll := client.Database(dbname).Collection(collection)
