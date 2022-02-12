@@ -19,9 +19,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-func dbConnect() (*mongo.Client, context.Context,
-	context.CancelFunc, error) {
-
+// dbConnect returns a mongoDB client, context, cancel function, and error.
+func dbConnect() (*mongo.Client, context.Context, context.CancelFunc, error){
 	var uri string = config.DBIP
 
 	// Set client options
@@ -44,10 +43,8 @@ func dbConnect() (*mongo.Client, context.Context,
 	return client, ctx, cancel, err
 }
 
-// This method closes mongoDB connection and cancel context.
-func dbClose(client *mongo.Client, ctx context.Context,
-	cancel context.CancelFunc) {
-
+// dbClose closes mongoDB connection and cancel context.
+func dbClose(client *mongo.Client, ctx context.Context, cancel context.CancelFunc) {
 	// CancelFunc to cancel to context
 	defer cancel()
 
@@ -59,9 +56,8 @@ func dbClose(client *mongo.Client, ctx context.Context,
 	}()
 }
 
-// This method used to ping the mongoDB, return error if any.
+// DbPing is used to ping the mongoDB, return error if any.
 func DbPing() error {
-
 	client, ctx, cancel, err := dbConnect()
 	if err != nil {
 		log.Panicln(err)
@@ -76,8 +72,8 @@ func DbPing() error {
 	return nil
 }
 
+// DbSingleInsert inserts a single document into a collection.
 func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.InsertOneResult {
-
 	client, ctx, cancel, err := dbConnect()
 	if err != nil {
 		log.Panicln(err)
@@ -86,7 +82,8 @@ func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.I
 	defer dbClose(client, ctx, cancel)
 
 	switch t := data.(type) {
-
+	
+	// Access struct case
 	case dbtypes.Access:
 		if collection != "Log" {
 			log.Panicf("[ERROR] Cannot insert data type %s into Log collection", t)
@@ -105,6 +102,7 @@ func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.I
 			return result
 		}
 
+	// Case struct case
 	case dbtypes.Case:
 		if collection != "Case" {
 			log.Panicf("[ERROR] Cannot insert data type %s into Case collection", t)
@@ -123,6 +121,7 @@ func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.I
 			return result
 		}
 
+	// File struct case
 	case dbtypes.File:
 		if collection != "File" {
 			log.Panicf("[ERROR] Cannot insert data type %s into File collection", t)
@@ -140,7 +139,8 @@ func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.I
 
 			return result
 		}
-
+	
+	// User struct case
 	case dbtypes.User:
 		if collection != "User" {
 			log.Panicf("[ERROR] Cannot insert data type %s into User collection", t)
@@ -158,7 +158,8 @@ func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.I
 
 			return result
 		}
-
+	
+	// default case: panic
 	default:
 		log.Panic("[ERROR] Unknown type for db intsert!")
 	}
@@ -166,8 +167,8 @@ func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.I
 	return nil
 }
 
+// MakeUser creates a new User struct.
 func MakeUser(uuid string, name string, email string, role string, cases []string, password string) dbtypes.User {
-
 	var saltedhash string = security.HashPass(password)
 
 	var NewUser = dbtypes.User{
@@ -182,8 +183,8 @@ func MakeUser(uuid string, name string, email string, role string, cases []strin
 	return NewUser
 }
 
+// MakeCase creates a new Case struct.
 func MakeCase(uuid string, name string, dateCreated string, viewAccess string, editAccess string, collaborators []string) dbtypes.Case {
-
 	var NewCase = dbtypes.Case{
 		UUID:          uuid,
 		Name:          name,
@@ -196,8 +197,8 @@ func MakeCase(uuid string, name string, dateCreated string, viewAccess string, e
 	return NewCase
 }
 
+// MakeFile creates a new File struct.
 func MakeFile(uuid string, hash string, filename string, caseName string, fileDir string, uploadDate string, viewAccess string, editAccess string) dbtypes.File {
-
 	var NewFile = dbtypes.File{
 		UUID:        uuid,
 		Hash:        hash,
@@ -212,8 +213,8 @@ func MakeFile(uuid string, hash string, filename string, caseName string, fileDi
 	return NewFile
 }
 
+// MakeAccess creates a new Access struct.
 func MakeAccess(uuid string, filename string, user string, date string) dbtypes.Access {
-
 	var NewAccess = dbtypes.Access{
 		UUID:     uuid,
 		Filename: filename,
@@ -222,31 +223,36 @@ func MakeAccess(uuid string, filename string, user string, date string) dbtypes.
 	}
 
 	return NewAccess
-
 }
 
-// Find multiple documents in a collection by a filter and RETURN a slice of documents (bson.m)
+// FindDocsByFilter finds multiple documents in a collection by a filter and RETURN a slice of documents (bson.m)
 func FindDocsByFilter(dbname string, collection string, filter bson.M) []bson.M {
-
+	// connect to db
 	client, ctx, cancel, err := dbConnect()
+	
 	if err != nil {
 		log.Panicln(err)
 	}
 
+	// defer closing db connection
 	defer dbClose(client, ctx, cancel)
 
+	// get collection
 	coll := client.Database(dbname).Collection(collection)
 
+	// run find function and get cursor
 	cur, err := coll.Find(ctx, filter)
 
 	if err != nil {
 		log.Panicln(err)
 	}
 
+	// create slice to hold documents
 	var docList []bson.M
 
+	// iterate through the documents
 	for cur.Next(context.Background()) {
-		// Decode cur into a interface
+		// decode cur into a interface
 		var doc bson.M
 		err := cur.Decode(&doc)
 
@@ -257,40 +263,44 @@ func FindDocsByFilter(dbname string, collection string, filter bson.M) []bson.M 
 			log.Panicln(err)
 		}
 		log.Println("[DEBUG] internal result: ", doc)
+
+		// append doc to docList
 		docList = append(docList, doc)
 	}
 
+	// return list of documents
 	return docList
 }
 
-// Find a single document in a collection by a filter and RETURN a document (*mongo.SingleResult)
+// FindDocByFilter finds a single document in a collection by a filter and RETURN a document (*mongo.SingleResult)
 func FindDocByFilter(dbname string, collection string, filter bson.M) *mongo.SingleResult {
-
+	// connect to db
 	client, ctx, cancel, err := dbConnect()
+	
 	if err != nil {
 		log.Panicln(err)
 	}
 
+	// defer closing db connection
 	defer dbClose(client, ctx, cancel)
 
-	// Get the collection
+	// get the collection
 	coll := client.Database(dbname).Collection(collection)
 
-	// Find the document
+	// find the document
 	var result *mongo.SingleResult = coll.FindOne(ctx, filter)
 
-	// If error, panic
 	if result.Err() != nil {
 		log.Panicln(result.Err())
 	}
 
-	// Return the result
+	// return the result
 	return result
 }
 
 // Check if UUID exists in the collection. Returns true if the document exists.
 func DoesUuidExist(dbname string, collection string, uuid string) bool {
-
+	// connect to db
 	client, ctx, cancel, err := dbConnect()
 	if err != nil {
 		log.Panicln(err)
@@ -298,13 +308,12 @@ func DoesUuidExist(dbname string, collection string, uuid string) bool {
 
 	defer dbClose(client, ctx, cancel)
 
-	// Get the collection
+	// get the collection
 	coll := client.Database(dbname).Collection(collection)
 
-	// Find the document
+	// find the document
 	var result *mongo.SingleResult = coll.FindOne(ctx, bson.M{"uuid": uuid})
 
-	// Return true if document exists
+	// return true if document exists
 	return result.Err() != mongo.ErrNoDocuments
-
 }
