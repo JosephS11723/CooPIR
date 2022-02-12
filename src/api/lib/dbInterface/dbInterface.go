@@ -180,7 +180,10 @@ func MakeUser(name string, email string, role string, cases []string, password s
 	}
 
 	// Hash password
-	var saltedhash string = security.HashPass(password)
+	saltedHash, err := security.HashPass(password)
+	if err != nil {
+		return nil, err
+	}
 
 	// Set db types
 	var dbName string = "Users"
@@ -196,7 +199,7 @@ func MakeUser(name string, email string, role string, cases []string, password s
 		Email:      email,
 		Role:       role,
 		Cases:      cases,
-		SaltedHash: saltedhash,
+		SaltedHash: saltedHash,
 	}
 
 	result := DbSingleInsert(dbName, dbCollection, NewUser)
@@ -453,7 +456,7 @@ func UpdateDoc(dbName string, dbCollection string, filter bson.M, updates bson.D
 }
 
 func RetrieveHashByEmail(email string) string {
-
+	// defer and recover if panicing
 	var dbName string = "Users"
 	var dbCollection string = "User"
 	var filter bson.M = bson.M{"email": email}

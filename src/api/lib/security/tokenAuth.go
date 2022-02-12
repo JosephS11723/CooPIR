@@ -1,8 +1,6 @@
 package security
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 )
@@ -30,11 +28,16 @@ func VerifyToken(c *gin.Context) bool {
 
 // CreateToken creates a new JWT token.
 func CreateToken(c *gin.Context) (string, error) {
+	return "", nil
 }
 
 
 // RevokeToken revokes the current JWT token.
-func RevokeToken(c *gin.Context) {
+func RevokeToken(c *gin.Context) error {
+	return nil
+}
 
-
+// VerifyRegistrationToken verifies the registration token as valid.
+func VerifyRegistrationToken(c *gin.Context) bool {
+	return true
 }

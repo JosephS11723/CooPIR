@@ -7,15 +7,15 @@ import (
 )
 
 // HashPassword hashes a password and returns the hexdump as a string
-func HashPass(password string) string {
+func HashPass(password string) (string, error) {
 	// Generate a salted hash of the password
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		log.Panicln(err)
+		return "", err
 	}
 	log.Println(string(hash))
 
-	return string(hash)
+	return string(hash), nil
 }
 
 func CheckPass(password string, hash string) bool {

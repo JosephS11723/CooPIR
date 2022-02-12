@@ -10,6 +10,7 @@ import (
 
 	"github.com/JosephS11723/CooPIR/src/api/config"
 	libcrypto "github.com/JosephS11723/CooPIR/src/api/lib/crypto"
+	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	swi "github.com/JosephS11723/CooPIR/src/api/lib/seaweedInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/security"
 	"github.com/gin-gonic/gin"
