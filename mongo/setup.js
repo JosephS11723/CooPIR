@@ -40,6 +40,8 @@ db.createRole(
 db = conn.getDB("Cases");
 
 db.createCollection("Case");
+db.createCollection("File");
+db.createCollection("Log");
 db.createCollection("Aggregations");
 
 db.createRole(
@@ -47,11 +49,38 @@ db.createRole(
       role: "apiCasesDatabase", 
       privileges: [
         { resource: {db: "Cases", collection: "Case"}, actions: ["find", "insert", "update"] },
+        { resource: {db: "Cases", collection: "File"}, actions: ["find", "insert", "update"] },
+        { resource: {db: "Cases", collection: "Log"}, actions: ["find", "insert", "update"] },
         { resource: {db: "Cases", collection: "Aggregation"}, actions: ["find"]}
       ],
       roles: []
     }
  )
+
+coll = db.getCollection("Aggregations");
+
+coll.insert(
+    {
+      "name":"GetFiles",
+
+      "aggregation":[
+        {
+          "$sort":{
+            "$size":"$collaborators"
+          }
+        },
+        {
+          "$project":{
+            "name":true,
+            "number_of_collaborators":{"$size": "$collaborators"},
+            "collaborators":true
+          }
+        }
+      ]
+    }
+  )
+
+
 
 //-----------------------------------------------
 
