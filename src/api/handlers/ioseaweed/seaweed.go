@@ -9,22 +9,14 @@ import (
 	"sync"
 
 	"github.com/JosephS11723/CooPIR/src/api/config"
-	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	libcrypto "github.com/JosephS11723/CooPIR/src/api/lib/crypto"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	swi "github.com/JosephS11723/CooPIR/src/api/lib/seaweedInterface"
-	"github.com/JosephS11723/CooPIR/src/api/lib/security"
 	"github.com/gin-gonic/gin"
 )
 
 // SWGET gets a file from the seaweedfs server and returns it to the client
 func SWGET(c *gin.Context) {
-	// verify token
-	if !security.VerifyToken(c) {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "invalid token"})
-		log.Panicln("INVALID TOKEN")
-	}
-
 	// get filename
 	filename, success := c.GetQuery("filename")
 
@@ -49,12 +41,6 @@ func SWGET(c *gin.Context) {
 func SWPOST(c *gin.Context) {
 	var err error
 
-	// verify token
-	if !security.VerifyToken(c) {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "invalid token"})
-		log.Panicln("INVALID TOKEN")
-	}
-
 	// get file multipart stream
 	filestream, _, err := c.Request.FormFile("file")
 	if err != nil {
@@ -64,7 +50,7 @@ func SWPOST(c *gin.Context) {
 
 	// set filename to randomly generated name. change after hash operation
 	// Use MakeUuid from dbInterface to ensure unique filename
-	filename := dbInterface.MakeUuid("Cases", "File")
+	filename := dbInterface.MakeUuid()
 
 	// create pipes
 	md5Reader, md5Writer := io.Pipe()
@@ -162,12 +148,6 @@ func SWPOST(c *gin.Context) {
 
 // SWDELETE deletes a file from seaweedfs
 func SWDELETE(c *gin.Context) {
-	// verify token
-	if !security.VerifyToken(c) {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "invalid token"})
-		log.Panicln("INVALID TOKEN")
-	}
-
 	// get filename
 	filename, success := c.GetQuery("filename")
 
