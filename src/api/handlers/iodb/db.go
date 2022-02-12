@@ -12,30 +12,10 @@ import (
 
 func DbPingTest(c *gin.Context) {
 	log.Println("[DEBUG] iodb.DbTest()")
-	// Get Client, Context, CalcelFunc and
-	// err from connect method.
-	client, ctx, cancel, err := dbInterface.DbConnect()
-	if err != nil {
-		log.Panicln(err)
-	}
-
-	// Release resource when the main
-	// function is returned.
-	defer dbInterface.DbClose(client, ctx, cancel)
-
-	// Ping mongoDB with Ping method
-	dbInterface.DbPing(client, ctx)
 }
 
 func DbUploadTest(c *gin.Context) {
 	log.Println("[DEBUG] iodb.DbUploadTest()")
-
-	client, ctx, cancel, err := dbInterface.DbConnect()
-	if err != nil {
-		log.Panicln(err)
-	}
-
-	defer dbInterface.DbClose(client, ctx, cancel)
 
 	var dbName string = "Users"
 	var dbCollection string = "User"
@@ -46,7 +26,7 @@ func DbUploadTest(c *gin.Context) {
 
 	// for loop to add 3 of the same users
 	for i := 0; i < 3; i++ {
-		result = dbInterface.DbSingleInsert(client, ctx, dbName, dbCollection, testUser)
+		result = dbInterface.DbSingleInsert(dbName, dbCollection, testUser)
 
 		log.Printf("[DEBUG] Inserted user document with _id: %v\n", result.InsertedID)
 	}
@@ -58,7 +38,7 @@ func DbUploadTest(c *gin.Context) {
 	dbCollection = "Case"
 	var testCase dbtypes.Case = dbInterface.MakeCase("1", "testcase", "1/1/1976", "responder", "supervisor", []string{"testuser, anotheruser, Brandon"})
 
-	result = dbInterface.DbSingleInsert(client, ctx, dbName, dbCollection, testCase)
+	result = dbInterface.DbSingleInsert(dbName, dbCollection, testCase)
 
 	log.Printf("[DEBUG] Inserted case document with _id: %v\n", result.InsertedID)
 
@@ -66,7 +46,7 @@ func DbUploadTest(c *gin.Context) {
 	dbCollection = "File"
 	var testfile dbtypes.File = dbInterface.MakeFile("1", "d5bb3ed1ccde75691e54f8f2da83a2fbf7eb9f0891ea141e67dd7f2b889ac479", "testfile", "case1", "test/dir", "1/1/1976", "supervisor", "admin")
 
-	result = dbInterface.DbSingleInsert(client, ctx, dbName, dbCollection, testfile)
+	result = dbInterface.DbSingleInsert(dbName, dbCollection, testfile)
 
 	log.Printf("[DEBUG] Inserted file document with _id: %v\n", result.InsertedID)
 
@@ -74,7 +54,7 @@ func DbUploadTest(c *gin.Context) {
 	dbCollection = "Log"
 	var testLog dbtypes.Access = dbInterface.MakeAccess("1", "testfile", "testuse", "1/1/1976")
 
-	result = dbInterface.DbSingleInsert(client, ctx, dbName, dbCollection, testLog)
+	result = dbInterface.DbSingleInsert(dbName, dbCollection, testLog)
 
 	log.Printf("[DEBUG] Inserted access document with _id: %v\n", result.InsertedID)
 
@@ -83,20 +63,13 @@ func DbUploadTest(c *gin.Context) {
 func DbFindTest(c *gin.Context) {
 	log.Println("[DEBUG] iodb.DbFindTest()")
 
-	client, ctx, cancel, err := dbInterface.DbConnect()
-	if err != nil {
-		log.Panicln(err)
-	}
-
-	defer dbInterface.DbClose(client, ctx, cancel)
-
 	var dbName string = "Users"
 	var dbCollection string = "User"
 
 	filter := bson.M{"email": "test@test.com"}
 
 	// Find user by filter
-	result := dbInterface.FindDocsByFilter(client, ctx, dbName, dbCollection, filter)
+	result := dbInterface.FindDocsByFilter(dbName, dbCollection, filter)
 
 	for _, user := range result {
 		// un marshal the document into a user
