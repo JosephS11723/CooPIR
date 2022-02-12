@@ -219,6 +219,7 @@ func MakeAccess(filename string, user string, date string) dbtypes.Access {
 
 }
 
+// Find multiple documents in a collection by a filter and RETURN a slice of documents (bson.m)
 func FindDocsByFilter(client *mongo.Client, ctx context.Context, dbname string, collection string, filter bson.M) []bson.M {
 
 	coll := client.Database(dbname).Collection(collection)
@@ -249,6 +250,7 @@ func FindDocsByFilter(client *mongo.Client, ctx context.Context, dbname string, 
 	return docList
 }
 
+// Find a single document in a collection by a filter and RETURN a document (*mongo.SingleResult)
 func FindDocByFilter(client *mongo.Client, ctx context.Context, dbname string, collection string, filter bson.M) *mongo.SingleResult {
 
 	// Get the collection
