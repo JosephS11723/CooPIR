@@ -88,8 +88,10 @@ func DbFindTest(c *gin.Context) {
 	var dbName string = "Users"
 	var dbCollection string = "User"
 
+	filter := bson.M{"name": "testuser", "email": "test@test.com"}
+
 	// Find user by filter
-	result := dbInterface.FindDocsByFilter(client, ctx, dbName, dbCollection, bson.M{"name": "testuser", "email": "test@test.com"})
+	result := dbInterface.FindDocsByFilter(client, ctx, dbName, dbCollection, filter)
 
 	log.Printf("[DEBUG] Found %v \n", result)
 

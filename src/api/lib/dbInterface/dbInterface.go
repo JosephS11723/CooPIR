@@ -233,15 +233,13 @@ func FindDocsByFilter(client *mongo.Client, ctx context.Context, dbname string, 
 
 	for cur.Next(context.Background()) {
 		// To decode into a struct, use cursor.Decode()
-		result := struct {
-			Foo string
-			Bar int32
-		}{}
+		result := dbtypes.User{}
 		err := cur.Decode(&result)
 		if err != nil {
 			log.Panicln(err)
 		}
-		docList = append(docList, result.Foo)
+		log.Println("[DEBUG] internal result: ", result)
+		docList = append(docList, result.Name)
 	}
 
 	return docList
