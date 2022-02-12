@@ -9,10 +9,12 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// DbPingTest is a test function to ping the database.
 func DbPingTest(c *gin.Context) {
 	log.Println("[DEBUG] iodb.DbTest()")
 }
 
+// DbUploadTest is a test function to upload a document to the database.
 func DbUploadTest(c *gin.Context) {
 	log.Println("[DEBUG] iodb.DbUploadTest()")
 
@@ -42,17 +44,21 @@ func DbUploadTest(c *gin.Context) {
 
 }
 
+// DbFindTest is a test function to find a document in the database.
 func DbFindTest(c *gin.Context) {
 	log.Println("[DEBUG] iodb.DbFindTest()")
 
+	// variables for test
 	var dbName string = "Users"
 	var dbCollection string = "User"
 
+	// create filter
 	filter := bson.M{"email": "test@test.com"}
 
-	// Find user by filter
+	// find user by filter
 	result := dbInterface.FindDocsByFilter(dbName, dbCollection, filter)
 
+	// iterate through results
 	for _, user := range result {
 		// un marshal the document into a user
 		// var user dbtypes.User
@@ -60,7 +66,6 @@ func DbFindTest(c *gin.Context) {
 
 		log.Print("[DEBUG] Found user document with _id: ", user["name"], " ", user["email"], " ", user["role"], " ", user["cases"], " ", user["saltedhash"], "\n")
 	}
-
 }
 
 func DbUpdateTest(c *gin.Context) {

@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"github.com/JosephS11723/CooPIR/src/api/handlers/authentication"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/debug"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/iodb"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/ioseaweed"
@@ -31,7 +32,10 @@ func InitRouter() *gin.Engine {
 	r.GET("/db/test/find", iodb.DbFindTest)
 	r.POST("/db/test/find", iodb.DbUpdateTest)
 
-	// TOKEN AUTHENTICATION HANDLING
+	// Authentication
+	r.POST("/login", authentication.Login)
+	r.POST("/renew", authentication.RenewToken)
+	r.POST("/logout", authentication.Logout)
 
 	// return handler router to main()
 	return r
