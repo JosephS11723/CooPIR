@@ -17,25 +17,28 @@ func InitRouter() *gin.Engine {
 	// set low memory limit for multipart forms (8 MiB)
 	r.MaxMultipartMemory = 8 << 20
 
+	// setup base path for api version v1
+	v1 := r.Group("/api/v1")
+
 	// DEBUG REQUESTS
 	// debug ping challenge
-	r.GET("/ping", debug.PingPong)
+	v1.GET("/ping", debug.PingPong)
 
 	// seaweedfs file storage transfer routes
-	r.GET("/file", ioseaweed.SWGET)
-	r.POST("/file", ioseaweed.SWPOST)
-	r.DELETE("/file", ioseaweed.SWDELETE)
+	v1.GET("/file", ioseaweed.SWGET)
+	v1.POST("/file", ioseaweed.SWPOST)
+	v1.DELETE("/file", ioseaweed.SWDELETE)
 
 	// MONGO-DB
-	r.GET("/db/test", iodb.DbPingTest)
-	r.POST("/db/test", iodb.DbUploadTest)
-	r.GET("/db/test/find", iodb.DbFindTest)
-	r.POST("/db/test/find", iodb.DbUpdateTest)
+	v1.GET("/db/test", iodb.DbPingTest)
+	v1.POST("/db/test", iodb.DbUploadTest)
+	v1.GET("/db/test/find", iodb.DbFindTest)
+	v1.POST("/db/test/find", iodb.DbUpdateTest)
 
 	// Authentication
-	r.POST("/login", authentication.Login)
-	r.POST("/renew", authentication.RenewToken)
-	r.POST("/logout", authentication.Logout)
+	v1.POST("/login", authentication.Login)
+	v1.POST("/renew", authentication.RenewToken)
+	v1.POST("/logout", authentication.Logout)
 
 	// return handler router to main()
 	return r

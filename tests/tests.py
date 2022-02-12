@@ -12,6 +12,8 @@ fileUUID : str
 parallelThreadReturnValues = []
 parallelThreadStartFlag = False
 
+# base path for api version
+apiBasePath = "http://localhost:8080/api/v1"
 
 def error(reason : str):
     print("[ERROR]: {}".format(reason))
@@ -26,7 +28,7 @@ def pingTest():
         print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
         # request ping page
-        r = requests.get(url="http://localhost:8080/ping", timeout=20)
+        r = requests.get(url=apiBasePath + "/ping", timeout=20)
 
         # check if good request
         if r.status_code != 200:
@@ -52,7 +54,7 @@ def uploadTest(fileData = None):
             file = {"file":open("test.txt",'rb')}
 
             # upload file
-            r = requests.post(url = "http://localhost:8080/file", files=file, timeout=20)
+            r = requests.post(url = apiBasePath + "/file", files=file, timeout=20)
 
             # check if good request
             if r.status_code != 200:
@@ -67,7 +69,7 @@ def uploadTest(fileData = None):
             file = {"file":fileData}
 
             # upload file
-            r = requests.post(url = "http://localhost:8080/file", files=file, timeout=10)
+            r = requests.post(url = apiBasePath + "/file", files=file, timeout=10)
 
             # check if good request
             if r.status_code != 200:
@@ -86,7 +88,7 @@ def downloadTest(filename : str = None):
             # print function name
             print(inspect.getframeinfo(inspect.currentframe()).function, end=" ", flush=True)
             
-            url = 'http://localhost:8080/file'
+            url = apiBasePath + '/file'
 
             params = {"filename" : fileUUID}
 
@@ -100,7 +102,7 @@ def downloadTest(filename : str = None):
                 success()
         else:
             # test if a particular file can be downloaded
-            url = 'http://localhost:8080/file'
+            url = apiBasePath + '/file'
 
             params = {"filename" : filename}
 
@@ -125,7 +127,7 @@ def deleteTest(filename : str = None):
             # print function name
             print(inspect.getframeinfo(inspect.currentframe()).function, end=" ", flush=True)
 
-            url = 'http://localhost:8080/file'
+            url = apiBasePath + '/file'
 
             params = {"filename" : fileUUID}
             
@@ -139,7 +141,7 @@ def deleteTest(filename : str = None):
                 success()
         else:
             # test if a particular file can be deleted
-            url = 'http://localhost:8080/file'
+            url = apiBasePath + '/file'
 
             params = {"filename" : filename}
 
@@ -232,6 +234,7 @@ def parallelUploadTest():
             return
     else:
         # everything successful
+        printStatus("")
         print("\r{}".format(inspect.getframeinfo(inspect.currentframe()).function), end=" ", flush=True)
         success()
 
@@ -242,7 +245,7 @@ def dbPingTest():
         print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
         # request ping page
-        r = requests.get(url="http://localhost:8080/db/test")
+        r = requests.get(url=apiBasePath + "/db/test")
 
         # check if good request
         if r.status_code != 200:
@@ -264,7 +267,7 @@ def dbInsertTest():
         print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
         # request ping page
-        r = requests.post(url="http://localhost:8080/db/test")
+        r = requests.post(url=apiBasePath + "/db/test")
 
         # check if good request
         if r.status_code != 200:
@@ -287,7 +290,7 @@ def dbFindTest():
         print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
         # request ping page
-        r = requests.get(url="http://localhost:8080/db/test/find")
+        r = requests.get(url=apiBasePath + "/db/test/find")
 
         # check if good request
         if r.status_code != 200:
@@ -302,7 +305,7 @@ def dbFindTest():
     except Exception as e:
         error(e)
 
-tests = [pingTest, uploadTest, downloadTest, deleteTest, dbPingTest, dbInsertTest, dbFindTest, parallelUploadTest]
+tests = [pingTest, uploadTest, downloadTest, deleteTest, dbPingTest, dbInsertTest, dbFindTest]
 def runAllTests():
     for test in tests:
         test()
