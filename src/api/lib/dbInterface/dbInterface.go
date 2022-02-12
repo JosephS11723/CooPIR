@@ -273,7 +273,14 @@ func FindDocByFilter(client *mongo.Client, ctx context.Context, dbname string, c
 }
 
 // Check if UUID exists in the collection
-func DoesUuidExist(client *mongo.Client, ctx context.Context, dbname string, collection string, uuid string) bool {
+func DoesUuidExist(dbname string, collection string, uuid string) bool {
+
+	client, ctx, cancel, err := DbConnect()
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	defer DbClose(client, ctx, cancel)
 
 	// Get the collection
 	coll := client.Database(dbname).Collection(collection)
