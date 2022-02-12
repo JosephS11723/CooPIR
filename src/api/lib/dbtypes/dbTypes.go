@@ -21,6 +21,7 @@ type Case struct {
 type File struct {
 	UUID        string `json:"uuid"`
 	Hash        string `json:"hash"`
+	UUID		string `json:"uuid"`
 	Filename    string `json:"filename"`
 	Case        string `json:"case"`
 	File_dir    string `json:"fileDir"`
