@@ -219,7 +219,7 @@ func MakeAccess(filename string, user string, date string) dbtypes.Access {
 
 }
 
-func FindDocsByFilter(client *mongo.Client, ctx context.Context, dbname string, collection string, filter bson.M) []string {
+func FindDocsByFilter(client *mongo.Client, ctx context.Context, dbname string, collection string, filter bson.M) []interface{} {
 
 	coll := client.Database(dbname).Collection(collection)
 
@@ -229,18 +229,36 @@ func FindDocsByFilter(client *mongo.Client, ctx context.Context, dbname string, 
 		log.Panicln(err)
 	}
 
-	var docList []string
+	var docList []interface{}
 
 	for cur.Next(context.Background()) {
-		// To decode into a struct, use cursor.Decode()
-		result := dbtypes.User{}
-		err := cur.Decode(&result)
+		// Decode cur into a interface
+		var doc interface{}
+		err := cur.Decode(&doc)
+
 		if err != nil {
 			log.Panicln(err)
 		}
-		log.Println("[DEBUG] internal result: ", result)
-		docList = append(docList, result.Name)
+		log.Println("[DEBUG] internal result: ", doc)
+		docList = append(docList, doc)
 	}
 
 	return docList
+}
+
+func FindDocByFilter(client *mongo.Client, ctx context.Context, dbname string, collection string, filter bson.M) *mongo.SingleResult {
+
+	// Get the collection
+	coll := client.Database(dbname).Collection(collection)
+
+	// Find the document
+	var result *mongo.SingleResult = coll.FindOne(ctx, filter)
+
+	// If error, panic
+	if result.Err() != nil {
+		log.Panicln(result.Err())
+	}
+
+	// Return the result
+	return result
 }

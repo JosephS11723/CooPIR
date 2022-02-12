@@ -7,6 +7,7 @@ import (
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func DbPingTest(c *gin.Context) {
@@ -38,13 +39,17 @@ func DbUploadTest(c *gin.Context) {
 
 	var dbName string = "Users"
 	var dbCollection string = "User"
+	var result *mongo.InsertOneResult
 
 	// Create a new user
 	var testUser dbtypes.User = dbInterface.MakeUser("testuser", "test@test.com", "supervisor", []string{"testcase", "thiscasedoesnotexist"}, "password")
 
-	result := dbInterface.DbSingleInsert(client, ctx, dbName, dbCollection, testUser)
+	// for loop to add 3 of the same users
+	for i := 0; i < 3; i++ {
+		result = dbInterface.DbSingleInsert(client, ctx, dbName, dbCollection, testUser)
 
-	log.Printf("[DEBUG] Inserted user document with _id: %v\n", result.InsertedID)
+		log.Printf("[DEBUG] Inserted user document with _id: %v\n", result.InsertedID)
+	}
 
 	// Set to Cases db
 	dbName = "Cases"
@@ -88,10 +93,15 @@ func DbFindTest(c *gin.Context) {
 	var dbName string = "Users"
 	var dbCollection string = "User"
 
-	filter := bson.M{"name": "testuser", "email": "test@test.com"}
+	filter := bson.M{"email": "test@test.com"}
 
 	// Find user by filter
 	result := dbInterface.FindDocsByFilter(client, ctx, dbName, dbCollection, filter)
+
+	for _, document := range result {
+		doc := document.(dbtypes.User)
+		log.Print("[DEBUG] Found user document with _id: ", doc.Name, " ", doc.Email, " ", doc.Role, " ", doc.Cases, " ", doc.SaltedHash, "\n")
+	}
 
 	log.Printf("[DEBUG] Found %v \n", result)
 
