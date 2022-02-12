@@ -9,7 +9,6 @@ import (
 	"sync"
 
 	"github.com/JosephS11723/CooPIR/src/api/config"
-	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	libcrypto "github.com/JosephS11723/CooPIR/src/api/lib/crypto"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	swi "github.com/JosephS11723/CooPIR/src/api/lib/seaweedInterface"
@@ -64,7 +63,7 @@ func SWPOST(c *gin.Context) {
 
 	// set filename to randomly generated name. change after hash operation
 	// Use MakeUuid from dbInterface to ensure unique filename
-	filename := dbInterface.MakeUuid("Cases", "File")
+	filename := dbInterface.MakeUuid()
 
 	// create pipes
 	md5Reader, md5Writer := io.Pipe()

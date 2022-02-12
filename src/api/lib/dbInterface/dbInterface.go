@@ -3,6 +3,7 @@ package dbInterface
 import (
 	// "io"
 	"context"
+	"errors"
 	"log"
 
 	// _ "sync"
@@ -170,11 +171,12 @@ func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.I
 }
 
 // MakeUser creates a new User struct.
-func MakeUser(name string, email string, role string, cases []string, password string) *mongo.InsertOneResult {
+func MakeUser(name string, email string, role string, cases []string, password string) (*mongo.InsertOneResult, error) {
 
 	// check if user email already exists
 	if doesEmailExist(email) {
-		log.Panic("[ERROR] Email already exists!")
+		// if email exists, return error
+		return nil, errors.New("email already exists")
 	}
 
 	// Hash password
@@ -199,7 +201,7 @@ func MakeUser(name string, email string, role string, cases []string, password s
 
 	result := DbSingleInsert(dbName, dbCollection, NewUser)
 
-	return result
+	return result, nil
 }
 
 // MakeCase creates a new Case struct.
