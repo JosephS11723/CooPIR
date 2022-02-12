@@ -14,7 +14,6 @@ import (
 	swi "github.com/JosephS11723/CooPIR/src/api/lib/seaweedInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/security"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 // SWGET gets a file from the seaweedfs server and returns it to the client
@@ -63,11 +62,8 @@ func SWPOST(c *gin.Context) {
 	}
 
 	// set filename to randomly generated name. change after hash operation
-	filename := uuid.New().String()
-
-	// TODO: check db to make sure uuid does not already exist
-	exist := dbInterface.DoesUuidExist("Cases", "File", filename)
-	_ = exist
+	// Use MakeUuid from dbInterface to ensure unique filename
+	filename := dbInterface.MakeUuid("Cases", "File")
 
 	// create pipes
 	md5Reader, md5Writer := io.Pipe()

@@ -171,21 +171,10 @@ func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.I
 func MakeUser(name string, email string, role string, cases []string, password string) *mongo.InsertOneResult {
 
 	var saltedhash string = security.HashPass(password)
-	var exist bool
-	var id string
 	var dbName string = "Users"
 	var dbCollection string = "User"
+	var id string = MakeUuid(dbName, dbCollection)
 	var result *mongo.InsertOneResult
-
-	// Loop that makes a uuid and checks if it already exists in the database.
-	// keep looping until it doesn't exist.
-	for {
-		id = uuid.New().String()
-		exist = DoesUuidExist(dbName, dbCollection, id)
-		if !exist {
-			break
-		}
-	}
 
 	var NewUser = dbtypes.User{
 		UUID:       id,
@@ -204,21 +193,10 @@ func MakeUser(name string, email string, role string, cases []string, password s
 // MakeCase creates a new Case struct.
 func MakeCase(name string, dateCreated string, viewAccess string, editAccess string, collaborators []string) *mongo.InsertOneResult {
 
-	var exist bool
-	var id string
 	var dbName string = "Cases"
 	var dbCollection string = "Case"
+	var id string = MakeUuid(dbName, dbCollection)
 	var result *mongo.InsertOneResult
-
-	// Loop that makes a uuid and checks if it already exists in the database.
-	// keep looping until it doesn't exist.
-	for {
-		id = uuid.New().String()
-		exist = DoesUuidExist(dbName, dbCollection, id)
-		if !exist {
-			break
-		}
-	}
 
 	var NewCase = dbtypes.Case{
 		UUID:          id,
@@ -237,21 +215,10 @@ func MakeCase(name string, dateCreated string, viewAccess string, editAccess str
 // MakeFile creates a new File struct.
 func MakeFile(hash string, filename string, caseName string, fileDir string, uploadDate string, viewAccess string, editAccess string) *mongo.InsertOneResult {
 
-	var exist bool
-	var id string
 	var dbName string = "Cases"
 	var dbCollection string = "File"
+	var id string = MakeUuid(dbName, dbCollection)
 	var result *mongo.InsertOneResult
-
-	// Loop that makes a uuid and checks if it already exists in the database.
-	// keep looping until it doesn't exist.
-	for {
-		id = uuid.New().String()
-		exist = DoesUuidExist(dbName, dbCollection, id)
-		if !exist {
-			break
-		}
-	}
 
 	var NewFile = dbtypes.File{
 		UUID:        id,
@@ -272,21 +239,10 @@ func MakeFile(hash string, filename string, caseName string, fileDir string, upl
 // MakeAccess creates a new Access struct.
 func MakeAccess(filename string, user string, date string) *mongo.InsertOneResult {
 
-	var exist bool
-	var id string
 	var dbName string = "Cases"
 	var dbCollection string = "Log"
+	var id string = MakeUuid(dbName, dbCollection)
 	var result *mongo.InsertOneResult
-
-	// Loop that makes a uuid and checks if it already exists in the database.
-	// keep looping until it doesn't exist.
-	for {
-		id = uuid.New().String()
-		exist = DoesUuidExist(dbName, dbCollection, id)
-		if !exist {
-			break
-		}
-	}
 
 	var NewAccess = dbtypes.Access{
 		UUID:     id,
@@ -373,8 +329,25 @@ func FindDocByFilter(dbname string, collection string, filter bson.M) *mongo.Sin
 	return result
 }
 
+func MakeUuid(dbName string, dbCollection string) string {
+
+	var id string
+	var exist bool
+	// Loop that makes a uuid and checks if it already exists in the database.
+	// keep looping until it doesn't exist.
+	for {
+		id = uuid.New().String()
+		exist = doesUuidExist(dbName, dbCollection, id)
+		if !exist {
+			break
+		}
+	}
+
+	return id
+}
+
 // Check if UUID exists in the collection. Returns true if the document exists.
-func DoesUuidExist(dbname string, collection string, uuid string) bool {
+func doesUuidExist(dbname string, collection string, uuid string) bool {
 	// connect to db
 	client, ctx, cancel, err := dbConnect()
 	if err != nil {
