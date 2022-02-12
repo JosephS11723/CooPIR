@@ -18,6 +18,7 @@ type Case struct {
 
 type File struct {
 	Hash        string `json:"hash"`
+	UUID		string `json:"uuid"`
 	Filename    string `json:"filename"`
 	Case        string `json:"case"`
 	File_dir    string `json:"fileDir"`
