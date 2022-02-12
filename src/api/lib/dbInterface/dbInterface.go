@@ -8,10 +8,10 @@ import (
 	// _ "sync"
 	"time"
 
-	"golang.org/x/crypto/bcrypt"
 
 	"github.com/JosephS11723/CooPIR/src/api/config"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
+	"github.com/JosephS11723/CooPIR/src/api/lib/security"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -166,20 +166,9 @@ func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.I
 	return nil
 }
 
-func PassHash(password string) string {
-
-	// Generate a salted hash of the password
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		log.Panicln(err)
-	}
-
-	return string(hash)
-}
-
 func MakeUser(uuid string, name string, email string, role string, cases []string, password string) dbtypes.User {
 
-	var saltedhash string = PassHash(password)
+	var saltedhash string = security.HashPass(password)
 
 	var NewUser = dbtypes.User{
 		UUID:       uuid,
