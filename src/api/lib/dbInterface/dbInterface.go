@@ -414,3 +414,18 @@ func UpdateDoc(dbName string, dbCollection string, filter bson.M, updates bson.D
 
 	return result
 }
+
+func RetrieveHashByEmail(email string) string {
+
+	var dbName string = "Users"
+	var dbCollection string = "User"
+	var filter bson.M = bson.M{"email": email}
+	var result *mongo.SingleResult
+
+	result = FindDocByFilter(dbName, dbCollection, filter)
+
+	var hash string
+	result.Decode(&hash)
+
+	return hash
+}
