@@ -2,6 +2,7 @@ package iodb
 
 import (
 	"log"
+	"strconv"
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/gin-gonic/gin"
@@ -22,7 +23,7 @@ func DbUploadTest(c *gin.Context) {
 
 	// Create three testusers in the database
 	for i := 0; i < 3; i++ {
-		result = dbInterface.MakeUser("testuser", "test@test.com", "supervisor", []string{"testcase", "thiscasedoesnotexist"}, "password")
+		result = dbInterface.MakeUser("testuser", "test"+strconv.Itoa(i)+"@test.com", "supervisor", []string{"testcase", "thiscasedoesnotexist"}, "password")
 
 		log.Printf("[DEBUG] Inserted user document with _id: %v\n", result.InsertedID)
 	}
