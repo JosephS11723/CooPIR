@@ -10,6 +10,7 @@ import (
 
 	"github.com/JosephS11723/CooPIR/src/api/config"
 	libcrypto "github.com/JosephS11723/CooPIR/src/api/lib/crypto"
+	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	swi "github.com/JosephS11723/CooPIR/src/api/lib/seaweedInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/security"
 	"github.com/gin-gonic/gin"
@@ -65,6 +66,8 @@ func SWPOST(c *gin.Context) {
 	filename := uuid.New().String()
 
 	// TODO: check db to make sure uuid does not already exist
+	exist := dbInterface.DoesUuidExist("Cases", "File", filename)
+	_ = exist
 
 	// create pipes
 	md5Reader, md5Writer := io.Pipe()
