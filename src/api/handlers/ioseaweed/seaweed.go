@@ -18,12 +18,6 @@ import (
 
 // SWGET gets a file from the seaweedfs server and returns it to the client
 func SWGET(c *gin.Context) {
-	// verify token
-	if !security.VerifyToken(c) {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "invalid token"})
-		log.Panicln("INVALID TOKEN")
-	}
-
 	// get filename
 	filename, success := c.GetQuery("filename")
 
@@ -47,12 +41,6 @@ func SWGET(c *gin.Context) {
 // SWPOST uploads a file to seaweedfs from the client multipart form
 func SWPOST(c *gin.Context) {
 	var err error
-
-	// verify token
-	if !security.VerifyToken(c) {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "invalid token"})
-		log.Panicln("INVALID TOKEN")
-	}
 
 	// get file multipart stream
 	filestream, _, err := c.Request.FormFile("file")
@@ -161,12 +149,6 @@ func SWPOST(c *gin.Context) {
 
 // SWDELETE deletes a file from seaweedfs
 func SWDELETE(c *gin.Context) {
-	// verify token
-	if !security.VerifyToken(c) {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "invalid token"})
-		log.Panicln("INVALID TOKEN")
-	}
-
 	// get filename
 	filename, success := c.GetQuery("filename")
 
