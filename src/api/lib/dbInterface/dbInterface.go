@@ -164,11 +164,12 @@ func PassHash(password string) string {
 	return string(hash)
 }
 
-func MakeUser(name string, email string, role string, cases []string, password string) dbtypes.User {
+func MakeUser(uuid string, name string, email string, role string, cases []string, password string) dbtypes.User {
 
 	var saltedhash string = PassHash(password)
 
 	var NewUser = dbtypes.User{
+		UUID:       uuid,
 		Name:       name,
 		Email:      email,
 		Role:       role,
@@ -179,9 +180,10 @@ func MakeUser(name string, email string, role string, cases []string, password s
 	return NewUser
 }
 
-func MakeCase(name string, dateCreated string, viewAccess string, editAccess string, collaborators []string) dbtypes.Case {
+func MakeCase(uuid string, name string, dateCreated string, viewAccess string, editAccess string, collaborators []string) dbtypes.Case {
 
 	var NewCase = dbtypes.Case{
+		UUID:          uuid,
 		Name:          name,
 		Date_created:  dateCreated,
 		View_access:   viewAccess,
@@ -192,9 +194,10 @@ func MakeCase(name string, dateCreated string, viewAccess string, editAccess str
 	return NewCase
 }
 
-func MakeFile(hash string, filename string, caseName string, fileDir string, uploadDate string, viewAccess string, editAccess string) dbtypes.File {
+func MakeFile(uuid string, hash string, filename string, caseName string, fileDir string, uploadDate string, viewAccess string, editAccess string) dbtypes.File {
 
 	var NewFile = dbtypes.File{
+		UUID:        uuid,
 		Hash:        hash,
 		Filename:    filename,
 		Case:        caseName,
@@ -207,9 +210,10 @@ func MakeFile(hash string, filename string, caseName string, fileDir string, upl
 	return NewFile
 }
 
-func MakeAccess(filename string, user string, date string) dbtypes.Access {
+func MakeAccess(uuid string, filename string, user string, date string) dbtypes.Access {
 
 	var NewAccess = dbtypes.Access{
+		UUID:     uuid,
 		Filename: filename,
 		User:     user,
 		Date:     date,
@@ -266,4 +270,18 @@ func FindDocByFilter(client *mongo.Client, ctx context.Context, dbname string, c
 
 	// Return the result
 	return result
+}
+
+// Check if UUID exists in the collection
+func DoesUuidExist(client *mongo.Client, ctx context.Context, dbname string, collection string, uuid string) bool {
+
+	// Get the collection
+	coll := client.Database(dbname).Collection(collection)
+
+	// Find the document
+	var result *mongo.SingleResult = coll.FindOne(ctx, bson.M{"uuid": uuid})
+
+	// Return true if document exists
+	return result.Err() != mongo.ErrNoDocuments
+
 }
