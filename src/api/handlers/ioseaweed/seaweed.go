@@ -9,7 +9,6 @@ import (
 	"sync"
 
 	"github.com/JosephS11723/CooPIR/src/api/config"
-	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	libcrypto "github.com/JosephS11723/CooPIR/src/api/lib/crypto"
 	swi "github.com/JosephS11723/CooPIR/src/api/lib/seaweedInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/security"

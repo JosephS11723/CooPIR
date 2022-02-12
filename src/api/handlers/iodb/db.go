@@ -23,7 +23,10 @@ func DbUploadTest(c *gin.Context) {
 
 	// Create three testusers in the database
 	for i := 0; i < 3; i++ {
-		result = dbInterface.MakeUser("testuser", "test"+strconv.Itoa(i)+"@test.com", "supervisor", []string{"testcase", "thiscasedoesnotexist"}, "password")
+		result, err := dbInterface.MakeUser("testuser", "test"+strconv.Itoa(i)+"@test.com", "supervisor", []string{"testcase", "thiscasedoesnotexist"}, "password")
+		if err != nil {
+			log.Panicln("[ERROR] Failed to create testuser: " + err.Error())
+		}
 
 		log.Printf("[DEBUG] Inserted user document with _id: %v\n", result.InsertedID)
 	}
