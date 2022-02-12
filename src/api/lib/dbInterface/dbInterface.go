@@ -8,11 +8,11 @@ import (
 	// _ "sync"
 	"time"
 
-
 	"github.com/JosephS11723/CooPIR/src/api/config"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 	"github.com/JosephS11723/CooPIR/src/api/lib/security"
 
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -20,7 +20,7 @@ import (
 )
 
 // dbConnect returns a mongoDB client, context, cancel function, and error.
-func dbConnect() (*mongo.Client, context.Context, context.CancelFunc, error){
+func dbConnect() (*mongo.Client, context.Context, context.CancelFunc, error) {
 	var uri string = config.DBIP
 
 	// Set client options
@@ -82,7 +82,7 @@ func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.I
 	defer dbClose(client, ctx, cancel)
 
 	switch t := data.(type) {
-	
+
 	// Access struct case
 	case dbtypes.Access:
 		if collection != "Log" {
@@ -139,7 +139,7 @@ func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.I
 
 			return result
 		}
-	
+
 	// User struct case
 	case dbtypes.User:
 		if collection != "User" {
@@ -158,7 +158,7 @@ func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.I
 
 			return result
 		}
-	
+
 	// default case: panic
 	default:
 		log.Panic("[ERROR] Unknown type for db intsert!")
@@ -168,11 +168,27 @@ func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.I
 }
 
 // MakeUser creates a new User struct.
-func MakeUser(uuid string, name string, email string, role string, cases []string, password string) dbtypes.User {
+func MakeUser(name string, email string, role string, cases []string, password string) *mongo.InsertOneResult {
+
 	var saltedhash string = security.HashPass(password)
+	var exist bool
+	var id string
+	var dbName string = "Users"
+	var dbCollection string = "User"
+	var result *mongo.InsertOneResult
+
+	// Loop that makes a uuid and checks if it already exists in the database.
+	// keep looping until it doesn't exist.
+	for {
+		id = uuid.New().String()
+		exist = DoesUuidExist(dbName, dbCollection, id)
+		if !exist {
+			break
+		}
+	}
 
 	var NewUser = dbtypes.User{
-		UUID:       uuid,
+		UUID:       id,
 		Name:       name,
 		Email:      email,
 		Role:       role,
@@ -180,13 +196,32 @@ func MakeUser(uuid string, name string, email string, role string, cases []strin
 		SaltedHash: saltedhash,
 	}
 
-	return NewUser
+	result = DbSingleInsert(dbName, dbCollection, NewUser)
+
+	return result
 }
 
 // MakeCase creates a new Case struct.
-func MakeCase(uuid string, name string, dateCreated string, viewAccess string, editAccess string, collaborators []string) dbtypes.Case {
+func MakeCase(name string, dateCreated string, viewAccess string, editAccess string, collaborators []string) *mongo.InsertOneResult {
+
+	var exist bool
+	var id string
+	var dbName string = "Cases"
+	var dbCollection string = "Case"
+	var result *mongo.InsertOneResult
+
+	// Loop that makes a uuid and checks if it already exists in the database.
+	// keep looping until it doesn't exist.
+	for {
+		id = uuid.New().String()
+		exist = DoesUuidExist(dbName, dbCollection, id)
+		if !exist {
+			break
+		}
+	}
+
 	var NewCase = dbtypes.Case{
-		UUID:          uuid,
+		UUID:          id,
 		Name:          name,
 		Date_created:  dateCreated,
 		View_access:   viewAccess,
@@ -194,13 +229,32 @@ func MakeCase(uuid string, name string, dateCreated string, viewAccess string, e
 		Collaborators: collaborators,
 	}
 
-	return NewCase
+	result = DbSingleInsert(dbName, dbCollection, NewCase)
+
+	return result
 }
 
 // MakeFile creates a new File struct.
-func MakeFile(uuid string, hash string, filename string, caseName string, fileDir string, uploadDate string, viewAccess string, editAccess string) dbtypes.File {
+func MakeFile(hash string, filename string, caseName string, fileDir string, uploadDate string, viewAccess string, editAccess string) *mongo.InsertOneResult {
+
+	var exist bool
+	var id string
+	var dbName string = "Cases"
+	var dbCollection string = "File"
+	var result *mongo.InsertOneResult
+
+	// Loop that makes a uuid and checks if it already exists in the database.
+	// keep looping until it doesn't exist.
+	for {
+		id = uuid.New().String()
+		exist = DoesUuidExist(dbName, dbCollection, id)
+		if !exist {
+			break
+		}
+	}
+
 	var NewFile = dbtypes.File{
-		UUID:        uuid,
+		UUID:        id,
 		Hash:        hash,
 		Filename:    filename,
 		Case:        caseName,
@@ -210,26 +264,47 @@ func MakeFile(uuid string, hash string, filename string, caseName string, fileDi
 		Edit_access: editAccess,
 	}
 
-	return NewFile
+	result = DbSingleInsert(dbName, dbCollection, NewFile)
+
+	return result
 }
 
 // MakeAccess creates a new Access struct.
-func MakeAccess(uuid string, filename string, user string, date string) dbtypes.Access {
+func MakeAccess(filename string, user string, date string) *mongo.InsertOneResult {
+
+	var exist bool
+	var id string
+	var dbName string = "Cases"
+	var dbCollection string = "Log"
+	var result *mongo.InsertOneResult
+
+	// Loop that makes a uuid and checks if it already exists in the database.
+	// keep looping until it doesn't exist.
+	for {
+		id = uuid.New().String()
+		exist = DoesUuidExist(dbName, dbCollection, id)
+		if !exist {
+			break
+		}
+	}
+
 	var NewAccess = dbtypes.Access{
-		UUID:     uuid,
+		UUID:     id,
 		Filename: filename,
 		User:     user,
 		Date:     date,
 	}
 
-	return NewAccess
+	result = DbSingleInsert(dbName, dbCollection, NewAccess)
+
+	return result
 }
 
 // FindDocsByFilter finds multiple documents in a collection by a filter and RETURN a slice of documents (bson.m)
 func FindDocsByFilter(dbname string, collection string, filter bson.M) []bson.M {
 	// connect to db
 	client, ctx, cancel, err := dbConnect()
-	
+
 	if err != nil {
 		log.Panicln(err)
 	}
@@ -276,7 +351,7 @@ func FindDocsByFilter(dbname string, collection string, filter bson.M) []bson.M 
 func FindDocByFilter(dbname string, collection string, filter bson.M) *mongo.SingleResult {
 	// connect to db
 	client, ctx, cancel, err := dbConnect()
-	
+
 	if err != nil {
 		log.Panicln(err)
 	}
