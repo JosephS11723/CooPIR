@@ -79,7 +79,7 @@ func DbUpdateTest(c *gin.Context) {
 	var dbCollection string = "User"
 	var name string = "testuser2"
 
-	filter := bson.M{"email": "test@test.com"}
+	filter := bson.M{"email": "test0@test.com"}
 	update := bson.D{{"$set",
 		bson.D{
 			{"name", name},
