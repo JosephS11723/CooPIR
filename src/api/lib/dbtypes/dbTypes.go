@@ -1,6 +1,7 @@
 package dbtypes
 
 type User struct {
+	UUID       string   `json:"uuid"`
 	Name       string   `json:"name"`
 	Email      string   `json:"email"`
 	Role       string   `json:"role"`
@@ -9,6 +10,7 @@ type User struct {
 }
 
 type Case struct {
+	UUID          string   `json:"uuid"`
 	Name          string   `json:"name"`
 	Date_created  string   `json:"dateCreated"`
 	View_access   string   `json:"viewAccess"`
@@ -17,6 +19,7 @@ type Case struct {
 }
 
 type File struct {
+	UUID        string `json:"uuid"`
 	Hash        string `json:"hash"`
 	Filename    string `json:"filename"`
 	Case        string `json:"case"`
@@ -27,6 +30,7 @@ type File struct {
 }
 
 type Access struct {
+	UUID     string `json:"uuid"`
 	Filename string `json:"filename"`
 	User     string `json:"user"`
 	Date     string `json:"date"`

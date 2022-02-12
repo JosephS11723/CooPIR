@@ -20,7 +20,7 @@ import (
 func SWGET(c *gin.Context) {
 	// verify token
 	if !security.VerifyToken(c) {
-		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"message": "invalid token"})
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "invalid token"})
 		log.Panicln("INVALID TOKEN")
 	}
 
@@ -50,7 +50,7 @@ func SWPOST(c *gin.Context) {
 
 	// verify token
 	if !security.VerifyToken(c) {
-		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"message": "invalid token"})
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "invalid token"})
 		log.Panicln("INVALID TOKEN")
 	}
 
@@ -63,10 +63,6 @@ func SWPOST(c *gin.Context) {
 
 	// set filename to randomly generated name. change after hash operation
 	filename := uuid.New().String()
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "failed to allocate temporary filename"})
-		log.Panicln(err)
-	}
 
 	// TODO: check db to make sure uuid does not already exist
 
@@ -168,7 +164,7 @@ func SWPOST(c *gin.Context) {
 func SWDELETE(c *gin.Context) {
 	// verify token
 	if !security.VerifyToken(c) {
-		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"message": "invalid token"})
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "invalid token"})
 		log.Panicln("INVALID TOKEN")
 	}
 
