@@ -6,13 +6,7 @@ import (
 
 type JobQueue struct {
 	NewJobs []jobservertypes.NewJob
-	Workers []WorkerInfo
-}
-
-type WorkerInfo struct {
-	Name           string
-	Host           string
-	Responsibility string
+	Workers []jobservertypes.WorkerInfo
 }
 
 func (jq JobQueue) push(job_request jobservertypes.NewJob) {
