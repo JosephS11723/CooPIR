@@ -5,6 +5,12 @@ import (
 	"log"
 )
 
+// API Documentation
+// @title CooPIR API
+// @version 1.0.0
+// @host localhost:8080
+// @BasePath /api/v1
+
 func main() {
 	// set log to print line numbers
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
