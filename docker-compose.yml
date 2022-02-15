@@ -18,6 +18,7 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
     links:
       - mongo-db
+    mem_limit: 1G
     networks:
       hostnetwork:
         ipv4_address: 20.20.20.20
@@ -36,23 +37,10 @@ services:
       - 27017:27017
     volumes:
       - mongodb-data:/data/db
+    mem_limit: 1G
     networks:
       network1:
         ipv4_address: 10.10.10.3
-
-  # ftp server
-  #ftp_server:
-  #  container_name: ftp_server
-  #  build: ./ftp
-  #  ports:
-  #    - "21:21"
-  #    - "21000-21010:21000-21010"
-  #  environment:
-  #    - USERS=api|password
-  #  networks:
-  #    network1:
-  #      ipv4_address: 10.10.10.2
-
 
   # go api
   api_server:
@@ -63,7 +51,11 @@ services:
       - target: 8080
         published: 8080
         protocol: tcp
-
+      - target: 8000
+        published: 8000
+        protocol: tcp
+    
+    mem_limit: 1G
     networks:
       hostnetwork:
         ipv4_address: 20.20.20.4
@@ -75,6 +67,7 @@ services:
     container_name: job_worker
     restart: always
     build: ./src/job_worker
+    mem_limit: 1G
     networks:
       hostnetwork:
         ipv4_address: 20.20.20.154
@@ -90,7 +83,7 @@ services:
       - 9333:9333
       - 19333:19333
     command: "master -ip=master"
-    mem_limit: 2G
+    mem_limit: 1G
     networks:
       hostnetwork:
         ipv4_address: 20.20.20.244
@@ -127,7 +120,7 @@ services:
     command: 'volume -mserver="master:9333" -port=8085'
     depends_on:
       - master
-    mem_limit: 0.3G
+    mem_limit: 0.5G
     networks:
       hostnetwork:
         ipv4_address: 20.20.20.245
@@ -144,7 +137,7 @@ services:
     command: 'volume -mserver="master:9333" -port=8086'
     depends_on:
       - master
-    mem_limit: 0.3G
+    mem_limit: 0.5G
     networks:
       hostnetwork:
         ipv4_address: 20.20.20.246
