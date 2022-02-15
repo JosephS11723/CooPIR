@@ -1,8 +1,6 @@
 package routers
 
 import (
-	"net/http"
-
 	"github.com/JosephS11723/CooPIR/src/api/handlers/authentication"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/debug"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/iodb"
@@ -18,13 +16,6 @@ func InitMainRouter() *gin.Engine {
 
 	// set low memory limit for multipart forms (8 MiB)
 	r.MaxMultipartMemory = 8 << 20
-
-	r.LoadHTMLGlob("*index.html")
-
-	// setup api version v1 routes
-	r.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", gin.H{})
-	})
 
 	// setup base path for api version v1
 	v1 := r.Group("/api/v1")

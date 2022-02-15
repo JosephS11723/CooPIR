@@ -21,17 +21,9 @@ func main() {
 	// initialize router with handlers
 	r := routers.InitMainRouter()
 
-	// initialize swagger router with handlers
-	sr := routers.InitSwaggerRouter()
-
 	// run and serve main router
 	go func(){
 		r.Run("0.0.0.0:8080")
-	}()
-
-	// run and serve swagger router
-	go func(){
-		sr.Run("0.0.0.0:8000")
 	}()
 
 	// wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds.

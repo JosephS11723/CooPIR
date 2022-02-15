@@ -16,12 +16,6 @@ import (
 )
 
 // SWGET gets a file from the seaweedfs server and returns it to the client
-// @Summary      get file from seaweedfs
-// @Description  get file from seaweedfs
-// @Tags         Files
-// @Success      200 {object} string
-// @Failure      400 {object} string
-// @Router       /file [get]
 func SWGET(c *gin.Context) {
 	// get filename
 	filename, success := c.GetQuery("filename")
