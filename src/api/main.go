@@ -12,9 +12,9 @@ func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	// initialize router with handlers
-	r, queue_chan := routers.InitRouter()
+	r, job_channel, worker_channel := routers.InitRouter()
 
-	go jobqueue.ManageQueue(queue_chan)
+	go jobqueue.ManageQueue(job_channel, worker_channel)
 
 	// run and serve
 	r.Run("0.0.0.0:8080")

@@ -5,10 +5,11 @@ import (
 	"github.com/JosephS11723/CooPIR/src/api/handlers/iodb"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/iojobserver"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/ioseaweed"
+	"github.com/JosephS11723/CooPIR/src/api/lib/jobservertypes"
 	"github.com/gin-gonic/gin"
 )
 
-func InitRouter() (*gin.Engine, chan interface{}) {
+func InitRouter() (*gin.Engine, chan jobservertypes.NewJob, chan jobservertypes.WorkerInfo) {
 	// intialize engine with default middleware (TODO: replace)
 	r := gin.New()
 	r.Use(gin.Logger())
@@ -17,8 +18,9 @@ func InitRouter() (*gin.Engine, chan interface{}) {
 	// set low memory limit for multipart forms (8 MiB)
 	r.MaxMultipartMemory = 8 << 20
 
-	//create the channel that will be used for handlers to send info to the job queue
-	queue_chan := make(chan interface{})
+	//create the channels that will be used for handlers to send info to the job queue
+	job_channel := make(chan jobservertypes.NewJob)
+	worker_channel := make(chan jobservertypes.WorkerInfo)
 
 	// DEBUG REQUESTS
 	// debug ping challenge
@@ -35,10 +37,10 @@ func InitRouter() (*gin.Engine, chan interface{}) {
 	r.GET("/db/test/find", iodb.DbFindTest)
 
 	//JOB QUEUE
-	r.POST("/job/new", iojobserver.CreateNewJob(queue_chan))
+	r.POST("/job/new", iojobserver.CreateNewJob(job_channel))
 
 	// TOKEN AUTHENTICATION HANDLING
 
 	// return handler router to main()
-	return r, queue_chan
+	return r, job_channel, worker_channel
 }
