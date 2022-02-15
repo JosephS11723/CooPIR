@@ -16,7 +16,7 @@ func CreateNewJob(queue_chan chan<- jobservertypes.NewJob) gin.HandlerFunc {
 
 		var job_request jobservertypes.NewJob
 
-		err := c.BindJSON(job_request)
+		err := c.BindJSON(&job_request)
 
 		if err != nil {
 			log.Panicln(err)

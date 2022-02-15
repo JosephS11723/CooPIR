@@ -1,6 +1,8 @@
 package jobqueue
 
 import (
+	"log"
+
 	"github.com/JosephS11723/CooPIR/src/api/lib/jobservertypes"
 )
 
@@ -13,13 +15,11 @@ type JobQueue struct {
 }
 
 //push and pop functions
-func (jq JobQueue) job_push(job_request jobservertypes.NewJob) {
-
+func (jq *JobQueue) job_push(job_request jobservertypes.NewJob) {
 	jq.NewJobs = append(jq.NewJobs, job_request)
-
 }
 
-func (jq JobQueue) job_pop() jobservertypes.NewJob {
+func (jq *JobQueue) job_pop() jobservertypes.NewJob {
 
 	var item jobservertypes.NewJob
 
@@ -60,6 +60,8 @@ func ManageQueue(job_receiver <-chan jobservertypes.NewJob, worker_receiver <-ch
 
 		case data := <-job_receiver:
 			queue.job_push(data)
+
+			log.Printf("[DEBUG] New Job received:\n\t%+v\n", data)
 
 		default:
 
