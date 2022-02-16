@@ -6,6 +6,8 @@ import requests
 import inspect
 import json
 from pprint import pprint
+import config
+import pyfiglet
 
 #not exactly sure how the validator works yet
 class NumberValidator(Validator):
@@ -51,7 +53,7 @@ def pingTest():
         print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
         # request ping page
-        r = requests.get(url="http://localhost:8080/ping")
+        r = requests.get(url=config.apiBasePath + "/ping")
 
         # check if good request
         if r.status_code != 200:
@@ -76,7 +78,7 @@ def uploadTest(fileName):
         file = {"file":open(fileName,'rb')}
 
         # upload file
-        r = requests.post(url = "http://localhost:8080/file", files=file)
+        r = requests.post(url = config.apiBasePath + "/file", files=file)
 
         # check if good request
         if r.status_code != 200:
@@ -87,9 +89,15 @@ def uploadTest(fileName):
         error(e)
 
 def main():
+    # print the ascii art
+    print(pyfiglet.figlet_format("CooPIR") + '''                     /^._
+       ,___,--~~~~--' /'
+       `~--~\ )___,)/'
+           (/\\_  (/\\_''')
+
     while(True):
         #get function choice
-        answers = prompt(questions, style=custom_style_2)
+        answers = prompt(questions)
 
         if answers.get("user_option") == "ping":
             pingTest()
