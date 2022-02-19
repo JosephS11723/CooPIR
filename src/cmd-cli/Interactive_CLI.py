@@ -41,11 +41,6 @@ uploadQuestions = [
         'type': 'input',
         'name': 'case_name',
         'message': 'Enter the case name to upload to:'
-    },
-    {
-        'type': 'input',
-        'name': 'origin_file_directory',
-        'message': 'Enter the origin file directory:'
     }
 ]
 
@@ -77,7 +72,7 @@ def pingTest():
     except Exception as e:
         error(e)
 
-def uploadTest(fileName, caseName, fileDir):
+def uploadTest(fileName, caseName):
     """Attempts to upload a file to the server
     """
     try:
@@ -90,7 +85,7 @@ def uploadTest(fileName, caseName, fileDir):
         # add params
         params = {
             "casename" : caseName,
-            "filedir" : fileDir,
+            "filename" : fileName,
         }
 
         # upload file
@@ -124,8 +119,7 @@ def main():
             #retrieve the specified file name
             uploadFile = uploadAnswers.get("file_to_upload")
             caseName = uploadAnswers.get("case_name")
-            fileDir = uploadAnswers.get("origin_file_directory")
-            uploadTest(uploadFile, caseName, fileDir)
+            uploadTest(uploadFile, caseName)
         
         #to be implemented if approved
         elif answers.get("user_option") == "delete":
