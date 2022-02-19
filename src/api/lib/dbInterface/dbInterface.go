@@ -239,7 +239,10 @@ func MakeFile(hashes []string, tags []string, filename string, caseName string, 
 
 	var NewFile = dbtypes.File{
 		UUID:        id,
-		Hashes:      hashes,
+		MD5:         hashes[0],
+		SHA1:        hashes[1],
+		SHA256:      hashes[2],
+		SHA512:      hashes[3],
 		Tags:        tags,
 		Filename:    filename,
 		Case:        caseName,

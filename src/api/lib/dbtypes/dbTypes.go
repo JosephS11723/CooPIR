@@ -20,7 +20,10 @@ type Case struct {
 
 type File struct {
 	UUID        string   `json:"uuid"`
-	Hashes      []string `json:"hashes"`
+	MD5         string   `json:"md5"`
+	SHA1        string   `json:"sha1"`
+	SHA256      string   `json:"sha256"`
+	SHA512      string   `json:"sha512"`
 	Tags        []string `json:"tags"`
 	Filename    string   `json:"filename"`
 	Case        string   `json:"case"`
