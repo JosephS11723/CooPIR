@@ -1,0 +1,165 @@
+version: "3"
+
+services:
+
+  # Allows quick access to the mongo database
+  # REMOVE BEFORE DEPLOYMENT
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongoDB
+      # ME_CONFIG_BASICAUTH_USERNAME: admin
+      # ME_CONFIG_BASICAUTH_PASSWORD: q
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_MONGODB_ADMINUSERNAME: test
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+    links:
+      - mongo-db
+    mem_limit: 1G
+    networks:
+      hostnetwork:
+        ipv4_address: 20.20.20.20
+      network1:
+        ipv4_address: 10.10.10.20
+
+  # mongo database
+  mongo-db:
+    container_name: mongoDB
+    build: ./mongo
+    environment:
+      MONGO_INITDB_DATABASE: testingdb
+      MONGO_INITDB_ROOT_USERNAME: test
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb-data:/data/db
+    mem_limit: 1G
+    networks:
+      network1:
+        ipv4_address: 10.10.10.3
+
+  # go api
+  api_server:
+    container_name: api_server
+    restart: always
+    build: ./src/api
+    ports:
+      - target: 8080
+        published: 8080
+        protocol: tcp
+      - target: 8000
+        published: 8000
+        protocol: tcp
+    
+    mem_limit: 1G
+    networks:
+      hostnetwork:
+        ipv4_address: 20.20.20.4
+      network1:
+        ipv4_address: 10.10.10.4
+  
+  # python job_worker container
+  #job_worker:
+  #  container_name: job_worker
+  #  restart: always
+  #  build: ./src/job_worker
+  #  mem_limit: 1G
+  #  networks:
+  #    hostnetwork:
+  #      ipv4_address: 20.20.20.154
+
+  ######################
+  # SEAWEEDFS SERVICES #
+  ######################
+  # controls the whole system
+  master:
+    image: chrislusf/seaweedfs # remote image
+    restart: always
+    ports:
+      - 9333:9333
+      - 19333:19333
+    command: "master -ip=master"
+    mem_limit: 1G
+    networks:
+      hostnetwork:
+        ipv4_address: 20.20.20.244
+      network1:
+        ipv4_address: 10.10.10.244
+  
+  # controls file fragment distribution
+  filer:
+    image: chrislusf/seaweedfs # remote image
+    restart: always
+    ports:
+      - 8888:8888
+      - 18888:18888
+    command: 'filer -master="master:9333" -encryptVolumeData'
+    tty: true
+    stdin_open: true
+    depends_on:
+      - master
+      - volume
+    mem_limit: 1G
+    networks:
+      hostnetwork:
+        ipv4_address: 20.20.20.243
+      network1:
+        ipv4_address: 10.10.10.243
+  
+  # file fragment storage location
+  volume:
+    image: chrislusf/seaweedfs # remote image
+    restart: always
+    ports:
+      - 8085:8085
+      - 18080:18080
+    command: 'volume -mserver="master:9333" -port=8085'
+    depends_on:
+      - master
+    mem_limit: 0.5G
+    networks:
+      hostnetwork:
+        ipv4_address: 20.20.20.245
+      network1:
+        ipv4_address: 10.10.10.245
+  
+  # second volume for replication testing
+  volume2:
+    image: chrislusf/seaweedfs # remote image
+    restart: always
+    ports:
+      - 8086:8086
+      - 18081:18081
+    command: 'volume -mserver="master:9333" -port=8086'
+    depends_on:
+      - master
+    mem_limit: 0.5G
+    networks:
+      hostnetwork:
+        ipv4_address: 20.20.20.246
+      network1:
+        ipv4_address: 10.10.10.246
+
+volumes:
+  # mongodb persistant storage
+  mongodb-data:
+  
+
+networks:
+  # this is for the api to communicate with the outside world
+  hostnetwork:
+    internal: false
+    ipam:
+      config: 
+        - subnet: 20.20.20.0/24
+  
+  # this is for the api to communicate with the internal services
+  network1:
+    internal: true
+    ipam:
+      config: 
+        - subnet: 10.10.10.0/24

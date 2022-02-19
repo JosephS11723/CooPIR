@@ -1,0 +1,25 @@
+package security
+
+import (
+	"log"
+
+	"golang.org/x/crypto/bcrypt"
+)
+
+// HashPassword hashes a password and returns the hexdump as a string
+func HashPass(password string) (string, error) {
+	// Generate a salted hash of the password
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+	log.Println(string(hash))
+
+	return string(hash), nil
+}
+
+func CheckPass(password string, hash string) bool {
+	// Check the password against the hash
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil // nil means no error
+}

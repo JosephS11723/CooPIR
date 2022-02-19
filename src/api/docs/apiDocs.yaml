@@ -1,0 +1,333 @@
+# base info
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: CooPIR API
+  description: The Coordinated Platform for Incident Response API.
+
+# server information
+servers:
+  - url: http://localhost:8080/api/v1
+    description: "localhost development server"
+    variables:
+      port:
+        default: "8080"
+      basePath:
+        default: "/api/v1"
+
+
+# security features (the api uses a JWT token that is received through a login)
+
+
+# paths
+paths:
+  /ping:
+    get:
+      summary: "Ping the API"
+      description: "Returns a simple message to confirm the API is up and running"
+      operationId: "ping"
+      responses:
+        "200":
+          description: "Successful operation"
+          content:
+            application/json:
+              schema:
+                type: string
+                description: "pong"
+  /file:
+    get:
+      description: Returns a file
+      operationId: getFile
+      parameters:
+        - name: filename
+          in: query
+          description: The file to return
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: File
+          content:
+            application/octet-stream:
+              schema:
+                type: object
+                format: binary
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The error message
+        404:
+          description: File not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The error message
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: internal server error
+    post:
+      description: Uploads a file
+      operationId: uploadFile
+      parameters:
+        - name: file
+          in: query
+          description: The file to upload
+          required: true
+          schema:
+            type: string
+        - name: casename
+          in: query
+          description: The case to upload the file to
+          required: true
+          schema:
+            type: string
+        - name: filedir
+          in: query
+          description: The directory the file came from
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: File uploaded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The message
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: The error message
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: The error message
+    delete:
+      description: Deletes a file
+      operationId: deleteFile
+      parameters:
+        - name: filename
+          in: query
+          description: The file to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: File deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The message
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: The error message
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: The error message
+  /db/test:
+    get:
+      description: test
+      responses:
+        '200':
+          description: Successful response
+    post:
+      description: test
+      responses:
+        '200':
+          description: Successful response
+  /db/test/find:
+    get:
+      description: test
+      responses:
+        '200':
+          description: Successful response
+    post:
+      description: test
+      responses:
+        '200':
+          description: Successful response
+  /login:
+    post:
+      description: Login
+      operationId: login
+      parameters:
+        - name: username
+          in: query
+          description: The username
+          required: true
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: The password
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: The JWT token
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: The error message
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: The error message
+  /logout:
+    post:
+      description: Logout
+      operationId: logout
+      parameters:
+        - name: token
+          in: query
+          description: The JWT token
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The message
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: The error message
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: The error message
+  /renew:
+    post:
+      description: Renew token
+      operationId: renew
+      parameters:
+        - name: token
+          in: query
+          description: The JWT token
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Renew successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: The JWT token
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: The error message
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: The error message
