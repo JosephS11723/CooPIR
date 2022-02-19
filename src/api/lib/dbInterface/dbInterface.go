@@ -230,7 +230,7 @@ func MakeCase(name string, dateCreated string, viewAccess string, editAccess str
 }
 
 // MakeFile creates a new File struct.
-func MakeFile(hash string, filename string, caseName string, fileDir string, uploadDate string, viewAccess string, editAccess string) *mongo.InsertOneResult {
+func MakeFile(hashes []string, tags []string, filename string, caseName string, fileDir string, uploadDate string, viewAccess string, editAccess string) *mongo.InsertOneResult {
 
 	var dbName string = "Cases"
 	var dbCollection string = "File"
@@ -239,7 +239,8 @@ func MakeFile(hash string, filename string, caseName string, fileDir string, upl
 
 	var NewFile = dbtypes.File{
 		UUID:        id,
-		Hash:        hash,
+		Hashes:      hashes,
+		Tags:        tags,
 		Filename:    filename,
 		Case:        caseName,
 		File_dir:    fileDir,

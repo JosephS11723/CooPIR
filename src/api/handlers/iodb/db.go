@@ -37,7 +37,7 @@ func DbUploadTest(c *gin.Context) {
 	log.Printf("[DEBUG] Inserted case document with _id: %v\n", result.InsertedID)
 
 	// Create a new file in db
-	result = dbInterface.MakeFile("d5bb3ed1ccde75691e54f8f2da83a2fbf7eb9f0891ea141e67dd7f2b889ac479", "testfile", "case1", "test/dir", "1/1/1976", "supervisor", "admin")
+	result = dbInterface.MakeFile([]string{"d5bb3ed1ccde75691e54f8f2da83a2fbf7eb9f0891ea141e67dd7f2b889ac479"}, []string{"tag", "tag2"}, "testfile", "case1", "test/dir", "1/1/1976", "supervisor", "admin")
 
 	log.Printf("[DEBUG] Inserted file document with _id: %v\n", result.InsertedID)
 
