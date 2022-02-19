@@ -63,14 +63,14 @@ services:
         ipv4_address: 10.10.10.4
   
   # python job_worker container
-  job_worker:
-    container_name: job_worker
-    restart: always
-    build: ./src/job_worker
-    mem_limit: 1G
-    networks:
-      hostnetwork:
-        ipv4_address: 20.20.20.154
+  #job_worker:
+  #  container_name: job_worker
+  #  restart: always
+  #  build: ./src/job_worker
+  #  mem_limit: 1G
+  #  networks:
+  #    hostnetwork:
+  #      ipv4_address: 20.20.20.154
 
   ######################
   # SEAWEEDFS SERVICES #
