@@ -27,10 +27,17 @@ func SWGET(c *gin.Context) {
 		return
 	}
 
+	caseName, success := c.GetQuery("casename")
+	// error if casename not provided
+	if !success {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no casename provided"})
+		return
+	}
+
 	// TODO: verify user is authorized to download file
 
 	// download file through lib
-	err := swi.GETFile(filename, c)
+	err := swi.GETFile(filename, caseName, c)
 
 	// internal server error: failed to retrieve file data
 	if err != nil {
@@ -51,7 +58,7 @@ func SWPOST(c *gin.Context) {
 		return
 	}
 
-	fileDir, success := c.GetQuery("filedir")
+	originalFilename, success := c.GetQuery("filename")
 	// error if filedir not provided
 	if !success {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no filedir provided"})
@@ -64,6 +71,10 @@ func SWPOST(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no file received"})
 		log.Panicln(err)
 	}
+
+	// TODO: ensure case name is valid
+
+	// TODO: ensure user is authorized to upload file to case
 
 	// set filename to randomly generated name. change after hash operation
 	// Use MakeUuid from dbInterface to ensure unique filename
@@ -109,7 +120,7 @@ func SWPOST(c *gin.Context) {
 	go libcrypto.Sha1FromReaderAsync(sha1Reader, &doWait, errChan, hashsha1Chan)
 	go libcrypto.Sha256FromReaderAsync(sha256Reader, &doWait, errChan, hashsha256Chan)
 	go libcrypto.Sha512FromReaderAsync(sha512Reader, &doWait, errChan, hashsha512Chan)
-	go swi.POSTFile(filename, POSTReader, c.Copy(), &doWait, errChan)
+	go swi.POSTFile(filename, caseName, POSTReader, c.Copy(), &doWait, errChan)
 
 	go func() {
 		// after completing the copy, we need to close
@@ -158,6 +169,7 @@ func SWPOST(c *gin.Context) {
 	// TODO: check mongo for file existence and remove if duplicate
 
 	dbInterface.MakeFile(
+		filename,
 		[]string{
 			hex.EncodeToString(filemd5Hash),
 			hex.EncodeToString(filesha1Hash),
@@ -165,9 +177,9 @@ func SWPOST(c *gin.Context) {
 			hex.EncodeToString(filesha512Hash),
 		},
 		[]string{},
-		filename,
+		originalFilename,
 		caseName,
-		fileDir,
+		"/files/"+caseName + "/" + filename,
 		time.Now().Local().String(),
 		"supervisor",
 		"admin",

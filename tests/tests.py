@@ -55,8 +55,8 @@ def uploadTest(fileData = None):
 
             # add params
             params = {
+                "filename" : "/home/test/test.txt",
                 "casename" : "testcase",
-                "filedir" : "/home/test/test.txt",
             }
 
             # upload file
@@ -96,7 +96,10 @@ def downloadTest(filename : str = None):
             
             url = apiBasePath + '/file'
 
-            params = {"filename" : fileUUID}
+            params = {
+                "filename" : fileUUID,
+                "casename" : "testcase",
+            }
 
             # download file
             r = requests.get(url, timeout=20, params=params)

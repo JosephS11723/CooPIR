@@ -18,7 +18,7 @@ var filerAddress string = "http://filer"
 var filerPort string = "8888"
 
 // GETs a file from seaweed and streams it to the ctx writer
-func GETFile(filename string, c *gin.Context) error {
+func GETFile(filename string, casename string, c *gin.Context) error {
 	// create http client
 	client := &http.Client{}
 
@@ -26,7 +26,7 @@ func GETFile(filename string, c *gin.Context) error {
 	var resp *http.Response
 
 	// create request
-	req, err := http.NewRequest(http.MethodGet, filerAddress+":"+filerPort+"/files/"+filename, nil)
+	req, err := http.NewRequest(http.MethodGet, filerAddress+":"+filerPort+"/files/" + casename + "/" + filename, nil)
 	if err != nil {
 		return err
 	}
@@ -52,7 +52,7 @@ func GETFile(filename string, c *gin.Context) error {
 }
 
 // PUTs a file to seaweed using the io reader passed
-func POSTFile(filename string, r io.Reader, c *gin.Context, ss *sync.WaitGroup, errChan chan error) {
+func POSTFile(filename string, casename string, r io.Reader, c *gin.Context, ss *sync.WaitGroup, errChan chan error) {
 	// defer job finish
 	defer ss.Done()
 
@@ -92,8 +92,8 @@ func POSTFile(filename string, r io.Reader, c *gin.Context, ss *sync.WaitGroup, 
 	}
 
 	// create request
-	resp, err := http.Post(filerAddress+":"+filerPort+"/files/"+fileStat, mpw.FormDataContentType(), rr)
-	log.Println(filerAddress + ":" + filerPort + "/files/" + fileStat)
+	resp, err := http.Post(filerAddress+":"+filerPort+"/files/" + casename + "/" + fileStat, mpw.FormDataContentType(), rr)
+	log.Println(filerAddress + ":" + filerPort + "/files/" + casename + "/" + fileStat)
 	if err != nil {
 		log.Println(err)
 		errChan <- err
