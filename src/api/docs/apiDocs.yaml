@@ -45,6 +45,12 @@ paths:
           required: true
           schema:
             type: string
+        - name: casename
+          in: query
+          description: The name of the case
+          required: true
+          schema:
+            type: string
       responses:
         200:
           description: File
@@ -93,15 +99,15 @@ paths:
           required: true
           schema:
             type: string
-        - name: casename
+        - name: filename
           in: query
-          description: The case to upload the file to
+          description: The filename specified by the user
           required: true
           schema:
             type: string
-        - name: filedir
+        - name: casename
           in: query
-          description: The directory the file came from
+          description: The case to upload the file to
           required: true
           schema:
             type: string
