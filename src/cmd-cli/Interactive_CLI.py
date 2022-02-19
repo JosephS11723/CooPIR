@@ -31,11 +31,21 @@ questions = [
 
 ]
 
-uplaodQuestions = [
+uploadQuestions = [
     {
         'type': 'input',
         'name': 'file_to_upload',
-        'message': 'Enter the file name to upload'
+        'message': 'Enter the file name to upload:'
+    },
+    {
+        'type': 'input',
+        'name': 'case_name',
+        'message': 'Enter the case name to upload to:'
+    },
+    {
+        'type': 'input',
+        'name': 'origin_file_directory',
+        'message': 'Enter the origin file directory:'
     }
 ]
 
@@ -67,7 +77,7 @@ def pingTest():
     except Exception as e:
         error(e)
 
-def uploadTest(fileName):
+def uploadTest(fileName, caseName, fileDir):
     """Attempts to upload a file to the server
     """
     try:
@@ -77,8 +87,14 @@ def uploadTest(fileName):
         # contents of test file
         file = {"file":open(fileName,'rb')}
 
+        # add params
+        params = {
+            "casename" : caseName,
+            "filedir" : fileDir,
+        }
+
         # upload file
-        r = requests.post(url = config.apiBasePath + "/file", files=file)
+        r = requests.post(url = config.apiBasePath + "/file", files=file, params=params)
 
         # check if good request
         if r.status_code != 200:
@@ -104,10 +120,12 @@ def main():
         
         elif answers.get("user_option") == "upload":
             #ask user for the file 
-            uploadAnswers = prompt(uplaodQuestions, style=custom_style_2)
+            uploadAnswers = prompt(uploadQuestions, style=custom_style_2)
             #retrieve the specified file name
             uploadFile = uploadAnswers.get("file_to_upload")
-            uploadTest(uploadFile)
+            caseName = uploadAnswers.get("case_name")
+            fileDir = uploadAnswers.get("origin_file_directory")
+            uploadTest(uploadFile, caseName, fileDir)
         
         #to be implemented if approved
         elif answers.get("user_option") == "delete":

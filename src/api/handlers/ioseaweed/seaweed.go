@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/JosephS11723/CooPIR/src/api/config"
 	libcrypto "github.com/JosephS11723/CooPIR/src/api/lib/crypto"
@@ -23,6 +24,7 @@ func SWGET(c *gin.Context) {
 	// error if filename not provided
 	if !success {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no filename provided"})
+		return
 	}
 
 	// TODO: verify user is authorized to download file
@@ -33,6 +35,7 @@ func SWGET(c *gin.Context) {
 	// internal server error: failed to retrieve file data
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "failed to retrieve data"})
+		return
 	}
 	c.Status(http.StatusOK)
 }
@@ -40,6 +43,20 @@ func SWGET(c *gin.Context) {
 // SWPOST uploads a file to seaweedfs from the client multipart form
 func SWPOST(c *gin.Context) {
 	var err error
+
+	caseName, success := c.GetQuery("casename")
+	// error if casename not provided
+	if !success {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no casename provided"})
+		return
+	}
+
+	fileDir, success := c.GetQuery("filedir")
+	// error if filedir not provided
+	if !success {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no filedir provided"})
+		return
+	}
 
 	// get file multipart stream
 	filestream, _, err := c.Request.FormFile("file")
@@ -140,7 +157,21 @@ func SWPOST(c *gin.Context) {
 
 	// TODO: check mongo for file existence and remove if duplicate
 
-	// TODO: after checking if file exists, add new file information to the database
+	dbInterface.MakeFile(
+		[]string{
+			hex.EncodeToString(filemd5Hash),
+			hex.EncodeToString(filesha1Hash),
+			hex.EncodeToString(filesha256Hash),
+			hex.EncodeToString(filesha512Hash),
+		},
+		[]string{},
+		filename,
+		caseName,
+		fileDir,
+		time.Now().Local().String(),
+		"supervisor",
+		"admin",
+	)
 
 	// upload succeeded
 	c.String(http.StatusOK, filename)

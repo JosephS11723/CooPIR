@@ -53,8 +53,14 @@ def uploadTest(fileData = None):
             # contents of test file
             file = {"file":open("test.txt",'rb')}
 
+            # add params
+            params = {
+                "casename" : "testcase",
+                "filedir" : "/home/test/test.txt",
+            }
+
             # upload file
-            r = requests.post(url = apiBasePath + "/file", files=file, timeout=20)
+            r = requests.post(url = apiBasePath + "/file", files=file, timeout=20, params=params)
 
             # check if good request
             if r.status_code != 200:

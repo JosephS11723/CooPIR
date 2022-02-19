@@ -1,3 +1,4 @@
-import argparser
+from re import I
+import Interactive_CLI
 
-argparser.runAllTests()
+Interactive_CLI.main()
