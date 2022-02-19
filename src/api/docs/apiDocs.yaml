@@ -82,7 +82,7 @@ paths:
                 properties:
                   message:
                     type: string
-                    description: The error message
+                    description: internal server error
     post:
       description: Uploads a file
       operationId: uploadFile
