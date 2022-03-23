@@ -57,8 +57,6 @@ export class HomeComponent implements OnInit {
     //var response;
 
     const header = new HttpHeaders()
-    .set('Access-Control-Allow-Origin', '*')
-    .set('Sec-Fetch-Site', 'cross-site')
     .set('content-type', 'application/json');
     this.http.get<any>("http://localhost:8080/api/v1/ping", {
       observe: 'response',
