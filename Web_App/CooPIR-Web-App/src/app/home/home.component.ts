@@ -102,7 +102,7 @@ export class HomeComponent implements OnInit {
 
             formData.append("testPic", file);
 
-            this.http.post("http://localhost:8080/api/v1/file", file, 
+            this.http.post("http://localhost:8080/api/v1/file", formData, 
             {
               params: params,
               headers: headers,
