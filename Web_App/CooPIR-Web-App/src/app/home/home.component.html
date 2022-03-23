@@ -1,0 +1,39 @@
+<div style="text-align:center" class="container mt-5">
+    <!-- <div *ngIf="!registerMode" style='text-align: center;'> -->
+     <h1 style="text-align:center">CooPIR</h1>
+     <script>
+       function pingButton(){
+         var topic = document.getElementById("topic").value;
+         //sendmsg(topic, action);
+         console.log("%s", topic);
+       }
+     </script>
+     
+  <!--Image-->   
+     <img src="assets/images/CooPIR_Pic.JPG" width="400" height="250"/>
+  <!--Buttons Functional stuff-->
+     <p><br></p>
+     <div class="text-center">
+         <button (click)="pingButton()" class="btn btn-primary btn-lg mr-2">Ping</button>
+         <br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+         <!--File uploader-->
+         <input type="text" id="caseName">
+         <input type="file" class="file-input"
+         (change)="onFileSelected($event)" #fileUpload>
+      </div>
+    
+    
+
+   <!-- <div class="file-upload">
+
+   {{fileName || "No file uploaded yet."}}
+
+    <button mat-mini-fab color="primary" class="upload-btn"
+      (click)="fileUpload.click()">
+        <mat-icon>attach_file</mat-icon>
+    </button>
+    </div> -->
+  </div>
+   <!--</div>-->
+
+ 
