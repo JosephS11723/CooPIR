@@ -6,6 +6,7 @@ import (
 	"github.com/JosephS11723/CooPIR/src/api/handlers/iodb"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/ioseaweed"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors"
 )
 
 func InitMainRouter() *gin.Engine {
@@ -13,6 +14,15 @@ func InitMainRouter() *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
+
+	// CORS for cross-site whitelisting
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET", "POST", "DELETE"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
 
 	// set low memory limit for multipart forms (8 MiB)
 	r.MaxMultipartMemory = 8 << 20
