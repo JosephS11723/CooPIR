@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import Swal from 'sweetalert2';
+//import { Server } from 'http';
 
 @Component({
   selector: 'app-home',
@@ -31,7 +32,7 @@ export class HomeComponent implements OnInit {
         {
           if(result.isConfirmed)
           {
-            Swal.fire(error.error.toString());
+            Swal.fire("Error status code: ", error.status.toString());
           }
         })
         break;
@@ -45,7 +46,7 @@ export class HomeComponent implements OnInit {
         {
           if(result.isConfirmed)
           {
-            Swal.fire(error.error.toString());
+            Swal.fire("Error status code: ", error.status.toString());
           }
         })
     }
@@ -54,7 +55,15 @@ export class HomeComponent implements OnInit {
   
   pingButton() : void {
     //var response;
-    this.http.get<any>("http://localhost:8080/api/v1/ping", {observe: 'response'})
+
+    const header = new HttpHeaders()
+    .set('Access-Control-Allow-Origin', '*')
+    .set('Sec-Fetch-Site', 'cross-site')
+    .set('content-type', 'application/json');
+    this.http.get<any>("http://localhost:8080/api/v1/ping", {
+      observe: 'response',
+      'headers': header
+    })
     .subscribe(response => {
       if(response.status === 200)
       {
@@ -79,15 +88,27 @@ export class HomeComponent implements OnInit {
         {
             this.fileName = file.name;
             console.log(file);
-            const params = new URLSearchParams();
-            params.set("caseName", caseName);
-            params.set("fileName", this.fileName);
+            //const params = new URLSearchParams();
+            //params.set("caseName", caseName);
+            //params.set("fileName", this.fileName);
+
+            const params = new HttpParams()
+            .append('casename', caseName)
+            .append('filename', this.fileName);
+
+            const headers = new HttpHeaders()
+            .set('Access-Control-Allow-Origin', '*');
+
 
             const formData = new FormData();
 
             formData.append("testPic", file);
 
-            this.http.post("http://localhost:8080/api/v1/file", formData, {observe: 'response'})
+            this.http.post("http://localhost:8080/api/v1/file", file, 
+            {
+              params: params,
+              headers: headers,
+              observe: 'response'})
             .subscribe(response => {
               console.log("logging respose");
               console.log(response);
