@@ -10,6 +10,25 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+
+func DbGetCaseInfo(c *gin.Context) {
+
+
+
+}
+
+func DbCreateCase(c *gin.Context) {
+
+
+
+}
+
+func DbUpdateCase(c *gin.Context) {
+
+	c.
+
+}
+
 // DbPingTest is a test function to ping the database.
 func DbPingTest(c *gin.Context) {
 	log.Println("[DEBUG] iodb.DbTest()")
