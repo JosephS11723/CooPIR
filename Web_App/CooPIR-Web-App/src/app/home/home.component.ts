@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 //import { Server } from 'http';
 
 @Component({
@@ -12,7 +13,7 @@ export class HomeComponent implements OnInit {
   fileName = '';
   path: string = "/assets/images/CooPIR_Pic.jpg";
   ImageAlt: string;
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router) {
     //this.ImagePath = 'src/app/img/CooPir_Pic.jpg'
     this.ImageAlt = 'Fox dude'
    }
@@ -36,7 +37,7 @@ export class HomeComponent implements OnInit {
           }
         })
         break;
-        case 200:
+      case 200:
           Swal.fire({
             icon: 'success',
             title: 'Successful Operation'
@@ -102,7 +103,7 @@ export class HomeComponent implements OnInit {
             .append('filename', this.fileName);
 
             const headers = new HttpHeaders()
-            .set('Access-Control-Allow-Origin', '*');
+            //.set('Access-Control-Allow-Origin', '*');
 
 
             const formData = new FormData();
@@ -126,4 +127,8 @@ export class HomeComponent implements OnInit {
            
         }
   } 
+  goToLogin(){
+    console.log("Going to login");
+    this.router.navigateByUrl('/login', { replaceUrl: true});  
+}
 }
