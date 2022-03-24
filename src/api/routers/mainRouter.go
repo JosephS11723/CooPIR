@@ -5,8 +5,9 @@ import (
 	"github.com/JosephS11723/CooPIR/src/api/handlers/debug"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/iodb"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/ioseaweed"
-	"github.com/gin-gonic/gin"
+	//"github.com/JosephS11723/CooPIR/src/api/handlers/jobs"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 func InitMainRouter() *gin.Engine {
@@ -30,6 +31,9 @@ func InitMainRouter() *gin.Engine {
 	// setup base path for api version v1
 	v1 := r.Group("/api/v1")
 
+	// TODO: add authentication middleware here
+	//v1.Use()
+
 	// DEBUG REQUESTS
 	// debug ping challenge
 	v1.GET("/ping", debug.PingPong)
@@ -49,6 +53,24 @@ func InitMainRouter() *gin.Engine {
 	v1.POST("/login", authentication.Login)
 	v1.POST("/renew", authentication.RenewToken)
 	v1.POST("/logout", authentication.Logout)
+
+	// group for job server requests
+	/*v2 := r.Group("/api/v1/jobs")
+
+	// get status of a job
+	v2.GET("/status", jobs.GetInfo)
+
+	// submit a job
+	v2.POST("new", jobs.CreateJob)
+
+	// get work
+	v2.GET("/work", jobs.GetWork)
+
+	// submit work
+	v2.POST("/work", jobs.SubmitWork)
+
+	// get job results
+	v2.GET("/results", jobs.GetResults)*/
 
 	// return handler router to main()
 	return r
