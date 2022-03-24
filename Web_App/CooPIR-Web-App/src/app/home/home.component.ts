@@ -36,6 +36,12 @@ export class HomeComponent implements OnInit {
           }
         })
         break;
+        case 200:
+          Swal.fire({
+            icon: 'success',
+            title: 'Successful Operation'
+          })
+          break;
       case 400:
         Swal.fire({
           icon: 'error',
@@ -49,6 +55,7 @@ export class HomeComponent implements OnInit {
             Swal.fire("Error status code: ", error.status.toString());
           }
         })
+        break;
     }
     
   }
@@ -65,7 +72,7 @@ export class HomeComponent implements OnInit {
     .subscribe(response => {
       if(response.status === 200)
       {
-        console.log("Status code 200 received");
+        this.alertPopup(response);
       }
       console.log("Logging status");
       console.log(response.status);
@@ -80,7 +87,7 @@ export class HomeComponent implements OnInit {
   onFileSelected(event:any) {
     var caseName = (<HTMLInputElement>document.getElementById("caseName")).value;
     console.log(caseName);
-    const file:File = event.target.files[0];
+    const file = event.target.files[0];
 
         if (file) 
         {
@@ -100,7 +107,8 @@ export class HomeComponent implements OnInit {
 
             const formData = new FormData();
 
-            formData.append("testPic", file);
+            formData.append("file", file);
+            //formData.
 
             this.http.post("http://localhost:8080/api/v1/file", formData, 
             {
@@ -112,10 +120,8 @@ export class HomeComponent implements OnInit {
               console.log(response);
             }, error => {
               console.log("logging error");
-              if(error.status === 0)
-              {
-                this.alertPopup(error);
-              }
+              this.alertPopup(error);
+              console.log(error.status);
             });
            
         }
