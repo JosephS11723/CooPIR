@@ -211,20 +211,33 @@ func MakeUser(name string, email string, role string, cases []string, password s
 func MakeCase(name string, dateCreated string, viewAccess string, editAccess string, collaborators []string) *mongo.InsertOneResult {
 
 	var dbName string = "Cases"
-	var dbCollection string = "Case"
+	var dbCollection string = "CaseMetadata"
 	var id string = MakeUuid()
 	var result *mongo.InsertOneResult
 
-	var NewCase = dbtypes.Case{
-		UUID:          id,
-		Name:          name,
-		Date_created:  dateCreated,
-		View_access:   viewAccess,
-		Edit_access:   editAccess,
-		Collaborators: collaborators,
+	/*
+		var NewCase = dbtypes.Case{
+			UUID:          id,
+			Name:          name,
+			Date_created:  dateCreated,
+			View_access:   viewAccess,
+			Edit_access:   editAccess,
+			Collaborators: collaborators,
+		}
+	*/
+
+	client, ctx, cancel, err := dbConnect()
+
+	// defer closing db connection
+	defer dbClose(client, ctx, cancel)
+
+	if err != nil {
+		log.Panicln(err)
 	}
 
-	result = DbSingleInsert(dbName, dbCollection, NewCase)
+	client.Database("Cases").CreateCollection(ctx, id)
+
+	result = DbSingleInsert(dbName, dbCollection, new_case)
 
 	return result
 }
