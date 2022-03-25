@@ -208,8 +208,8 @@ func MakeUser(name string, email string, role string, cases []string, password s
 }
 
 // MakeCase creates a new Case struct.
-func MakeCase(name string, dateCreated string, viewAccess string, editAccess string, collaborators []string) *mongo.InsertOneResult {
-
+//func MakeCase(name string, dateCreated string, viewAccess string, editAccess string, collaborators []string) *mongo.InsertOneResult {
+func MakeCase(NewCase dbtypes.Case) *mongo.InsertOneResult {
 	var dbName string = "Cases"
 	var dbCollection string = "CaseMetadata"
 	var id string = MakeUuid()
@@ -237,7 +237,7 @@ func MakeCase(name string, dateCreated string, viewAccess string, editAccess str
 
 	client.Database("Cases").CreateCollection(ctx, id)
 
-	result = DbSingleInsert(dbName, dbCollection, new_case)
+	result = DbSingleInsert(dbName, dbCollection, NewCase)
 
 	return result
 }

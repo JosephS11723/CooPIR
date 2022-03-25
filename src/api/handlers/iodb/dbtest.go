@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
+	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -32,7 +33,18 @@ func DbUploadTest(c *gin.Context) {
 	}
 
 	// Create new case in db
-	result = dbInterface.MakeCase("testcase", "1/1/1976", "responder", "supervisor", []string{"testuser, anotheruser, Brandon"})
+	//result = dbInterface.MakeCase("testcase", "1/1/1976", "responder", "supervisor", []string{"testuser, anotheruser, Brandon"})
+
+	var NewCase = dbtypes.Case{
+
+		Name:          "testcase",
+		Date_created:  "1/1/1976",
+		View_access:   "responder",
+		Edit_access:   "supervisor",
+		Collaborators: []string{"testuser, anotheruser, Brandon"},
+	}
+
+	result = dbInterface.MakeCase(NewCase)
 
 	log.Printf("[DEBUG] Inserted case document with _id: %v\n", result.InsertedID)
 
