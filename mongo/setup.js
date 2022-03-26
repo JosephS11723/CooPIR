@@ -39,6 +39,8 @@ db.createRole(
 
 db = conn.getDB("Cases");
 
+db.createCollection("CaseMetadata")
+
 //db.createCollection("Aggregations");
 
 db.createRole(
