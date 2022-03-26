@@ -466,8 +466,11 @@ func RetrieveHashByEmail(email string) string {
 
 	result := FindDocByFilter(dbName, dbCollection, filter)
 
+	var userStructTmp dbtypes.User = dbtypes.User{}
 	var hash string
-	result.Decode(&hash)
+	result.Decode(&userStructTmp)
+
+	hash = userStructTmp.SaltedHash
 
 	return hash
 }
