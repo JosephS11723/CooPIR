@@ -322,7 +322,15 @@ def dbNewCaseTest():
         print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
         # request ping page
-        r = requests.get(url=apiBasePath + "/db/test/find")
+        r = requests.post(
+            url=apiBasePath + "/db/Case/Add", json={
+	                "Name":"testcase",
+                    "Date_created":"today :D",
+                    "View_access":"supervisor",
+                    "Edit_access":"supervisor",
+                    "Collaborators":["Brandon Ship", "Me lol"]
+                }
+            )
 
         # check if good request
         if r.status_code != 200:
