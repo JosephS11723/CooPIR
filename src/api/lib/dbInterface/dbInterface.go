@@ -213,6 +213,7 @@ func MakeCase(NewCase dbtypes.Case) *mongo.InsertOneResult {
 	var dbName string = "Cases"
 	var dbCollection string = "CaseMetadata"
 	var id string = MakeUuid()
+	NewCase.UUID = id
 	var result *mongo.InsertOneResult
 
 	// Replaced
