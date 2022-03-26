@@ -314,6 +314,29 @@ def dbFindTest():
     except Exception as e:
         error(e)
 
+def dbNewCaseTest():
+    """Attempts to add a case to the database
+    """
+    try:
+        # print function name
+        print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
+
+        # request ping page
+        r = requests.get(url=apiBasePath + "/db/test/find")
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+        else:
+            success()
+            
+    except Exception as e:
+        error(e)
+
 tests = [pingTest, uploadTest, downloadTest, deleteTest, dbPingTest, dbInsertTest, dbFindTest]
 def runAllTests():
     for test in tests:

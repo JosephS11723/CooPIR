@@ -214,6 +214,7 @@ func MakeCase(NewCase dbtypes.Case) *mongo.InsertOneResult {
 	var dbCollection string = "CaseMetadata"
 	var id string = MakeUuid()
 	var result *mongo.InsertOneResult
+
 	// Replaced
 	/*
 		var NewCase = dbtypes.Case{
