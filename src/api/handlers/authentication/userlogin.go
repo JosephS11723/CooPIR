@@ -6,8 +6,8 @@ import (
 )
 
 // Basic user login fucntion
-func UserLogin(email string, password string) bool {
-
+func userLogin(email string, password string) bool {
+	// get password hash from database
 	hash := dbInterface.RetrieveHashByEmail(email)
 
 	// Check the password against the hash

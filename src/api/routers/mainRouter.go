@@ -5,6 +5,7 @@ import (
 	"github.com/JosephS11723/CooPIR/src/api/handlers/debug"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/iodb"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/ioseaweed"
+	authmw "github.com/JosephS11723/CooPIR/src/api/middleware/authentication"
 	//"github.com/JosephS11723/CooPIR/src/api/handlers/jobs"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -31,8 +32,8 @@ func InitMainRouter() *gin.Engine {
 	// setup base path for api version v1
 	v1 := r.Group("/api/v1")
 
-	// TODO: add authentication middleware here
-	//v1.Use()
+	// authentication middleware
+	v1.Use(authmw.AuthenticationMiddleware)
 
 	// DEBUG REQUESTS
 	// debug ping challenge
@@ -49,8 +50,7 @@ func InitMainRouter() *gin.Engine {
 	v1.GET("/db/test/find", iodb.DbFindTest)
 	v1.POST("/db/test/find", iodb.DbUpdateTest)
 
-	// Authentication
-	v1.POST("/login", authentication.Login)
+	// authentication
 	v1.POST("/renew", authentication.RenewToken)
 	v1.POST("/logout", authentication.Logout)
 
@@ -71,6 +71,12 @@ func InitMainRouter() *gin.Engine {
 
 	// get job results
 	v2.GET("/results", jobs.GetResults)*/
+
+	// group for logging in
+	v3 := r.Group("/api/v1/auth")
+	
+	// login
+	v3.POST("/login", authentication.Login)
 
 	// return handler router to main()
 	return r

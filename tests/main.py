@@ -1,3 +1,5 @@
 import tests
+import authTests
 
-tests.runAllTests()
+#tests.runAllTests()
+authTests.runAllTests()
