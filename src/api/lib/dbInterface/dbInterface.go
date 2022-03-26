@@ -107,7 +107,7 @@ func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.I
 
 	// Case struct case
 	case dbtypes.Case:
-		if collection != "Case" {
+		if collection != "CaseMetadata" {
 			log.Panicf("[ERROR] Cannot insert data type %s into Case collection", t)
 		} else {
 
