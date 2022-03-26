@@ -28,4 +28,11 @@ func DbCreateCase(c *gin.Context) {
 
 func DbUpdateCase(c *gin.Context) {
 
+	//this is NOT the correct code for this
+	var json_request dbtypes.Case
+
+	c.BindJSON(&json_request)
+
+	dbInterface.MakeCase(json_request)
+
 }
