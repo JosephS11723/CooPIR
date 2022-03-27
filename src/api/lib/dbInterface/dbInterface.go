@@ -554,7 +554,7 @@ func UpdateCase(dbName string, dbCollection string, caseUpdate dbtypes.UpdateCas
 	var filter map[string]interface{} = caseUpdate.Filter
 
 	//get the update field and the proceed with removing UUID and Date_created
-	var unchecked_update map[string]interface{} = caseUpdate.Case
+	var unchecked_update map[string]interface{} = caseUpdate.Update
 
 	delete(unchecked_update, "uuid")
 

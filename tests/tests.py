@@ -346,6 +346,41 @@ def dbNewCaseTest():
     except Exception as e:
         error(e)
 
+def dbUpdateCaseTest():
+    """Attempts to update a case to the database
+    """
+    try:
+        # print function name
+        print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
+
+        # request ping page
+        r = requests.post(
+            url=apiBasePath + "/db/Case/Update", json={
+                "filter":{"name":"testcase"},
+                "update":{
+                    "UUID":"3333-3333-3333-6969",
+	                "Name":"testcase",
+                    "Date_created":"June 4th, 1776",
+                    "View_access":"mega-supervisor",
+                    "Edit_access":"responder",
+                    "Collaborators":["Brandon Ship", "Me lol", "Alex Johnson Petty"]
+                    }
+                }
+            )
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+        else:
+            success()
+            
+    except Exception as e:
+        error(e)
+
 tests = [pingTest, uploadTest, downloadTest, deleteTest, dbPingTest, dbInsertTest, dbFindTest]
 def runAllTests():
     for test in tests:
