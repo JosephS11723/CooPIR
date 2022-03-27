@@ -360,10 +360,10 @@ def dbUpdateCaseTest():
                 "update":{
                     "uuid":"3333-3333-3333-6969",
 	                "name":"testcase",
-                    "dateCreated":"June 4th, 1776",
-                    "viewAccess":"mega-supervisor",
-                    "editAccess":"responder",
-                    "collabs":["Brandon Ship", "Me lol", "Alex Johnson Petty"]
+                    "date_created":"June 4th, 1776",
+                    "view_access":"mega-supervisor",
+                    "edit_access":"responder",
+                    "collaborators":["Brandon Ship", "Me lol", "Alex Johnson Petty"]
                     }
                 }
             )
