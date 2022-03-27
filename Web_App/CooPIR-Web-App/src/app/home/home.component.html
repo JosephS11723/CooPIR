@@ -1,7 +1,6 @@
-
 <div style="text-align:center" class="container mt-5">
     <!-- <div *ngIf="!registerMode" style='text-align: center;'> -->
-     <h1 style="text-align:center">CooPIR</h1>
+     <h1 style="text-align:left">CooPIR Dashboard</h1>
      <script>
        function pingButton(){
          var topic = document.getElementById("topic").value;
@@ -11,21 +10,25 @@
      </script>
      
   <!--Image-->   
-     <img src="assets/images/CooPIR_Pic.JPG" width="400" height="250"/>
-  <!--Buttons Functional stuff-->
+     <!--<img src="assets/images/CooPIR_Pic.JPG" width="400" height="250"/>-->
+  <div>
+   <p style="text-align:left;font-size:35px;">Cases: </p>
+  </div>
+  
+     <!--Buttons Functional stuff-->
      <p><br></p>
      <div class="text-center">
-         <button (click)="pingButton()" class="btn btn-primary btn-lg mr-2">Ping</button>
-         <br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+   <!--      <button (click)="pingButton()" class="btn btn-primary btn-lg mr-2">Ping</button>
+         <br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
          <!--File uploader-->
-         <input type="text" id="caseName">
+   <!--      <input type="text" id="caseName">
          <input type="file" class="file-input"
          (change)="onFileSelected($event)" #fileUpload>
 
-         <br><br>
+         <br><br> -->
          <button (click)="goToLogin()" class="btn btn-primary btn-lg mr-2">Go Back to Login</button>
       </div>
-    
+   
   </div>
    <!--</div>-->
 

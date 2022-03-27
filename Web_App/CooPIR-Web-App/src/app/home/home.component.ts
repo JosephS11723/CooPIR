@@ -40,7 +40,7 @@ export class HomeComponent implements OnInit {
       case 200:
           Swal.fire({
             icon: 'success',
-            title: 'Successful Operation'
+            title: 'Success!'
           })
           break;
       case 400:
