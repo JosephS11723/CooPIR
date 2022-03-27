@@ -131,4 +131,8 @@ export class HomeComponent implements OnInit {
     console.log("Going to login");
     this.router.navigateByUrl('/login', { replaceUrl: true});  
 }
+goToDashboard(){
+  console.log("Going to Dashboard");
+  this.router.navigateByUrl('/dashboard', { replaceUrl: true});  
+}
 }
