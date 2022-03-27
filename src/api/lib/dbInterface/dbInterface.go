@@ -418,9 +418,23 @@ func DoesCaseExist(name string) bool {
 
 	var dbName string = "Cases"
 	var dbCollection string = "CaseMetadata"
-	var result *mongo.SingleResult = FindDocByFilter(dbName, dbCollection, bson.M{"name": name})
 
-	return result.Err() == nil
+	// connect to db
+	client, ctx, cancel, err := dbConnect()
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	defer dbClose(client, ctx, cancel)
+
+	// get the collection
+	coll := client.Database(dbName).Collection(dbCollection)
+
+	// find the document
+	var result *mongo.SingleResult = coll.FindOne(ctx, bson.M{"name": name})
+
+	// return true if document exists
+	return result.Err() != mongo.ErrNoDocuments
 }
 
 // TODO: Logic is broken in the check against the database. FIX
