@@ -358,12 +358,12 @@ def dbUpdateCaseTest():
             url=apiBasePath + "/db/Case/Update", json={
                 "filter":{"name":"testcase"},
                 "update":{
-                    "UUID":"3333-3333-3333-6969",
-	                "Name":"testcase",
-                    "Date_created":"June 4th, 1776",
-                    "View_access":"mega-supervisor",
-                    "Edit_access":"responder",
-                    "Collaborators":["Brandon Ship", "Me lol", "Alex Johnson Petty"]
+                    "uuid":"3333-3333-3333-6969",
+	                "name":"testcase",
+                    "dateCreated":"June 4th, 1776",
+                    "viewAccess":"mega-supervisor",
+                    "editAccess":"responder",
+                    "collabs":["Brandon Ship", "Me lol", "Alex Johnson Petty"]
                     }
                 }
             )
