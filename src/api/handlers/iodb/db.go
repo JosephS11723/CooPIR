@@ -13,6 +13,12 @@ import (
 
 func DbGetCaseInfo(c *gin.Context) {
 
+	var json_request map[string]interface{}
+
+	c.BindJSON(&json_request)
+
+	dbInterface.FindDocByFilter("Cases", "CaseMetadata", json_request)
+
 }
 
 func DbCreateCase(c *gin.Context) {

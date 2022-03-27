@@ -323,7 +323,7 @@ def dbNewCaseTest():
 
         # request ping page
         r = requests.post(
-            url=apiBasePath + "/db/Case/Add", json={
+            url=apiBasePath + "/db/case/add", json={
                     "UUID":None,
 	                "Name":"testcase",
                     "Date_created":"today :D",
@@ -355,7 +355,7 @@ def dbUpdateCaseTest():
 
         # request ping page
         r = requests.post(
-            url=apiBasePath + "/db/Case/Update", json={
+            url=apiBasePath + "/db/case/update", json={
                 "filter":{"name":"testcase"},
                 "update":{
                     "uuid":"3333-3333-3333-6969",
@@ -365,6 +365,34 @@ def dbUpdateCaseTest():
                     "edit_access":"responder",
                     "collaborators":["Brandon Ship", "Me lol", "Alex Johnson Petty"]
                     }
+                }
+            )
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+        else:
+            success()
+            
+    except Exception as e:
+        error(e)
+
+
+def dbFindCaseTest():
+    """Attempts to find a case in the database
+    """
+    try:
+        # print function name
+        print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
+
+        # request ping page
+        r = requests.post(
+            url=apiBasePath + "/db/case/find", json={
+                "name":"testcase"
                 }
             )
 
