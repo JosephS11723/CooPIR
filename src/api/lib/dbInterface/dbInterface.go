@@ -125,23 +125,24 @@ func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.I
 		}
 
 	// File struct case
+	// TODO: Replace Sanity check with a more robust check
 	case dbtypes.File:
-		if collection != "File" {
-			log.Panicf("[ERROR] Cannot insert data type %s into File collection", t)
-		} else {
+		// if collection != "File" {
+		// 	log.Panicf("[ERROR] Cannot insert data type %s into File collection", t)
+		// } else {
 
-			data := data.(dbtypes.File)
+		data := data.(dbtypes.File)
 
-			coll := client.Database(dbname).Collection(collection)
+		coll := client.Database(dbname).Collection(collection)
 
-			result, err := coll.InsertOne(ctx, data)
+		result, err := coll.InsertOne(ctx, data)
 
-			if err != nil {
-				log.Panicln(err)
-			}
-
-			return result
+		if err != nil {
+			log.Panicln(err)
 		}
+
+		return result
+		// }
 
 	// User struct case
 	case dbtypes.User:
@@ -210,6 +211,14 @@ func MakeUser(name string, email string, role string, cases []string, password s
 // MakeCase creates a new Case struct.
 //func MakeCase(NewCase dbttypes.Case) *mongo.InsertOneResult {
 func MakeCase(NewCase dbtypes.Case) *mongo.InsertOneResult {
+
+	// Check if case name already exists
+	if DoesCaseExist(NewCase.Name) {
+		// If case name exists, return error
+		log.Panicln("[ERROR] Case name already exists")
+	}
+
+	// Set db types
 	var dbName string = "Cases"
 	var dbCollection string = "CaseMetadata"
 	var id string = MakeUuid()
@@ -244,11 +253,51 @@ func MakeCase(NewCase dbtypes.Case) *mongo.InsertOneResult {
 	return result
 }
 
+// Finds the case name from CaseMetadata collection using the case UUID.
+func FindCaseNameByUUID(uuid string) string {
+
+	var dbName string = "Cases"
+	var dbCollection string = "CaseMetadata"
+	var result *mongo.SingleResult = FindDocByFilter(dbName, dbCollection, bson.M{"uuid": uuid})
+
+	var dbCase dbtypes.Case
+	err := result.Decode(&dbCase)
+
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	var caseName string = dbCase.Name
+
+	return caseName
+}
+
+// Finds the uuid of a case by the case name
+func FindCaseUUIDByName(name string) string {
+
+	var dbName string = "Cases"
+	var dbCollection string = "CaseMetadata"
+	var result *mongo.SingleResult = FindDocByFilter(dbName, dbCollection, bson.M{"name": name})
+
+	var dbCase dbtypes.Case
+	err := result.Decode(&dbCase)
+
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	var caseUUID string = dbCase.UUID
+
+	return caseUUID
+}
+
 // MakeFile creates a new File struct.
 func MakeFile(uuid string, hashes []string, tags []string, filename string, caseName string, fileDir string, uploadDate string, viewAccess string, editAccess string) *mongo.InsertOneResult {
 
+	var caseUUID string = FindCaseUUIDByName(caseName)
+
 	var dbName string = "Cases"
-	var dbCollection string = "File"
+	var dbCollection string = caseUUID
 	var result *mongo.InsertOneResult
 
 	var NewFile = dbtypes.File{
@@ -364,12 +413,23 @@ func FindDocByFilter(dbname string, collection string, filter bson.M) *mongo.Sin
 	return result
 }
 
+// Checks if Case name already exist in the mongo database
+func DoesCaseExist(name string) bool {
+
+	var dbName string = "Cases"
+	var dbCollection string = "CaseMetadata"
+	var result *mongo.SingleResult = FindDocByFilter(dbName, dbCollection, bson.M{"name": name})
+
+	return result.Err() == nil
+}
+
+// TODO: Logic is broken in the check against the database. FIX
 func MakeUuid() string {
 
 	var id string
 	var exist bool
 	var Users []string = []string{"User"}
-	var Cases []string = []string{"Case", "File", "Log"}
+	var Cases []string = []string{"CaseMetadata", "File", "Log"}
 
 	// Loop that makes a uuid and checks if it already exists in the database.
 	// keep looping until it doesn't exist.
