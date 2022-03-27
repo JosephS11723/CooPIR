@@ -39,6 +39,4 @@ func DbUpdateCase(c *gin.Context) {
 
 	dbInterface.UpdateCase("Cases", "CaseMetadata", json_request)
 
-	//dbInterface.MakeCase(json_request)
-
 }
