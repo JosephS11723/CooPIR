@@ -547,6 +547,25 @@ func UpdateDoc(dbName string, dbCollection string, filter bson.M, updates bson.D
 	return result
 }
 
+//wrapper around the UpdateDoc function specifically for updating cases
+func UpdateCase(dbName string, dbCollection string, caseUpdate dbtypes.UpdateCase) *mongo.UpdateResult {
+
+	//get the filter, which will act as a bson.M
+	var filter map[string]interface{} = caseUpdate.Filter
+
+	//get the update field and the proceed with removing UUID and Date_created
+	var unchecked_update map[string]interface{} = caseUpdate.Case
+
+	delete(unchecked_update, "uuid")
+
+	delete(unchecked_update, "dateCreated")
+
+	//this constructs the update bson.D
+	var update bson.D = bson.D{{"$set", unchecked_update}}
+
+	return UpdateDoc(dbName, dbCollection, filter, update)
+}
+
 func RetrieveHashByEmail(email string) string {
 	// defer and recover if panicing
 	var dbName string = "Users"

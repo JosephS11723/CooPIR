@@ -3,12 +3,10 @@ package iodb
 import (
 
 	//"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
-	"log"
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson"
 	//"go.mongodb.org/mongo-driver/bson"
 	//"go.mongodb.org/mongo-driver/mongo"
 )
@@ -29,30 +27,11 @@ func DbCreateCase(c *gin.Context) {
 
 func DbUpdateCase(c *gin.Context) {
 
-	var json_request interface{}
+	var json_request dbtypes.UpdateCase
 
-	//this is NOT the correct code for
-	byte_data, err := c.GetRawData()
+	c.BindJSON(&json_request)
 
-	if err != nil {
-
-		log.Panicln(err)
-
-	}
-
-	bson.UnmarshalExtJSON(byte_data, true, json_request)
-
-	filter := bson.M{"email": "test0@test.com"}
-
-	/*
-		update := bson.D{{"$set",
-			bson.D{
-				{"name", name},
-			},
-		}}
-	*/
-
-	dbInterface.UpdateDoc("Cases", "CaseMetadata", filter, update)
+	dbInterface.UpdateCase("Cases", "CaseMetadata", json_request)
 
 	//dbInterface.MakeCase(json_request)
 
