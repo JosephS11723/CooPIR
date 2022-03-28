@@ -13,7 +13,7 @@ import (
 	//"go.mongodb.org/mongo-driver/mongo"
 )
 
-func DbGetCaseInfo(c *gin.Context) {
+func DbGetCaseInfo(c *gin.Context) dbtypes.Case {
 
 	var json_request map[string]interface{}
 
@@ -23,7 +23,18 @@ func DbGetCaseInfo(c *gin.Context) {
 		log.Panicln(err)
 	}
 
-	dbInterface.FindDocByFilter("Cases", "CaseMetadata", json_request)
+	//dbInterface.FindCase("Case", "CaseMetadata", json_request)
+	var result = dbInterface.FindDocByFilter("Cases", "CaseMetadata", json_request)
+
+	var dbCase dbtypes.Case
+
+	err = result.Decode(&dbCase)
+
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	return dbCase
 
 }
 
@@ -43,7 +54,7 @@ func DbCreateCase(c *gin.Context) {
 
 func DbUpdateCase(c *gin.Context) {
 
-	var json_request dbtypes.UpdateCase
+	var json_request dbtypes.UpdateDoc
 
 	err := c.BindJSON(&json_request)
 

@@ -173,7 +173,7 @@ func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.I
 
 // MakeUser creates a new User struct.
 //func MakeUser(name string, email string, role string, cases []string, password string) (*mongo.InsertOneResult, error) {
-func MakeUser(user dbtypes.User) (*mongo.InsertOneResult, error) {
+func MakeUser(user dbtypes.NewUser) (*mongo.InsertOneResult, error) {
 
 	// check if user email already exists
 	if doesEmailExist(user.Email) {
@@ -182,14 +182,14 @@ func MakeUser(user dbtypes.User) (*mongo.InsertOneResult, error) {
 	}
 
 	// Hash password
-	saltedHash, err := security.HashPass(password)
+	saltedHash, err := security.HashPass(user.Password)
 	if err != nil {
 		return nil, err
 	}
 
 	// Set db types
 	var dbName string = "Users"
-	var dbCollection string = "User"
+	var dbCollection string = "UserMetadata"
 
 	// Make unique id
 	var id string = MakeUuid()
@@ -197,10 +197,10 @@ func MakeUser(user dbtypes.User) (*mongo.InsertOneResult, error) {
 	// Set user struct
 	var NewUser = dbtypes.User{
 		UUID:       id,
-		Name:       name,
-		Email:      email,
-		Role:       role,
-		Cases:      cases,
+		Name:       user.Name,
+		Email:      user.Email,
+		Role:       user.Role,
+		Cases:      user.Cases,
 		SaltedHash: saltedHash,
 	}
 
@@ -549,7 +549,7 @@ func UpdateDoc(dbName string, dbCollection string, filter bson.M, updates bson.D
 }
 
 //wrapper around the UpdateDoc function specifically for updating cases
-func UpdateCase(dbName string, dbCollection string, caseUpdate dbtypes.UpdateCase) *mongo.UpdateResult {
+func UpdateCase(dbName string, dbCollection string, caseUpdate dbtypes.UpdateDoc) *mongo.UpdateResult {
 
 	//get the filter, which will act as a bson.M
 	var filter map[string]interface{} = caseUpdate.Filter
@@ -560,6 +560,27 @@ func UpdateCase(dbName string, dbCollection string, caseUpdate dbtypes.UpdateCas
 	delete(unchecked_update, "uuid")
 
 	delete(unchecked_update, "dateCreated")
+
+	//this constructs the update bson.D
+	var update bson.D = bson.D{{"$set", unchecked_update}}
+
+	return UpdateDoc(dbName, dbCollection, filter, update)
+}
+
+//wrapper around the UpdateDoc function specifically for updating cases
+func UpdateUser(dbName string, dbCollection string, caseUpdate dbtypes.UpdateDoc) *mongo.UpdateResult {
+
+	//get the filter, which will act as a bson.M
+	var filter map[string]interface{} = caseUpdate.Filter
+
+	//get the update field and the proceed with removing UUID and Date_created
+	var unchecked_update map[string]interface{} = caseUpdate.Update
+
+	delete(unchecked_update, "uuid")
+
+	delete(unchecked_update, "saltedhash")
+
+	delete(unchecked_update, "role")
 
 	//this constructs the update bson.D
 	var update bson.D = bson.D{{"$set", unchecked_update}}

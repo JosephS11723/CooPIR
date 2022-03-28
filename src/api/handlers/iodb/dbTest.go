@@ -22,9 +22,21 @@ func DbUploadTest(c *gin.Context) {
 
 	var result *mongo.InsertOneResult
 
+	var testUser dbtypes.NewUser
+
 	// Create three testusers in the database
 	for i := 0; i < 3; i++ {
-		result, err := dbInterface.MakeUser("testuser", "test"+strconv.Itoa(i)+"@test.com", "supervisor", []string{"testcase", "thiscasedoesnotexist"}, "password")
+
+		testUser = dbtypes.NewUser{
+			Name:     "testuser",
+			Email:    "test" + strconv.Itoa(i) + "@test.com",
+			Role:     "supervisor",
+			Cases:    []string{"testcase", "thiscasedoesnotexist"},
+			Password: "password",
+		}
+
+		result, err := dbInterface.MakeUser(testUser) //"testuser", "test"+strconv.Itoa(i)+"@test.com", "supervisor", []string{"testcase", "thiscasedoesnotexist"}, "password")
+
 		if err != nil {
 			log.Panicln("[ERROR] Failed to create testuser: " + err.Error())
 		}
