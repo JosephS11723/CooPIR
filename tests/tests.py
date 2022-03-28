@@ -409,6 +409,99 @@ def dbFindCaseTest():
     except Exception as e:
         error(e)
 
+def dbNewUserTest():
+    """Attempts to add a case to the database
+    """
+    try:
+        # print function name
+        print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
+
+        # request ping page
+        r = requests.post(
+            url=apiBasePath + "/db/user/add", json={
+	                "Name":"testuser",
+                    "Email":"testemail@emailservice.com",
+                    "Role":"responder",
+                    "Cases":["The Case"],
+                    "Password":"football"
+                }
+            )
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+        else:
+            success()
+            
+    except Exception as e:
+        error(e)
+
+def dbUpdateUserTest():
+    """Attempts to update a case to the database
+    """
+    try:
+        # print function name
+        print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
+
+        # request ping page
+        r = requests.post(
+            url=apiBasePath + "/db/case/update", json={
+                "filter":{"name":"testuser"},
+                "update":{
+                    "Name":"testcase",
+                    "Email":"thenewummmmemail@emailservice.com",
+                    "Role":"rEsPoNDeR",
+                    "Cases":["The Case", "The OTHER Case ;)"],
+                    "Password":"football123"
+                    }
+                }
+            )
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+        else:
+            success()
+            
+    except Exception as e:
+        error(e)
+
+
+def dbFindUserTest():
+    """Attempts to find a case in the database
+    """
+    try:
+        # print function name
+        print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
+
+        # request ping page
+        r = requests.post(
+            url=apiBasePath + "/db/case/find", json={
+                "name":"testuser"
+                }
+            )
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+        else:
+            success()
+            
+    except Exception as e:
+        error(e)
+
 tests = [pingTest, uploadTest, downloadTest, deleteTest, dbPingTest, dbInsertTest, dbFindTest]
 def runAllTests():
     for test in tests:

@@ -13,7 +13,7 @@ import (
 	//"go.mongodb.org/mongo-driver/mongo"
 )
 
-func DbGetUserInfo(c *gin.Context) dbtypes.Case {
+func DbGetUserInfo(c *gin.Context) dbtypes.User {
 
 	var json_request map[string]interface{}
 
@@ -25,15 +25,17 @@ func DbGetUserInfo(c *gin.Context) dbtypes.Case {
 
 	var result = dbInterface.FindDocByFilter("Users", "UserMetadata", json_request)
 
-	var dbCase dbtypes.Case
+	var dbUser dbtypes.User
 
-	err = result.Decode(&dbCase)
+	err = result.Decode(&dbUser)
 
 	if err != nil {
 		log.Panicln(err)
 	}
 
-	return dbCase
+	dbUser.SaltedHash = "no password hash for you ;)"
+
+	return dbUser
 
 }
 
