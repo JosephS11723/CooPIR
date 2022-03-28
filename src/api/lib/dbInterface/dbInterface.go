@@ -172,10 +172,11 @@ func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.I
 }
 
 // MakeUser creates a new User struct.
-func MakeUser(name string, email string, role string, cases []string, password string) (*mongo.InsertOneResult, error) {
+//func MakeUser(name string, email string, role string, cases []string, password string) (*mongo.InsertOneResult, error) {
+func MakeUser(user dbtypes.User) (*mongo.InsertOneResult, error) {
 
 	// check if user email already exists
-	if doesEmailExist(email) {
+	if doesEmailExist(user.Email) {
 		// if email exists, return error
 		return nil, errors.New("email already exists")
 	}
