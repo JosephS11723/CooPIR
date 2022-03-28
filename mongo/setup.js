@@ -19,7 +19,7 @@ db.createUser(
 //---------------------------------------------
 db = conn.getDB("Users");
 
-db.createCollection("User");
+db.createCollection("UserMetadata");
 db.createCollection("Authentication");
 //db.createCollection("Aggregations");
 
@@ -34,6 +34,19 @@ db.createRole(
       roles: []
     }
  )
+
+coll = db.getCollection("UserMetadata");
+
+coll.insert(
+  { 
+    "uuid":"00000000-0000-0000-0000-000000000000",
+    "name":"default",
+    "email":"default@coopir.edu",
+    "role":"admin",
+    "cases":[],
+    "saltedhash":""
+  }
+)
 
 //-----------------------------------------------------
 
