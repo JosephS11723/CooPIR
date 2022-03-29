@@ -19,9 +19,9 @@ db.createUser(
 //---------------------------------------------
 db = conn.getDB("Users");
 
-db.createCollection("User");
+db.createCollection("UserMetadata");
 db.createCollection("Authentication");
-db.createCollection("Aggregations");
+//db.createCollection("Aggregations");
 
 db.createRole(
     {
@@ -29,36 +29,46 @@ db.createRole(
       privileges: [
         { resource: {db: "Users", collection: "User"}, actions: ["find", "insert", "update"] },
         { resource: {db: "Users", collection: "Authentication"}, actions: ["find", "insert", "update"] },
-        { resource: {db: "Users", collection: "Aggregation"}, actions: ["find"]}
+        //{ resource: {db: "Users", collection: "Aggregation"}, actions: ["find"]}
       ],
       roles: []
     }
  )
+
+coll = db.getCollection("UserMetadata");
+
+coll.insert(
+  { 
+    "uuid":"00000000-0000-0000-0000-000000000000",
+    "name":"default",
+    "email":"default@coopir.edu",
+    "role":"admin",
+    "cases":[],
+    "saltedhash":""
+  }
+)
 
 //-----------------------------------------------------
 
 db = conn.getDB("Cases");
 
-db.createCollection("Case");
-db.createCollection("File");
-db.createCollection("Log");
-db.createCollection("Aggregations");
+db.createCollection("CaseMetadata")
+
+//db.createCollection("Aggregations");
 
 db.createRole(
     {
       role: "apiCasesDatabase", 
       privileges: [
-        { resource: {db: "Cases", collection: "Case"}, actions: ["find", "insert", "update"] },
-        { resource: {db: "Cases", collection: "File"}, actions: ["find", "insert", "update"] },
-        { resource: {db: "Cases", collection: "Log"}, actions: ["find", "insert", "update"] },
-        { resource: {db: "Cases", collection: "Aggregation"}, actions: ["find"]}
+        { resource: {db: "Cases", collection: ""}, actions: ["find", "insert", "update"] },
+        //{ resource: {db: "Cases", collection: "Aggregation"}, actions: ["find"]}
       ],
       roles: []
     }
  )
 
-coll = db.getCollection("Aggregations");
-
+//coll = db.getCollection("Aggregations");
+/*
 coll.insert(
     {
       "name":"GetFiles",
@@ -79,7 +89,7 @@ coll.insert(
       ]
     }
   )
-
+*/
 
 
 //-----------------------------------------------
@@ -96,4 +106,3 @@ db.createUser(
         ]
       }
   )
-

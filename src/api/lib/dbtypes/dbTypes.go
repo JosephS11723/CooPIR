@@ -39,3 +39,18 @@ type Access struct {
 	User     string `json:"user"`
 	Date     string `json:"date"`
 }
+
+type UpdateDoc struct {
+	Filter map[string]interface{}
+	Update map[string]interface{}
+}
+
+//just makes it easy to unmarshal a UUID-less struct as well
+//as a struct with a password; User has saltedHash
+type NewUser struct {
+	Name     string   `json:"name"`
+	Email    string   `json:"email"`
+	Role     string   `json:"role"`
+	Cases    []string `json:"cases"`
+	Password string   `json:"password"`
+}

@@ -6,7 +6,6 @@ import (
 	"github.com/JosephS11723/CooPIR/src/api/handlers/iodb"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/ioseaweed"
 	authmw "github.com/JosephS11723/CooPIR/src/api/middleware/authentication"
-	//"github.com/JosephS11723/CooPIR/src/api/handlers/jobs"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -44,13 +43,27 @@ func InitMainRouter() *gin.Engine {
 	v1.POST("/file", ioseaweed.SWPOST)
 	v1.DELETE("/file", ioseaweed.SWDELETE)
 
-	// MONGO-DB
+	// MONGO-DB Tests
 	v1.GET("/db/test", iodb.DbPingTest)
 	v1.POST("/db/test", iodb.DbUploadTest)
 	v1.GET("/db/test/find", iodb.DbFindTest)
 	v1.POST("/db/test/find", iodb.DbUpdateTest)
 
-	// authentication
+	// MONGO-DB Final
+	v1.POST("/db/case/add", iodb.DbCreateCase)
+	v1.POST("/db/case/update", iodb.DbUpdateCase)
+	v1.GET("db/case/find", iodb.DbGetCaseInfo)
+
+	//MONGO-DB
+	/*
+		v1.GET("/db/case", iodb.DbGetCaseInfo)
+		v1.POST("/db/case/new", iodb.DbCreateCase)
+		v1.POST("/db/case/update", iodb.DbUpdateCase)
+		v1.GET("/db/user", iodb.DbGetUserInfo)
+		v1.POST("/db/user", iodb.Db)
+	*/
+
+	// Authentication
 	v1.POST("/renew", authentication.RenewToken)
 	v1.POST("/logout", authentication.Logout)
 
