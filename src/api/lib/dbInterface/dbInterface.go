@@ -503,7 +503,7 @@ func doesUuidExist(dbname string, collection string, uuid string) bool {
 func doesEmailExist(email string) bool {
 
 	var dbName string = "Users"
-	var dbCollection string = "User"
+	var dbCollection string = "UserMetadata"
 
 	// connect to db
 	client, ctx, cancel, err := dbConnect()
