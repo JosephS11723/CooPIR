@@ -1,9 +1,12 @@
 package authentication
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/crypto"
+	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
+	"github.com/JosephS11723/CooPIR/src/api/lib/security"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 )
@@ -85,4 +88,62 @@ func RenewToken(c *gin.Context) {
 
 	// send token
 	c.JSON(http.StatusOK, gin.H{"token": token})
+}
+
+// Adds a user to the database by consuming a registration token.
+func AddUser(c *gin.Context) {
+	// verify token
+	if !security.VerifyRegistrationToken(c) {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "invalid token"})
+		log.Panicln("INVALID REGISTRATION TOKEN")
+	}
+
+	// get email
+	email, success := c.GetPostForm("email")
+	if !success {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no email provided"})
+		return
+	}
+
+	// get password
+	password, success := c.GetPostForm("password")
+	if !success {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no password provided"})
+		return
+	}
+
+	// get username
+	username, success := c.GetPostForm("username")
+	if !success {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no username provided"})
+		return
+	}
+
+	// TODO: fix role to have sanity checks. should we make this a read-only by default? should the registration token be attached to particular permissions or should we just let the user set it?
+	// add role
+	role, success := c.GetPostForm("role")
+	if !success {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no role provided"})
+		return
+	}
+
+	// hash password
+	hashedPassword, err := security.HashPass(password)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "failed to hash password"})
+		return
+	}
+
+	// TODO: figure out what cases a user will be added with a role
+	var cases []string
+
+	// add user to database
+	_, err = dbInterface.MakeUser(username, email, role, cases, hashedPassword)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "failed to add user"})
+		return
+	}
+
+	// return success
+	c.Status(http.StatusOK)
 }
