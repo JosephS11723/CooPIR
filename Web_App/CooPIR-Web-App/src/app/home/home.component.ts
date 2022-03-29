@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 //import { Server } from 'http';
 
 @Component({
@@ -12,7 +13,7 @@ export class HomeComponent implements OnInit {
   fileName = '';
   path: string = "/assets/images/CooPIR_Pic.jpg";
   ImageAlt: string;
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router) {
     //this.ImagePath = 'src/app/img/CooPir_Pic.jpg'
     this.ImageAlt = 'Fox dude'
    }
@@ -36,6 +37,12 @@ export class HomeComponent implements OnInit {
           }
         })
         break;
+      case 200:
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!'
+          })
+          break;
       case 400:
         Swal.fire({
           icon: 'error',
@@ -49,6 +56,7 @@ export class HomeComponent implements OnInit {
             Swal.fire("Error status code: ", error.status.toString());
           }
         })
+        break;
     }
     
   }
@@ -57,8 +65,6 @@ export class HomeComponent implements OnInit {
     //var response;
 
     const header = new HttpHeaders()
-    .set('Access-Control-Allow-Origin', '*')
-    .set('Sec-Fetch-Site', 'cross-site')
     .set('content-type', 'application/json');
     this.http.get<any>("http://localhost:8080/api/v1/ping", {
       observe: 'response',
@@ -67,7 +73,7 @@ export class HomeComponent implements OnInit {
     .subscribe(response => {
       if(response.status === 200)
       {
-        console.log("Status code 200 received");
+        this.alertPopup(response);
       }
       console.log("Logging status");
       console.log(response.status);
@@ -82,7 +88,7 @@ export class HomeComponent implements OnInit {
   onFileSelected(event:any) {
     var caseName = (<HTMLInputElement>document.getElementById("caseName")).value;
     console.log(caseName);
-    const file:File = event.target.files[0];
+    const file = event.target.files[0];
 
         if (file) 
         {
@@ -97,14 +103,15 @@ export class HomeComponent implements OnInit {
             .append('filename', this.fileName);
 
             const headers = new HttpHeaders()
-            .set('Access-Control-Allow-Origin', '*');
+            //.set('Access-Control-Allow-Origin', '*');
 
 
             const formData = new FormData();
 
-            formData.append("testPic", file);
+            formData.append("file", file);
+            //formData.
 
-            this.http.post("http://localhost:8080/api/v1/file", file, 
+            this.http.post("http://localhost:8080/api/v1/file", formData, 
             {
               params: params,
               headers: headers,
@@ -114,12 +121,18 @@ export class HomeComponent implements OnInit {
               console.log(response);
             }, error => {
               console.log("logging error");
-              if(error.status === 0)
-              {
-                this.alertPopup(error);
-              }
+              this.alertPopup(error);
+              console.log(error.status);
             });
            
         }
   } 
+  goToLogin(){
+    console.log("Going to login");
+    this.router.navigateByUrl('/login', { replaceUrl: true});  
+}
+goToDashboard(){
+  console.log("Going to Dashboard");
+  this.router.navigateByUrl('/dashboard', { replaceUrl: true});  
+}
 }

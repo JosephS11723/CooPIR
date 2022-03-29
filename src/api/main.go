@@ -22,7 +22,7 @@ func main() {
 	r := routers.InitMainRouter()
 
 	// run and serve main router
-	go func(){
+	go func() {
 		r.Run("0.0.0.0:8080")
 	}()
 

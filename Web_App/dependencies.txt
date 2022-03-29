@@ -1,0 +1,2 @@
+npm install --save @angular/material @angular/cdk @angular/animations
+npm install @angular/flex-layout --save
