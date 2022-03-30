@@ -12,6 +12,7 @@ type User struct {
 type Case struct {
 	UUID          string   `json:"uuid"`
 	Name          string   `json:"name"`
+	Description	  string   `json:"description" default:""`
 	Date_created  string   `json:"dateCreated"`
 	View_access   string   `json:"viewAccess"`
 	Edit_access   string   `json:"editAccess"`

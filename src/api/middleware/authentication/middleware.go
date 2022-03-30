@@ -4,12 +4,20 @@ import (
 	"net/http"
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/crypto"
+	"github.com/JosephS11723/CooPIR/src/api/config"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 )
 
 // AuthenticationMiddleware is a middleware that checks if the user is authenticated
 func AuthenticationMiddleware(c *gin.Context) {
+	// debug config boolean (no login if in auth debug mode)
+	if !config.RequireLogin {
+		c.Set("identity", "00000000-0000-0000-0000-000000000000")
+		c.Next()
+		return
+	}
+
 	// get the token from the request
 	token, err := c.Cookie("token")
 

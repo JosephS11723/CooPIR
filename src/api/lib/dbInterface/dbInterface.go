@@ -439,12 +439,13 @@ func DoesCaseExist(name string) bool {
 }
 
 // TODO: Logic is broken in the check against the database. FIX
+// MakeUuid creates a new UUID and checks the database to make sure it doesn't already exist.
 func MakeUuid() string {
-
 	var id string
 	var exist bool
-	var Users []string = []string{"User"}
+	var Users []string = []string{"UserMetadata"}
 	var Cases []string = []string{"CaseMetadata", "File", "Log"}
+	// TODO: check more collections (all the collections for all the cases)
 
 	// Loop that makes a uuid and checks if it already exists in the database.
 	// keep looping until it doesn't exist.
@@ -567,13 +568,13 @@ func UpdateCase(dbName string, dbCollection string, caseUpdate dbtypes.UpdateDoc
 	return UpdateDoc(dbName, dbCollection, filter, update)
 }
 
-//wrapper around the UpdateDoc function specifically for updating cases
+// wrapper around the UpdateDoc function specifically for updating cases
 func UpdateUser(dbName string, dbCollection string, caseUpdate dbtypes.UpdateDoc) *mongo.UpdateResult {
 
-	//get the filter, which will act as a bson.M
+	// get the filter, which will act as a bson.M
 	var filter map[string]interface{} = caseUpdate.Filter
 
-	//get the update field and the proceed with removing UUID and Date_created
+	// get the update field and the proceed with removing UUID and Date_created
 	var unchecked_update map[string]interface{} = caseUpdate.Update
 
 	delete(unchecked_update, "uuid")
@@ -582,7 +583,7 @@ func UpdateUser(dbName string, dbCollection string, caseUpdate dbtypes.UpdateDoc
 
 	delete(unchecked_update, "role")
 
-	//this constructs the update bson.D
+	// this constructs the update bson.D
 	var update bson.D = bson.D{{"$set", unchecked_update}}
 
 	return UpdateDoc(dbName, dbCollection, filter, update)

@@ -50,9 +50,9 @@ func InitMainRouter() *gin.Engine {
 	v1.POST("/db/test/find", iodb.DbUpdateTest)
 
 	// MONGO-DB Final
-	v1.POST("/db/case/add", iodb.DbCreateCase)
-	v1.POST("/db/case/update", iodb.DbUpdateCase)
-	v1.GET("db/case/find", iodb.DbGetCaseInfo)
+	v1.POST("/case/add", iodb.DbCreateCase)
+	v1.POST("/case/update", iodb.DbUpdateCase)
+	//v1.GET("db/case/find", iodb.DbGetCaseInfo)
 
 	//MONGO-DB
 	/*
@@ -64,8 +64,8 @@ func InitMainRouter() *gin.Engine {
 	*/
 
 	// Authentication
-	v1.POST("/renew", authentication.RenewToken)
-	v1.POST("/logout", authentication.Logout)
+	v1.POST("/auth/renew", authentication.RenewToken)
+	v1.POST("/auth/logout", authentication.Logout)
 
 	// group for job server requests
 	/*v2 := r.Group("/api/v1/jobs")
@@ -85,7 +85,7 @@ func InitMainRouter() *gin.Engine {
 	// get job results
 	v2.GET("/results", jobs.GetResults)*/
 
-	// group for logging in
+	// group for unauthenticated actions
 	v3 := r.Group("/api/v1/auth")
 	
 	// login

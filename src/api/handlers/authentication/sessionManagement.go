@@ -36,7 +36,15 @@ func Login(c *gin.Context) {
 	}
 
 	// create token
-	token, err := crypto.CreateToken(email)
+	//uuid, err := dbInterface.FindUUIDByEmail(email)
+	uuid := "00000000-0000-0000-0000-000000000000"
+	/*if err != nil {
+		log.Println("Failed to find user uuid by email")
+		c.AbortWithError(http.StatusUnauthorized, errors.New("Invalid credentials"))
+	}*/
+
+	token, err := crypto.CreateToken(uuid)
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create token"})
 		return
@@ -100,16 +108,18 @@ func RenewToken(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"token": token})
 }
 
-// Adds a user to the database by consuming a registration token.
+// Adds a user to the database. only admins can do this.
 func AddUser(c *gin.Context) {
 	// verify token
-	if !security.VerifyRegistrationToken(c) {
+	/*if !security.VerifyRegistrationToken(c) {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "invalid token"})
 		log.Println("INVALID REGISTRATION TOKEN")
 
 		// http 401
 		c.AbortWithStatus(http.StatusUnauthorized)
-	}
+	}*/
+
+	// TODO: verify user sending request is admin
 
 	// get email
 	email, success := c.GetPostForm("email")

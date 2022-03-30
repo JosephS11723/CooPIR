@@ -19,6 +19,10 @@ apiBasePath = "http://localhost:8080/api/v1"
 email = "default@coopir.edu"
 password = "password"
 
+# case information
+caseName = "testcase"
+caseDescription = '''This is a test case for the CoopIR API made by the\npython test script'''
+
 # create requests session object for cookies
 s = requests.Session() 
 
@@ -67,6 +71,30 @@ def pingTest():
     except Exception as e:
         error(e)
 
+def createCaseTest():
+    '''Attempts to create a case'''
+    try:
+        # print function name
+        print(inspect.getframeinfo(inspect.currentframe()).function, end=" ", flush=True)
+
+        # request to create case
+        r = s.post(
+            url=apiBasePath + "/case/add",
+            data={
+                "name":caseName,
+                "description":caseDescription
+            }, 
+            timeout=20
+        )
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+        else:
+            success()
+    except Exception as e:
+        error(e)
+
 def uploadTest(fileData = None):
     '''Attempts to upload a file to the server'''
     try:
@@ -81,7 +109,7 @@ def uploadTest(fileData = None):
             # add params
             params = {
                 "filename" : "/home/test/test.txt",
-                "casename" : "testcase",
+                "casename" : caseName,
             }
 
             # upload file
@@ -123,7 +151,7 @@ def downloadTest(filename : str = None):
 
             params = {
                 "filename" : fileUUID,
-                "casename" : "testcase",
+                "casename" : caseName,
             }
 
             # download file
@@ -435,7 +463,7 @@ def dbFindCaseTest():
         error(e)
 
 def dbNewUserTest():
-    """Attempts to add a case to the database
+    """Attempts to add a user to the database
     """
     try:
         # print function name
@@ -466,7 +494,7 @@ def dbNewUserTest():
         error(e)
 
 def dbUpdateUserTest():
-    """Attempts to update a case to the database
+    """Attempts to update a user in the database
     """
     try:
         # print function name
@@ -527,7 +555,7 @@ def dbFindUserTest():
     except Exception as e:
         error(e)
 
-tests = [loginTest, pingTest, uploadTest, downloadTest, deleteTest, dbPingTest, dbInsertTest, dbFindTest]
+tests = [loginTest, createCaseTest, pingTest, uploadTest, downloadTest, dbPingTest, dbInsertTest, dbFindTest]
 def runAllTests():
     for test in tests:
         test()
