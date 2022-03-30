@@ -43,11 +43,25 @@ func InitMainRouter() *gin.Engine {
 	v1.POST("/file", ioseaweed.SWPOST)
 	v1.DELETE("/file", ioseaweed.SWDELETE)
 
-	// MONGO-DB
+	// MONGO-DB Tests
 	v1.GET("/db/test", iodb.DbPingTest)
 	v1.POST("/db/test", iodb.DbUploadTest)
 	v1.GET("/db/test/find", iodb.DbFindTest)
 	v1.POST("/db/test/find", iodb.DbUpdateTest)
+
+	// MONGO-DB Final
+	v1.POST("/db/case/add", iodb.DbCreateCase)
+	v1.POST("/db/case/update", iodb.DbUpdateCase)
+	v1.GET("db/case/find", iodb.DbGetCaseInfo)
+
+	//MONGO-DB
+	/*
+		v1.GET("/db/case", iodb.DbGetCaseInfo)
+		v1.POST("/db/case/new", iodb.DbCreateCase)
+		v1.POST("/db/case/update", iodb.DbUpdateCase)
+		v1.GET("/db/user", iodb.DbGetUserInfo)
+		v1.POST("/db/user", iodb.Db)
+	*/
 
 	// Authentication
 	v1.POST("/login", authentication.Login)

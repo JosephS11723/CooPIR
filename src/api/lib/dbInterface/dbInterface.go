@@ -107,7 +107,7 @@ func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.I
 
 	// Case struct case
 	case dbtypes.Case:
-		if collection != "Case" {
+		if collection != "CaseMetadata" {
 			log.Panicf("[ERROR] Cannot insert data type %s into Case collection", t)
 		} else {
 
@@ -125,23 +125,24 @@ func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.I
 		}
 
 	// File struct case
+	// TODO: Replace Sanity check with a more robust check
 	case dbtypes.File:
-		if collection != "File" {
-			log.Panicf("[ERROR] Cannot insert data type %s into File collection", t)
-		} else {
+		// if collection != "File" {
+		// 	log.Panicf("[ERROR] Cannot insert data type %s into File collection", t)
+		// } else {
 
-			data := data.(dbtypes.File)
+		data := data.(dbtypes.File)
 
-			coll := client.Database(dbname).Collection(collection)
+		coll := client.Database(dbname).Collection(collection)
 
-			result, err := coll.InsertOne(ctx, data)
+		result, err := coll.InsertOne(ctx, data)
 
-			if err != nil {
-				log.Panicln(err)
-			}
-
-			return result
+		if err != nil {
+			log.Panicln(err)
 		}
+
+		return result
+		// }
 
 	// User struct case
 	case dbtypes.User:
@@ -171,23 +172,24 @@ func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.I
 }
 
 // MakeUser creates a new User struct.
-func MakeUser(name string, email string, role string, cases []string, password string) (*mongo.InsertOneResult, error) {
+//func MakeUser(name string, email string, role string, cases []string, password string) (*mongo.InsertOneResult, error) {
+func MakeUser(user dbtypes.NewUser) (*mongo.InsertOneResult, error) {
 
 	// check if user email already exists
-	if doesEmailExist(email) {
+	if doesEmailExist(user.Email) {
 		// if email exists, return error
 		return nil, errors.New("email already exists")
 	}
 
 	// Hash password
-	saltedHash, err := security.HashPass(password)
+	saltedHash, err := security.HashPass(user.Password)
 	if err != nil {
 		return nil, err
 	}
 
 	// Set db types
 	var dbName string = "Users"
-	var dbCollection string = "User"
+	var dbCollection string = "UserMetadata"
 
 	// Make unique id
 	var id string = MakeUuid()
@@ -195,10 +197,10 @@ func MakeUser(name string, email string, role string, cases []string, password s
 	// Set user struct
 	var NewUser = dbtypes.User{
 		UUID:       id,
-		Name:       name,
-		Email:      email,
-		Role:       role,
-		Cases:      cases,
+		Name:       user.Name,
+		Email:      user.Email,
+		Role:       user.Role,
+		Cases:      user.Cases,
 		SaltedHash: saltedHash,
 	}
 
@@ -208,32 +210,95 @@ func MakeUser(name string, email string, role string, cases []string, password s
 }
 
 // MakeCase creates a new Case struct.
-func MakeCase(name string, dateCreated string, viewAccess string, editAccess string, collaborators []string) *mongo.InsertOneResult {
+//func MakeCase(NewCase dbttypes.Case) *mongo.InsertOneResult {
+func MakeCase(NewCase dbtypes.Case) *mongo.InsertOneResult {
 
+	// Check if case name already exists
+	if DoesCaseExist(NewCase.Name) {
+		// If case name exists, return error
+		log.Panicln("[ERROR] Case name already exists")
+	}
+
+	// Set db types
 	var dbName string = "Cases"
-	var dbCollection string = "Case"
+	var dbCollection string = "CaseMetadata"
 	var id string = MakeUuid()
+	NewCase.UUID = id
 	var result *mongo.InsertOneResult
 
-	var NewCase = dbtypes.Case{
-		UUID:          id,
-		Name:          name,
-		Date_created:  dateCreated,
-		View_access:   viewAccess,
-		Edit_access:   editAccess,
-		Collaborators: collaborators,
+	// Replaced
+	/*
+		var NewCase = dbtypes.Case{
+			UUID:          id,
+			Name:          name,
+			Date_created:  dateCreated,
+			View_access:   viewAccess,
+			Edit_access:   editAccess,
+			Collaborators: collaborators,
+		}
+	*/
+
+	client, ctx, cancel, err := dbConnect()
+
+	// defer closing db connection
+	defer dbClose(client, ctx, cancel)
+
+	if err != nil {
+		log.Panicln(err)
 	}
+
+	client.Database("Cases").CreateCollection(ctx, id)
 
 	result = DbSingleInsert(dbName, dbCollection, NewCase)
 
 	return result
 }
 
+// Finds the case name from CaseMetadata collection using the case UUID.
+func FindCaseNameByUUID(uuid string) string {
+
+	var dbName string = "Cases"
+	var dbCollection string = "CaseMetadata"
+	var result *mongo.SingleResult = FindDocByFilter(dbName, dbCollection, bson.M{"uuid": uuid})
+
+	var dbCase dbtypes.Case
+	err := result.Decode(&dbCase)
+
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	var caseName string = dbCase.Name
+
+	return caseName
+}
+
+// Finds the uuid of a case by the case name
+func FindCaseUUIDByName(name string) string {
+
+	var dbName string = "Cases"
+	var dbCollection string = "CaseMetadata"
+	var result *mongo.SingleResult = FindDocByFilter(dbName, dbCollection, bson.M{"name": name})
+
+	var dbCase dbtypes.Case
+	err := result.Decode(&dbCase)
+
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	var caseUUID string = dbCase.UUID
+
+	return caseUUID
+}
+
 // MakeFile creates a new File struct.
 func MakeFile(uuid string, hashes []string, tags []string, filename string, caseName string, fileDir string, uploadDate string, viewAccess string, editAccess string) *mongo.InsertOneResult {
 
+	var caseUUID string = FindCaseUUIDByName(caseName)
+
 	var dbName string = "Cases"
-	var dbCollection string = "File"
+	var dbCollection string = caseUUID
 	var result *mongo.InsertOneResult
 
 	var NewFile = dbtypes.File{
@@ -349,12 +414,37 @@ func FindDocByFilter(dbname string, collection string, filter bson.M) *mongo.Sin
 	return result
 }
 
+// Checks if Case name already exist in the mongo database
+func DoesCaseExist(name string) bool {
+
+	var dbName string = "Cases"
+	var dbCollection string = "CaseMetadata"
+
+	// connect to db
+	client, ctx, cancel, err := dbConnect()
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	defer dbClose(client, ctx, cancel)
+
+	// get the collection
+	coll := client.Database(dbName).Collection(dbCollection)
+
+	// find the document
+	var result *mongo.SingleResult = coll.FindOne(ctx, bson.M{"name": name})
+
+	// return true if document exists
+	return result.Err() != mongo.ErrNoDocuments
+}
+
+// TODO: Logic is broken in the check against the database. FIX
 func MakeUuid() string {
 
 	var id string
 	var exist bool
 	var Users []string = []string{"User"}
-	var Cases []string = []string{"Case", "File", "Log"}
+	var Cases []string = []string{"CaseMetadata", "File", "Log"}
 
 	// Loop that makes a uuid and checks if it already exists in the database.
 	// keep looping until it doesn't exist.
@@ -413,7 +503,7 @@ func doesUuidExist(dbname string, collection string, uuid string) bool {
 func doesEmailExist(email string) bool {
 
 	var dbName string = "Users"
-	var dbCollection string = "User"
+	var dbCollection string = "UserMetadata"
 
 	// connect to db
 	client, ctx, cancel, err := dbConnect()
@@ -456,6 +546,46 @@ func UpdateDoc(dbName string, dbCollection string, filter bson.M, updates bson.D
 	}
 
 	return result
+}
+
+//wrapper around the UpdateDoc function specifically for updating cases
+func UpdateCase(dbName string, dbCollection string, caseUpdate dbtypes.UpdateDoc) *mongo.UpdateResult {
+
+	//get the filter, which will act as a bson.M
+	var filter map[string]interface{} = caseUpdate.Filter
+
+	//get the update field and the proceed with removing UUID and Date_created
+	var unchecked_update map[string]interface{} = caseUpdate.Update
+
+	delete(unchecked_update, "uuid")
+
+	delete(unchecked_update, "dateCreated")
+
+	//this constructs the update bson.D
+	var update bson.D = bson.D{{"$set", unchecked_update}}
+
+	return UpdateDoc(dbName, dbCollection, filter, update)
+}
+
+//wrapper around the UpdateDoc function specifically for updating cases
+func UpdateUser(dbName string, dbCollection string, caseUpdate dbtypes.UpdateDoc) *mongo.UpdateResult {
+
+	//get the filter, which will act as a bson.M
+	var filter map[string]interface{} = caseUpdate.Filter
+
+	//get the update field and the proceed with removing UUID and Date_created
+	var unchecked_update map[string]interface{} = caseUpdate.Update
+
+	delete(unchecked_update, "uuid")
+
+	delete(unchecked_update, "saltedhash")
+
+	delete(unchecked_update, "role")
+
+	//this constructs the update bson.D
+	var update bson.D = bson.D{{"$set", unchecked_update}}
+
+	return UpdateDoc(dbName, dbCollection, filter, update)
 }
 
 func RetrieveHashByEmail(email string) string {
