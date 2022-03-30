@@ -22,7 +22,9 @@ var ReadOnlyFiles bool = true    // whether files uploaded to seaweedfs should b
 var MongoConnectionTimeout int = 30
 
 // jwt config
+var AuthenticationDebug bool = true
 var RSAKeySize int = 2048
 var RSAKeyDirectory string = "./data"
 var RSAKeyFile string = "private.pem"
 var RSAPublicKeyFile string = "public.pem"
+var HTTPOnly bool = false

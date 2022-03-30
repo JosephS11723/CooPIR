@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/JosephS11723/CooPIR/src/api/config"
 	"github.com/JosephS11723/CooPIR/src/api/lib/crypto"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
@@ -41,13 +42,16 @@ func Login(c *gin.Context) {
 		return
 	}
 
+	// set token in cookie
+	c.SetCookie("token", token, 3600, "", "", false, config.HTTPOnly)
+
 	// send token
 	c.JSON(http.StatusOK, gin.H{"token": token})
 }
 
 // Logout deletes the token from the cookie
 func Logout(c *gin.Context) {
-	c.SetCookie("token", "", -1, "", "", false, true)
+	c.SetCookie("token", "", -1, "", "", false, config.HTTPOnly)
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully logged out"})
 }
 
@@ -80,6 +84,11 @@ func RenewToken(c *gin.Context) {
 	// get the identity from the token
 	identity := parsedToken.Claims.(jwt.MapClaims)["identity"]
 
+	// debug
+	if config.AuthenticationDebug {
+		log.Println("Renewing token for user ", identity)
+	}
+
 	// create a new token
 	token, err = crypto.CreateToken(identity.(string))
 	if err != nil {
@@ -96,7 +105,10 @@ func AddUser(c *gin.Context) {
 	// verify token
 	if !security.VerifyRegistrationToken(c) {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "invalid token"})
-		log.Panicln("INVALID REGISTRATION TOKEN")
+		log.Println("INVALID REGISTRATION TOKEN")
+
+		// http 401
+		c.AbortWithStatus(http.StatusUnauthorized)
 	}
 
 	// get email
