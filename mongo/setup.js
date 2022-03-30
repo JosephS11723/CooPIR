@@ -27,7 +27,7 @@ db.createRole(
     {
       role: "apiUsersDatabase", 
       privileges: [
-        { resource: {db: "Users", collection: "User"}, actions: ["find", "insert", "update"] },
+        { resource: {db: "Users", collection: "UserMetadata"}, actions: ["find", "insert", "update"] },
         { resource: {db: "Users", collection: "Authentication"}, actions: ["find", "insert", "update"] },
         //{ resource: {db: "Users", collection: "Aggregation"}, actions: ["find"]}
       ],
