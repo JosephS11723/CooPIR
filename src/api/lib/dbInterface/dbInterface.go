@@ -591,7 +591,7 @@ func UpdateUser(dbName string, dbCollection string, caseUpdate dbtypes.UpdateDoc
 func RetrieveHashByEmail(email string) string {
 	// defer and recover if panicing
 	var dbName string = "Users"
-	var dbCollection string = "User"
+	var dbCollection string = "UserMetadata"
 	var filter bson.M = bson.M{"email": email}
 
 	result := FindDocByFilter(dbName, dbCollection, filter)
