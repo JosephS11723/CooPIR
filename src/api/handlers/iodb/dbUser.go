@@ -14,7 +14,7 @@ import (
 	//"go.mongodb.org/mongo-driver/mongo"
 )
 
-func DbGetUserInfo(c *gin.Context) dbtypes.User {
+func DbGetUserInfo(c *gin.Context) {
 
 	var json_request map[string]interface{}
 
@@ -36,7 +36,7 @@ func DbGetUserInfo(c *gin.Context) dbtypes.User {
 
 	dbUser.SaltedHash = "no password hash for you ;)"
 
-	return c.JSON(http.StatusOK, gin.H{"user": dbUser})
+	c.JSON(http.StatusOK, gin.H{"user": dbUser})
 
 }
 
