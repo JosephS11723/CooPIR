@@ -16,6 +16,11 @@ var PrivateKey *rsa.PrivateKey
 
 // VerifyKey checks if the RSA key files exist and if the private key matches the public key. If they do not exist, it creates them.
 func VerifyKeys() {
+	// create directory if it does not exist
+	if _, err := os.Stat(config.RSAKeyDirectory); os.IsNotExist(err) {
+		os.Mkdir(config.RSAKeyDirectory, 0755)
+	}
+	
 	// check if key file exists
 	if _, err := os.Stat(config.RSAKeyDirectory + string(os.PathSeparator) + config.RSAKeyFile); os.IsNotExist(err) {
 		log.Println("No private key file file found. Generating new key...")
