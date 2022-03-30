@@ -5,6 +5,7 @@ import (
 	//"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 
 	"log"
+	"net/http"
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
@@ -13,7 +14,7 @@ import (
 	//"go.mongodb.org/mongo-driver/mongo"
 )
 
-func DbGetCaseInfo(c *gin.Context) dbtypes.Case {
+func DbGetCaseInfo(c *gin.Context) {
 
 	var json_request map[string]interface{}
 
@@ -34,7 +35,7 @@ func DbGetCaseInfo(c *gin.Context) dbtypes.Case {
 		log.Panicln(err)
 	}
 
-	return dbCase
+	c.JSON(http.StatusOK, gin.H{"case": dbCase})
 
 }
 
