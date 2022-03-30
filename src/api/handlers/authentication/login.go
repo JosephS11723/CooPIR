@@ -1,10 +1,11 @@
-package authentication
+/*package authentication
 
 import (
 	"log"
 	"net/http"
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
+	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 	"github.com/JosephS11723/CooPIR/src/api/lib/security"
 	"github.com/gin-gonic/gin"
 )
@@ -124,8 +125,18 @@ func AddUser(c *gin.Context) {
 	// TODO: figure out what cases a user will be added with a role
 	var cases []string
 
+	var new_user = dbtypes.User{
+		Name:       username,
+		Email:      email,
+		Role:       role,
+		Cases:      cases,
+		SaltedHash: hashedPassword,
+	}
+
 	// add user to database
-	_, err = dbInterface.MakeUser(username, email, role, cases, hashedPassword)
+	//_, err = dbInterface.MakeUser(username, email, role, cases, hashedPassword)
+	result, err := dbInterface.DbSingleInsert("Users", "UserMetadata", new_user)
+
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "failed to add user"})
 		return
@@ -134,3 +145,4 @@ func AddUser(c *gin.Context) {
 	// return success
 	c.Status(http.StatusOK)
 }
+*/

@@ -5,6 +5,7 @@ import (
 	//"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 
 	"log"
+	"net/http"
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
@@ -35,7 +36,7 @@ func DbGetUserInfo(c *gin.Context) dbtypes.User {
 
 	dbUser.SaltedHash = "no password hash for you ;)"
 
-	return dbUser
+	return c.JSON(http.StatusOK, gin.H{"user": dbUser})
 
 }
 

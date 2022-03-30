@@ -5,6 +5,7 @@ import (
 	"github.com/JosephS11723/CooPIR/src/api/handlers/debug"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/iodb"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/ioseaweed"
+
 	//"github.com/JosephS11723/CooPIR/src/api/handlers/jobs"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -49,19 +50,19 @@ func InitMainRouter() *gin.Engine {
 	v1.GET("/db/test/find", iodb.DbFindTest)
 	v1.POST("/db/test/find", iodb.DbUpdateTest)
 
-	// MONGO-DB Final
-	v1.POST("/db/case/add", iodb.DbCreateCase)
-	v1.POST("/db/case/update", iodb.DbUpdateCase)
-	v1.GET("db/case/find", iodb.DbGetCaseInfo)
+	// MONGO-DB Old
+	//v1.POST("/db/case/add", iodb.DbCreateCase)
+	//v1.POST("/db/case/update", iodb.DbUpdateCase)
+	//v1.GET("db/case/find", iodb.DbGetCaseInfo)
 
 	//MONGO-DB
-	/*
-		v1.GET("/db/case", iodb.DbGetCaseInfo)
-		v1.POST("/db/case/new", iodb.DbCreateCase)
-		v1.POST("/db/case/update", iodb.DbUpdateCase)
-		v1.GET("/db/user", iodb.DbGetUserInfo)
-		v1.POST("/db/user", iodb.Db)
-	*/
+
+	v1.GET("/db/case", iodb.DbGetCaseInfo)
+	v1.POST("/db/case/new", iodb.DbCreateCase)
+	v1.POST("/db/case/update", iodb.DbUpdateCase)
+	v1.GET("/db/user", iodb.DbGetUserInfo)
+	v1.POST("/db/user/new", iodb.DbCreateUser)
+	v1.POST("/db/user/update")
 
 	// Authentication
 	v1.POST("/login", authentication.Login)
