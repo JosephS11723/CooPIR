@@ -16,7 +16,9 @@
         <!--Textbox for password-->
         <label for="password">Password: </label>
         &nbsp;&nbsp;&nbsp;
-        <input type="text" id="password">
+        <input type="password" id="password">
+        <br>
+        <input type="checkbox" (click)="toggleVisibility()">Show Password
         <br><br>
         
         <button (click)="login()" class="btn btn-primary btn-lg mr-2">Login</button>

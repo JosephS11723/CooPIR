@@ -40,7 +40,7 @@ export class HomeComponent implements OnInit {
       case 200:
           Swal.fire({
             icon: 'success',
-            title: 'Successful Operation'
+            title: 'Success!'
           })
           break;
       case 400:
@@ -130,5 +130,9 @@ export class HomeComponent implements OnInit {
   goToLogin(){
     console.log("Going to login");
     this.router.navigateByUrl('/login', { replaceUrl: true});  
+}
+goToDashboard(){
+  console.log("Going to Dashboard");
+  this.router.navigateByUrl('/dashboard', { replaceUrl: true});  
 }
 }
