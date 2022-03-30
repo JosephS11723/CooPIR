@@ -86,16 +86,13 @@ def createCaseTest():
 
         # request to create case
         r = s.post(
-            url= apiBasePath + "/case/new",
+            url= apiBasePath + "/db/case/new",
             data={
                 "name":caseName,
                 "description":caseDescription
             }, 
             timeout=20
         )
-
-        print(apiBasePath + "/case/new")
-        print(apiBasePath + "/case/new")
 
         # check if good request
         if r.status_code != 200:
