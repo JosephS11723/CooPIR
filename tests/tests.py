@@ -509,7 +509,7 @@ def dbUpdateUserTest():
 
         # request ping page
         r = s.post(
-            url=apiBasePath + "/db/case/update", json={
+            url=apiBasePath + "/db/user/update", json={
                 "filter":{"name":"testuser"},
                 "update":{
                     "Name":"testcase",
@@ -544,7 +544,7 @@ def dbFindUserTest():
 
         # request ping page
         r = s.get(
-            url=apiBasePath + "/db/case", json={
+            url=apiBasePath + "/db/user", json={
                 "name":"testuser"
                 }
             )
