@@ -15,15 +15,15 @@ import (
 
 // Login verifies user credentials and returns a token
 func Login(c *gin.Context) {
-	// get email from formdata
-	email := c.PostForm("email")
+	// get email from parameter
+	email := c.Param("email")
 	if email == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "No email provided"})
 		return
 	}
 
-	// get password from formdata
-	password := c.PostForm("password")
+	// get password from parameter
+	password := c.Param("password")
 	if password == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "No password provided"})
 		return

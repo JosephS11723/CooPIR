@@ -50,8 +50,8 @@ func InitMainRouter() *gin.Engine {
 	v1.POST("/db/test/find", iodb.DbUpdateTest)
 
 	// MONGO-DB Final
-	v1.POST("/case/add", iodb.DbCreateCase)
-	v1.POST("/case/update", iodb.DbUpdateCase)
+	//v1.POST("/case/add", iodb.DbCreateCase)
+	//v1.POST("/case/update", iodb.DbUpdateCase)
 	//v1.GET("db/case/find", iodb.DbGetCaseInfo)
 
 	//MONGO-DB

@@ -39,7 +39,14 @@ def loginTest():
         print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
         # request login page
-        r = s.post(url=apiBasePath + "/auth/login", data={"email":email, "password":password}, timeout=20)
+        r = s.post(
+            url = apiBasePath + "/auth/login",
+            params = {
+                "email":email,
+                "password":password
+            },
+            timeout=20
+            )
 
         # check if good request
         if r.status_code != 200:
@@ -79,13 +86,16 @@ def createCaseTest():
 
         # request to create case
         r = s.post(
-            url=apiBasePath + "/case/add",
+            url= apiBasePath + "/case/new",
             data={
                 "name":caseName,
                 "description":caseDescription
             }, 
             timeout=20
         )
+
+        print(apiBasePath + "/case/new")
+        print(apiBasePath + "/case/new")
 
         # check if good request
         if r.status_code != 200:

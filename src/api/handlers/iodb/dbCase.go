@@ -36,7 +36,6 @@ func DbGetCaseInfo(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"case": dbCase})
-
 }
 
 func DbCreateCase(c *gin.Context) {
@@ -53,6 +52,8 @@ func DbCreateCase(c *gin.Context) {
 
 	dbInterface.MakeCase(json_request)
 
+	// send ok
+	c.JSON(http.StatusOK, gin.H{"message": "Case created"})
 }
 
 func DbUpdateCase(c *gin.Context) {
@@ -69,4 +70,6 @@ func DbUpdateCase(c *gin.Context) {
 
 	dbInterface.UpdateCase("Cases", "CaseMetadata", json_request)
 
+	// send ok
+	c.JSON(http.StatusOK, gin.H{"message": "Case updated"})
 }
