@@ -1,5 +1,6 @@
-/*package authentication
+package authentication
 
+/*
 import (
 	"log"
 	"net/http"

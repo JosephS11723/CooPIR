@@ -254,6 +254,44 @@ func MakeCase(NewCase dbtypes.Case) *mongo.InsertOneResult {
 	return result
 }
 
+// Find the user's email with an UUID
+func FindUserEmailByUUID(uuid string) string {
+
+	var dbName string = "Users"
+	var dbCollection string = "UserMetadata"
+	var result *mongo.SingleResult = FindDocByFilter(dbName, dbCollection, bson.M{"uuid": uuid})
+
+	var dbUser dbtypes.User
+	err := result.Decode(&dbUser)
+
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	var userEmail string = dbUser.Email
+
+	return userEmail
+}
+
+// Find the user's UUID with an email
+func FindUserUUIDByEmail(email string) string {
+
+	var dbName string = "Users"
+	var dbCollection string = "UserMetadata"
+	var result *mongo.SingleResult = FindDocByFilter(dbName, dbCollection, bson.M{"email": email})
+
+	var dbUser dbtypes.User
+	err := result.Decode(&dbUser)
+
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	var userUUID string = dbUser.UUID
+
+	return userUUID
+}
+
 // Finds the case name from CaseMetadata collection using the case UUID.
 func FindCaseNameByUUID(uuid string) string {
 
