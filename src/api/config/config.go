@@ -15,8 +15,17 @@ var FtpTimeout int = 100 // seconds
 
 // seaweedfs config
 var UpTaskCount int = 5          // the number of tasks performed on a file when it is uploaded
-var DoUploadLogging bool = false // whether or not the upload process should be logged with hashes
+var DoUploadLogging bool = true // whether or not the upload process should be logged with hashes
 var ReadOnlyFiles bool = true    // whether files uploaded to seaweedfs should be read-only
 
 // mongo config
 var MongoConnectionTimeout int = 30
+
+// jwt config
+var AuthenticationDebug bool = true
+var RSAKeySize int = 2048
+var RSAKeyDirectory string = "./data"
+var RSAKeyFile string = "private.pem"
+var RSAPublicKeyFile string = "public.pem"
+var HTTPOnly bool = false
+var RequireLogin bool = false // WARNING: this means no one has to authenticate to use the api!!!

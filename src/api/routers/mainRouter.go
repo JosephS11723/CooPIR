@@ -5,8 +5,7 @@ import (
 	"github.com/JosephS11723/CooPIR/src/api/handlers/debug"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/iodb"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/ioseaweed"
-
-	//"github.com/JosephS11723/CooPIR/src/api/handlers/jobs"
+	authmw "github.com/JosephS11723/CooPIR/src/api/middleware/authentication"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -32,8 +31,8 @@ func InitMainRouter() *gin.Engine {
 	// setup base path for api version v1
 	v1 := r.Group("/api/v1")
 
-	// TODO: add authentication middleware here
-	//v1.Use()
+	// authentication middleware
+	v1.Use(authmw.AuthenticationMiddleware)
 
 	// DEBUG REQUESTS
 	// debug ping challenge
@@ -50,9 +49,9 @@ func InitMainRouter() *gin.Engine {
 	v1.GET("/db/test/find", iodb.DbFindTest)
 	v1.POST("/db/test/find", iodb.DbUpdateTest)
 
-	// MONGO-DB Old
-	//v1.POST("/db/case/add", iodb.DbCreateCase)
-	//v1.POST("/db/case/update", iodb.DbUpdateCase)
+	// MONGO-DB Final
+	v1.POST("/case/add", iodb.DbCreateCase)
+	v1.POST("/case/update", iodb.DbUpdateCase)
 	//v1.GET("db/case/find", iodb.DbGetCaseInfo)
 
 	//MONGO-DB
@@ -65,9 +64,8 @@ func InitMainRouter() *gin.Engine {
 	v1.POST("/db/user/update", iodb.DbUpdateUser)
 
 	// Authentication
-	v1.POST("/login", authentication.Login)
-	v1.POST("/renew", authentication.RenewToken)
-	v1.POST("/logout", authentication.Logout)
+	v1.POST("/auth/renew", authentication.RenewToken)
+	v1.POST("/auth/logout", authentication.Logout)
 
 	// group for job server requests
 	/*v2 := r.Group("/api/v1/jobs")
@@ -86,6 +84,12 @@ func InitMainRouter() *gin.Engine {
 
 	// get job results
 	v2.GET("/results", jobs.GetResults)*/
+
+	// group for unauthenticated actions
+	v3 := r.Group("/api/v1/auth")
+	
+	// login
+	v3.POST("/login", authentication.Login)
 
 	// return handler router to main()
 	return r

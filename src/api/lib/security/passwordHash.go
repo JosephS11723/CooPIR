@@ -13,13 +13,17 @@ func HashPass(password string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	log.Println(string(hash))
 
 	return string(hash), nil
 }
 
 func CheckPass(password string, hash string) bool {
 	// Check the password against the hash
+	log.Println("PASS", password)
+	log.Println("HASH", hash)
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	if err != nil {
+		log.Println("[CheckPass ERROR}", err)
+	}
 	return err == nil // nil means no error
 }

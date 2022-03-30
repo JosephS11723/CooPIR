@@ -10,6 +10,8 @@ require (
 	golang.org/x/crypto v0.0.0-20220210151621-f4118a5b28e2
 )
 
+require github.com/tidwall/pretty v1.2.0 // indirect
+
 require (
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/sse v0.1.0 // indirect

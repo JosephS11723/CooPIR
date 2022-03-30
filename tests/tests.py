@@ -15,11 +15,40 @@ parallelThreadStartFlag = False
 # base path for api version
 apiBasePath = "http://localhost:8080/api/v1"
 
+# test credentials
+email = "default@coopir.edu"
+password = "password"
+
+# case information
+caseName = "testcase"
+caseDescription = '''This is a test case for the CoopIR API made by the\npython test script'''
+
+# create requests session object for cookies
+s = requests.Session() 
+
 def error(reason : str):
     print("[ERROR]: {}".format(reason))
 
 def success():
     print("[Success]")
+
+def loginTest():
+    '''Checks the login path and gets a cookie'''
+    try:
+        # print function name
+        print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
+
+        # request login page
+        r = s.post(url=apiBasePath + "/auth/login", data={"email":email, "password":password}, timeout=20)
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+            print(r.content)
+        else:
+            success()
+    except Exception as e:
+        error(e)
 
 def pingTest():
     '''Checks for the ping response against the api'''
@@ -28,7 +57,7 @@ def pingTest():
         print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
         # request ping page
-        r = requests.get(url=apiBasePath + "/ping", timeout=20)
+        r = s.get(url=apiBasePath + "/ping", timeout=20)
 
         # check if good request
         if r.status_code != 200:
@@ -39,6 +68,30 @@ def pingTest():
             success()
         else:
             error()
+    except Exception as e:
+        error(e)
+
+def createCaseTest():
+    '''Attempts to create a case'''
+    try:
+        # print function name
+        print(inspect.getframeinfo(inspect.currentframe()).function, end=" ", flush=True)
+
+        # request to create case
+        r = s.post(
+            url=apiBasePath + "/case/add",
+            data={
+                "name":caseName,
+                "description":caseDescription
+            }, 
+            timeout=20
+        )
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+        else:
+            success()
     except Exception as e:
         error(e)
 
@@ -56,11 +109,11 @@ def uploadTest(fileData = None):
             # add params
             params = {
                 "filename" : "/home/test/test.txt",
-                "casename" : "testcase",
+                "casename" : caseName,
             }
 
             # upload file
-            r = requests.post(url = apiBasePath + "/file", files=file, timeout=20, params=params)
+            r = s.post(url = apiBasePath + "/file", files=file, timeout=20, params=params)
 
             # check if good request
             if r.status_code != 200:
@@ -75,7 +128,7 @@ def uploadTest(fileData = None):
             file = {"file":fileData}
 
             # upload file
-            r = requests.post(url = apiBasePath + "/file", files=file, timeout=10)
+            r = s.post(url = apiBasePath + "/file", files=file, timeout=10)
 
             # check if good request
             if r.status_code != 200:
@@ -98,11 +151,11 @@ def downloadTest(filename : str = None):
 
             params = {
                 "filename" : fileUUID,
-                "casename" : "testcase",
+                "casename" : caseName,
             }
 
             # download file
-            r = requests.get(url, timeout=20, params=params)
+            r = s.get(url, timeout=20, params=params)
 
             # check if good request
             if r.status_code != 200:
@@ -116,7 +169,7 @@ def downloadTest(filename : str = None):
             params = {"filename" : filename}
 
             # download file
-            r = requests.get(url, timeout=10, params=params)
+            r = s.get(url, timeout=10, params=params)
 
             # check if good request
             if r.status_code != 200:
@@ -141,7 +194,7 @@ def deleteTest(filename : str = None):
             params = {"filename" : fileUUID}
             
             # request to delete file
-            r = requests.delete(url, timeout=20, params=params)
+            r = s.delete(url, timeout=20, params=params)
 
             # check if good request
             if r.status_code != 200:
@@ -155,7 +208,7 @@ def deleteTest(filename : str = None):
             params = {"filename" : filename}
 
             # request to delete file
-            r = requests.delete(url, timeout=20, params=params)
+            r = s.delete(url, timeout=20, params=params)
 
             # check if good request
             if r.status_code != 200:
@@ -254,7 +307,7 @@ def dbPingTest():
         print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
         # request ping page
-        r = requests.get(url=apiBasePath + "/db/test")
+        r = s.get(url=apiBasePath + "/db/test")
 
         # check if good request
         if r.status_code != 200:
@@ -276,7 +329,7 @@ def dbInsertTest():
         print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
         # request ping page
-        r = requests.post(url=apiBasePath + "/db/test")
+        r = s.post(url=apiBasePath + "/db/test")
 
         # check if good request
         if r.status_code != 200:
@@ -299,7 +352,7 @@ def dbFindTest():
         print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
         # request ping page
-        r = requests.get(url=apiBasePath + "/db/test/find")
+        r = s.get(url=apiBasePath + "/db/test/find")
 
         # check if good request
         if r.status_code != 200:
@@ -322,7 +375,7 @@ def dbNewCaseTest():
         print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
         # request ping page
-        r = requests.post(
+        r = s.post(
             url=apiBasePath + "/db/case/add", json={
                     "UUID":None,
 	                "Name":"testcase",
@@ -354,7 +407,7 @@ def dbUpdateCaseTest():
         print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
         # request ping page
-        r = requests.post(
+        r = s.post(
             url=apiBasePath + "/db/case/update", json={
                 "filter":{"name":"testcase"},
                 "update":{
@@ -390,7 +443,7 @@ def dbFindCaseTest():
         print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
         # request ping page
-        r = requests.post(
+        r = s.post(
             url=apiBasePath + "/db/case/find", json={
                 "name":"testcase"
                 }
@@ -410,14 +463,14 @@ def dbFindCaseTest():
         error(e)
 
 def dbNewUserTest():
-    """Attempts to add a case to the database
+    """Attempts to add a user to the database
     """
     try:
         # print function name
         print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
         # request ping page
-        r = requests.post(
+        r = s.post(
             url=apiBasePath + "/db/user/add", json={
 	                "Name":"testuser",
                     "Email":"testemail@emailservice.com",
@@ -441,14 +494,14 @@ def dbNewUserTest():
         error(e)
 
 def dbUpdateUserTest():
-    """Attempts to update a case to the database
+    """Attempts to update a user in the database
     """
     try:
         # print function name
         print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
         # request ping page
-        r = requests.post(
+        r = s.post(
             url=apiBasePath + "/db/case/update", json={
                 "filter":{"name":"testuser"},
                 "update":{
@@ -483,7 +536,7 @@ def dbFindUserTest():
         print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
         # request ping page
-        r = requests.post(
+        r = s.post(
             url=apiBasePath + "/db/case/find", json={
                 "name":"testuser"
                 }
@@ -502,7 +555,7 @@ def dbFindUserTest():
     except Exception as e:
         error(e)
 
-tests = [pingTest, uploadTest, downloadTest, deleteTest, dbPingTest, dbInsertTest, dbFindTest]
+tests = [loginTest, createCaseTest, pingTest, uploadTest, downloadTest, dbPingTest, dbInsertTest, dbFindTest]
 def runAllTests():
     for test in tests:
         test()

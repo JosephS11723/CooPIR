@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/JosephS11723/CooPIR/src/api/lib/crypto"
 	"github.com/JosephS11723/CooPIR/src/api/routers"
 )
 
@@ -20,6 +21,9 @@ func main() {
 
 	// initialize router with handlers
 	r := routers.InitMainRouter()
+
+	// key check. this initializes the public and private keys for authentication (JWT token signing)
+	crypto.VerifyKeys()
 
 	// run and serve main router
 	go func() {
