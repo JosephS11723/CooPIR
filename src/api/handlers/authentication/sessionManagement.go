@@ -16,14 +16,14 @@ import (
 // Login verifies user credentials and returns a token
 func Login(c *gin.Context) {
 	// get email from parameter
-	email := c.Param("email")
+	email := c.PostForm("email")
 	if email == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "No email provided"})
 		return
 	}
 
 	// get password from parameter
-	password := c.Param("password")
+	password := c.PostForm("password")
 	if password == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "No password provided"})
 		return

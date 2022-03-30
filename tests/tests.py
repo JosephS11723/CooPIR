@@ -41,7 +41,7 @@ def loginTest():
         # request login page
         r = s.post(
             url = apiBasePath + "/auth/login",
-            params = {
+            data = {
                 "email":email,
                 "password":password
             },
