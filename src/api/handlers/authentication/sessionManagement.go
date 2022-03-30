@@ -6,6 +6,7 @@ import (
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/crypto"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
+	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 	"github.com/JosephS11723/CooPIR/src/api/lib/security"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
@@ -112,13 +113,6 @@ func AddUser(c *gin.Context) {
 		return
 	}
 
-	// get username
-	username, success := c.GetPostForm("username")
-	if !success {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no username provided"})
-		return
-	}
-
 	// TODO: fix role to have sanity checks. should we make this a read-only by default? should the registration token be attached to particular permissions or should we just let the user set it?
 	// add role
 	role, success := c.GetPostForm("role")
@@ -138,7 +132,15 @@ func AddUser(c *gin.Context) {
 	var cases []string
 
 	// add user to database
-	_, err = dbInterface.MakeUser(username, email, role, cases, hashedPassword)
+	_, err = dbInterface.MakeUser(
+		dbtypes.NewUser{
+			Email:    email,
+			Password: hashedPassword,
+			Role:     role,
+			Cases:    cases,
+		},
+	)
+
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "failed to add user"})
 		return
