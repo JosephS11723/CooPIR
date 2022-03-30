@@ -383,7 +383,7 @@ def dbNewCaseTest():
 
         # request ping page
         r = s.post(
-            url=apiBasePath + "/db/case/add", json={
+            url=apiBasePath + "/db/case/new", json={
                     "UUID":None,
 	                "Name":"testcase",
                     "Date_created":"today :D",
@@ -450,8 +450,8 @@ def dbFindCaseTest():
         print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
         # request ping page
-        r = s.post(
-            url=apiBasePath + "/db/case/find", json={
+        r = s.get(
+            url=apiBasePath + "/db/case", json={
                 "name":"testcase"
                 }
             )
@@ -478,7 +478,7 @@ def dbNewUserTest():
 
         # request ping page
         r = s.post(
-            url=apiBasePath + "/db/user/add", json={
+            url=apiBasePath + "/db/user/new", json={
 	                "Name":"testuser",
                     "Email":"testemail@emailservice.com",
                     "Role":"responder",
@@ -543,8 +543,8 @@ def dbFindUserTest():
         print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
         # request ping page
-        r = s.post(
-            url=apiBasePath + "/db/case/find", json={
+        r = s.get(
+            url=apiBasePath + "/db/case", json={
                 "name":"testuser"
                 }
             )
@@ -562,7 +562,7 @@ def dbFindUserTest():
     except Exception as e:
         error(e)
 
-tests = [loginTest, createCaseTest, pingTest, uploadTest, downloadTest, dbPingTest, dbInsertTest, dbFindTest]
+tests = [loginTest, pingTest, dbNewCaseTest ,uploadTest,  dbUpdateCaseTest, dbFindCaseTest, dbNewUserTest, dbUpdateUserTest, dbFindUserTest, downloadTest, dbPingTest, dbInsertTest, dbFindTest]
 def runAllTests():
     for test in tests:
         test()
