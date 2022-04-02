@@ -47,8 +47,7 @@ func DbCreateCase(c *gin.Context) {
 		log.Panicln(err)
 	}
 
-	// TODO: check to see if case name already taken
-
+	// call make case (it does the sanity checks for us)
 	dbInterface.MakeCase(json_request)
 
 	// send ok
