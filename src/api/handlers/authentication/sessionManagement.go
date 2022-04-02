@@ -124,14 +124,14 @@ func AddUser(c *gin.Context) {
 	// get email
 	email, success := c.GetPostForm("email")
 	if !success {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no email provided"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "No email provided"})
 		return
 	}
 
 	// get password
 	password, success := c.GetPostForm("password")
 	if !success {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no password provided"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "No password provided"})
 		return
 	}
 
@@ -139,14 +139,14 @@ func AddUser(c *gin.Context) {
 	// add role
 	role, success := c.GetPostForm("role")
 	if !success {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no role provided"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "No role provided"})
 		return
 	}
 
 	// hash password
 	hashedPassword, err := security.HashPass(password)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "failed to hash password"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Failed to hash password"})
 		return
 	}
 

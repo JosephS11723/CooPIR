@@ -78,7 +78,13 @@ func SWPOST(c *gin.Context) {
 
 	// set filename to randomly generated name. change after hash operation
 	// Use MakeUuid from dbInterface to ensure unique filename
-	filename := dbInterface.MakeUuid()
+	filename, err := dbInterface.MakeUuid()
+
+	// error if failed to generate uuid
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "failed to generate uuid"})
+		return
+	}
 
 	// create pipes
 	md5Reader, md5Writer := io.Pipe()
@@ -179,7 +185,7 @@ func SWPOST(c *gin.Context) {
 		[]string{},
 		originalFilename,
 		caseName,
-		"/files/"+caseName + "/" + filename,
+		"/files/"+caseName+"/"+filename,
 		time.Now().Local().String(),
 		"supervisor",
 		"admin",
