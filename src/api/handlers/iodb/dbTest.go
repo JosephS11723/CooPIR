@@ -57,7 +57,7 @@ func DbUploadTest(c *gin.Context) {
 		Collaborators: []string{"testuser, anotheruser, Brandon"},
 	}
 
-	result, err = dbInterface.MakeCase(NewCase)
+	result, _, err = dbInterface.MakeCase(NewCase)
 
 	if err != nil {
 		log.Panicln("[ERROR] Failed to create testcase: " + err.Error())

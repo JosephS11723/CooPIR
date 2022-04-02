@@ -26,7 +26,7 @@ func GETFile(filename string, casename string, c *gin.Context) error {
 	var resp *http.Response
 
 	// create request
-	req, err := http.NewRequest(http.MethodGet, filerAddress+":"+filerPort+"/files/" + casename + "/" + filename, nil)
+	req, err := http.NewRequest(http.MethodGet, filerAddress+":"+filerPort+"/files/"+casename+"/"+filename, nil)
 	if err != nil {
 		return err
 	}
@@ -92,7 +92,7 @@ func POSTFile(filename string, casename string, r io.Reader, c *gin.Context, ss 
 	}
 
 	// create request
-	resp, err := http.Post(filerAddress+":"+filerPort+"/files/" + casename + "/" + fileStat, mpw.FormDataContentType(), rr)
+	resp, err := http.Post(filerAddress+":"+filerPort+"/files/"+casename+"/"+fileStat, mpw.FormDataContentType(), rr)
 	log.Println(filerAddress + ":" + filerPort + "/files/" + casename + "/" + fileStat)
 	if err != nil {
 		log.Println(err)
@@ -112,12 +112,12 @@ func POSTFile(filename string, casename string, r io.Reader, c *gin.Context, ss 
 }
 
 // DELETEs a file on seaweed given its name
-func DELETEFile(filename string, c *gin.Context) error {
+func DELETEFile(filename string, casename string, c *gin.Context) error {
 	// create http agent
 	client := &http.Client{}
 
 	// create request
-	req, err := http.NewRequest(http.MethodDelete, filerAddress+":"+filerPort+"/files/"+filename, nil)
+	req, err := http.NewRequest(http.MethodDelete, filerAddress+":"+filerPort+"/files/"+casename+"/"+filename, nil)
 
 	if err != nil {
 		log.Println(err)

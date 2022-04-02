@@ -28,8 +28,8 @@ func dbConnect() (*mongo.Client, context.Context, context.CancelFunc, error) {
 	credential := options.Credential{
 		AuthMechanism: "SCRAM-SHA-256",
 		AuthSource:    "admin",
-		Username:      "api",
-		Password:      "bingusmalingus",
+		Username:      "myUserAdmin",
+		Password:      "securepassword",
 	}
 	clientOpts := options.Client().ApplyURI(uri).
 		SetAuth(credential)
@@ -220,16 +220,16 @@ func MakeUser(user dbtypes.NewUser) (*mongo.InsertOneResult, error) {
 
 // MakeCase creates a new Case struct.
 //func MakeCase(NewCase dbttypes.Case) *mongo.InsertOneResult {
-func MakeCase(NewCase dbtypes.Case) (*mongo.InsertOneResult, error) {
+func MakeCase(NewCase dbtypes.Case) (*mongo.InsertOneResult, string, error) {
 	// Check if case name already exists
 	exists, err := DoesCaseExist(NewCase.Name)
 	if exists {
 		// If case name exists, return error
-		return nil, errors.New("case name already exists")
+		return nil, "", errors.New("case name already exists")
 	}
 
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	// Set db types
@@ -239,7 +239,7 @@ func MakeCase(NewCase dbtypes.Case) (*mongo.InsertOneResult, error) {
 
 	// could not make uuid
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	NewCase.UUID = id
@@ -270,7 +270,7 @@ func MakeCase(NewCase dbtypes.Case) (*mongo.InsertOneResult, error) {
 
 	result, err = DbSingleInsert(dbName, dbCollection, NewCase)
 
-	return result, err
+	return result, id, err
 }
 
 // Find the user's email with an UUID
@@ -342,7 +342,7 @@ func FindCaseUUIDByName(name string) (string, error) {
 }
 
 func FindFileByHash(hash string, dbCollection string) (string, error) {
-	var dbName string = "Files"
+	var dbName string = "Cases"
 	result, err := FindDocByFilter(dbName, dbCollection, bson.M{"sha512": hash})
 
 	if err != nil {
@@ -356,8 +356,8 @@ func FindFileByHash(hash string, dbCollection string) (string, error) {
 }
 
 // MakeFile creates a new File struct.
-func MakeFile(uuid string, hashes []string, tags []string, filename string, caseName string, fileDir string, uploadDate string, viewAccess string, editAccess string) (*mongo.InsertOneResult, error) {
-	caseUUID, err := FindCaseUUIDByName(caseName)
+func MakeFile(uuid string, hashes []string, tags []string, filename string, caseUUID string, fileDir string, uploadDate string, viewAccess string, editAccess string) (*mongo.InsertOneResult, error) {
+	caseName, err := FindCaseNameByUUID(caseUUID)
 	if err != nil {
 		return nil, err
 	}

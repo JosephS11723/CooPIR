@@ -49,14 +49,14 @@ func DbCreateCase(c *gin.Context) {
 	}
 
 	// call make case (it does the sanity checks for us)
-	_, err = dbInterface.MakeCase(json_request)
+	_, caseUUID, err := dbInterface.MakeCase(json_request)
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, errors.New("Case already exists"))
 	}
 
 	// send ok
-	c.JSON(http.StatusOK, gin.H{"message": "Case created"})
+	c.String(http.StatusOK, caseUUID)
 }
 
 func DbUpdateCase(c *gin.Context) {

@@ -27,17 +27,17 @@ func SWGET(c *gin.Context) {
 		return
 	}
 
-	caseName, success := c.GetQuery("casename")
-	// error if casename not provided
+	caseUUID, success := c.GetQuery("caseuuid")
+	// error if caseuuid not provided
 	if !success {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no casename provided"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no caseuuid provided"})
 		return
 	}
 
 	// TODO: verify user is authorized to download file
 
 	// download file through lib
-	err := swi.GETFile(filename, caseName, c)
+	err := swi.GETFile(filename, caseUUID, c)
 
 	// internal server error: failed to retrieve file data
 	if err != nil {
@@ -51,10 +51,10 @@ func SWGET(c *gin.Context) {
 func SWPOST(c *gin.Context) {
 	var err error
 
-	caseName, success := c.GetQuery("casename")
-	// error if casename not provided
+	caseUUID, success := c.GetQuery("caseuuid")
+	// error if caseuuid not provided
 	if !success {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no casename provided"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no caseuuid provided"})
 		return
 	}
 
@@ -72,7 +72,16 @@ func SWPOST(c *gin.Context) {
 		log.Panicln(err)
 	}
 
-	// TODO: ensure case name is valid
+	// ensure case name is valid
+	fmt.Println(caseUUID)
+	_, err = dbInterface.FindCaseNameByUUID(caseUUID)
+
+	if err != nil {
+		log.Println(err)
+		// case does not exist
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Invalid case UUID"})
+		return
+	}
 
 	// TODO: ensure user is authorized to upload file to case
 
@@ -126,7 +135,7 @@ func SWPOST(c *gin.Context) {
 	go libcrypto.Sha1FromReaderAsync(sha1Reader, &doWait, errChan, hashsha1Chan)
 	go libcrypto.Sha256FromReaderAsync(sha256Reader, &doWait, errChan, hashsha256Chan)
 	go libcrypto.Sha512FromReaderAsync(sha512Reader, &doWait, errChan, hashsha512Chan)
-	go swi.POSTFile(filename, caseName, POSTReader, c.Copy(), &doWait, errChan)
+	go swi.POSTFile(filename, caseUUID, POSTReader, c.Copy(), &doWait, errChan)
 
 	go func() {
 		// after completing the copy, we need to close
@@ -172,9 +181,21 @@ func SWPOST(c *gin.Context) {
 		}
 	}
 
-	// TODO: check mongo for file existence and remove if duplicate
+	// check mongo for file existence and remove if duplicate
+	_, err = dbInterface.FindFileByHash(hex.EncodeToString(filesha512Hash), caseUUID)
+	
+	if err == nil {
+		// file already exists, remove it
+		err = swi.DELETEFile(filename, caseUUID, c)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "failed to delete file"})
+			log.Panicln(err)
+		}
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "file already exists"})
+		return
+	}
 
-	dbInterface.MakeFile(
+	_, err = dbInterface.MakeFile(
 		filename,
 		[]string{
 			hex.EncodeToString(filemd5Hash),
@@ -184,12 +205,17 @@ func SWPOST(c *gin.Context) {
 		},
 		[]string{},
 		originalFilename,
-		caseName,
-		"/files/"+caseName+"/"+filename,
+		caseUUID,
+		"/files/"+caseUUID+"/"+filename,
 		time.Now().Local().String(),
 		"supervisor",
 		"admin",
 	)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "failed to create file"})
+		log.Panicln(err)
+	}
 
 	// upload succeeded
 	c.String(http.StatusOK, filename)
@@ -205,10 +231,17 @@ func SWDELETE(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no filename provided"})
 	}
 
+	caseUUID, success := c.GetQuery("caseuuid")
+	// error if caseuuid not provided
+	if !success {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no caseuuid provided"})
+		return
+	}
+
 	// TODO: verify user is authorized to delete file  and case files are marked as editable (not likely)
 
 	// run delete function from lib
-	err := swi.DELETEFile(filename, c)
+	err := swi.DELETEFile(filename, caseUUID, c)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "failed to delete"})
 		log.Panicln("INTERNAL SERVER ERROR: DELETE FAILED")
