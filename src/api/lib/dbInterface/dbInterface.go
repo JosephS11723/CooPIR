@@ -290,9 +290,7 @@ func FindUserEmailByUUID(uuid string) (string, error) {
 		return "", err
 	}
 
-	var userEmail string = dbUser.Email
-
-	return userEmail, nil
+	return dbUser.Email, nil
 }
 
 // Find the user's UUID with an email
@@ -308,9 +306,7 @@ func FindUserUUIDByEmail(email string) (string, error) {
 	var dbUser dbtypes.User
 	err = result.Decode(&dbUser)
 
-	var userUUID string = dbUser.UUID
-
-	return userUUID, err
+	return dbUser.UUID, nil
 }
 
 // Finds the case name from CaseMetadata collection using the case UUID.
@@ -326,9 +322,7 @@ func FindCaseNameByUUID(uuid string) (string, error) {
 	var dbCase dbtypes.Case
 	err = result.Decode(&dbCase)
 
-	var caseName string = dbCase.Name
-
-	return caseName, err
+	return dbCase.Name, err
 }
 
 // Finds the uuid of a case by the case name
@@ -344,9 +338,7 @@ func FindCaseUUIDByName(name string) (string, error) {
 	var dbCase dbtypes.Case
 	err = result.Decode(&dbCase)
 
-	var caseUUID string = dbCase.UUID
-
-	return caseUUID, err
+	return dbCase.UUID, err
 }
 
 // MakeFile creates a new File struct.
@@ -385,11 +377,6 @@ func MakeAccess(filename string, user string, date string) (*mongo.InsertOneResu
 	var dbName string = "Cases"
 	var dbCollection string = "Log"
 	var result *mongo.InsertOneResult
-	
-	id, err := MakeUuid()
-	if err != nil {
-		return nil, err
-	}
 
 	id, err := MakeUuid()
 	if err != nil {
@@ -500,15 +487,13 @@ func DoesCaseExist(name string) (bool, error) {
 	return result.Err() != mongo.ErrNoDocuments, nil
 }
 
-// TODO: Logic is broken in the check against the database. FIX
 // MakeUuid creates a new UUID and checks the database to make sure it doesn't already exist.
 func MakeUuid() (string, error) {
 	var id string
 	var exist bool
 	var err error
-	var Users []string = []string{"UserMetadata"}
-	var Cases []string = []string{"CaseMetadata", "File", "Log"}
-	// TODO: check more collections (all the collections for all the cases)
+	var Users []string = findCollections("Users")
+	var Cases []string = findCollections("Cases")
 
 	// Loop that makes a uuid and checks if it already exists in the database.
 	// keep looping until it doesn't exist.
