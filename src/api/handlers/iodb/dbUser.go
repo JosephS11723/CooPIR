@@ -4,6 +4,7 @@ import (
 
 	//"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 
+	"errors"
 	"log"
 	"net/http"
 
@@ -15,7 +16,6 @@ import (
 )
 
 func DbGetUserInfo(c *gin.Context) {
-
 	var json_request map[string]interface{}
 
 	err := c.BindJSON(&json_request)
@@ -24,7 +24,11 @@ func DbGetUserInfo(c *gin.Context) {
 		log.Panicln(err)
 	}
 
-	var result = dbInterface.FindDocByFilter("Users", "UserMetadata", json_request)
+	result, err := dbInterface.FindDocByFilter("Users", "UserMetadata", json_request)
+
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, errors.New("could not retrieve user information"))
+	}
 
 	var dbUser dbtypes.User
 

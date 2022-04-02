@@ -27,8 +27,8 @@ db.createRole(
     {
       role: "apiUsersDatabase", 
       privileges: [
-        { resource: {db: "Users", collection: "UserMetadata"}, actions: ["find", "insert", "update"] },
-        { resource: {db: "Users", collection: "Authentication"}, actions: ["find", "insert", "update"] },
+        { resource: {db: "Users", collection: "UserMetadata"}, actions: ["find", "insert", "update", "remove", "listCollections"] },
+        // { resource: {db: "Users", collection: "Authentication"}, actions: ["find", "insert", "update", "remove", "listCollections"] },
         //{ resource: {db: "Users", collection: "Aggregation"}, actions: ["find"]}
       ],
       roles: []
@@ -60,7 +60,7 @@ db.createRole(
     {
       role: "apiCasesDatabase", 
       privileges: [
-        { resource: {db: "Cases", collection: ""}, actions: ["find", "insert", "update"] },
+        { resource: {db: "Cases", collection: ""}, actions: ["find", "insert", "update", "remove", "listCollections"] },
         //{ resource: {db: "Cases", collection: "Aggregation"}, actions: ["find"]}
       ],
       roles: []

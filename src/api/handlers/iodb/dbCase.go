@@ -4,6 +4,7 @@ import (
 
 	//"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 
+	"errors"
 	"log"
 	"net/http"
 
@@ -15,7 +16,6 @@ import (
 )
 
 func DbGetCaseInfo(c *gin.Context) {
-
 	var json_request map[string]interface{}
 
 	err := c.BindJSON(&json_request)
@@ -25,7 +25,7 @@ func DbGetCaseInfo(c *gin.Context) {
 	}
 
 	//dbInterface.FindCase("Case", "CaseMetadata", json_request)
-	var result = dbInterface.FindDocByFilter("Cases", "CaseMetadata", json_request)
+	result, err := dbInterface.FindDocByFilter("Cases", "CaseMetadata", json_request)
 
 	var dbCase dbtypes.Case
 
@@ -48,9 +48,12 @@ func DbCreateCase(c *gin.Context) {
 		log.Panicln(err)
 	}
 
-	// TODO: check to see if case name already taken
+	// call make case (it does the sanity checks for us)
+	_, err = dbInterface.MakeCase(json_request)
 
-	dbInterface.MakeCase(json_request)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, errors.New("Case already exists"))
+	}
 
 	// send ok
 	c.JSON(http.StatusOK, gin.H{"message": "Case created"})
@@ -65,7 +68,7 @@ func DbUpdateCase(c *gin.Context) {
 	if err != nil {
 		log.Panicln(err)
 	}
-	
+
 	// TODO: check to see if case name already taken
 
 	dbInterface.UpdateCase("Cases", "CaseMetadata", json_request)

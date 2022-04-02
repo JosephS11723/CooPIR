@@ -562,7 +562,7 @@ def dbFindUserTest():
     except Exception as e:
         error(e)
 
-tests = [loginTest, pingTest, dbNewCaseTest ,uploadTest,  dbUpdateCaseTest, dbFindCaseTest, dbNewUserTest, dbUpdateUserTest, dbFindUserTest, downloadTest, dbPingTest, dbInsertTest, dbFindTest]
+tests = [loginTest, pingTest, dbNewCaseTest ,uploadTest,  dbUpdateCaseTest, dbFindCaseTest, dbNewUserTest, dbUpdateUserTest, dbFindUserTest, downloadTest]
 def runAllTests():
     for test in tests:
         test()
