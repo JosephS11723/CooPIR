@@ -25,6 +25,7 @@
     "cors": "^2.8.5",
     "material-icons": "^1.10.8",
     "ngx-bootstrap": "^8.0.0",
+    "ngx-cookie-service": "^13.1.2",
     "rxjs": "~7.4.0",
     "sweetalert2": "^11.4.6",
     "tslib": "^2.3.0",

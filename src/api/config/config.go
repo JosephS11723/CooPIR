@@ -28,4 +28,4 @@ var RSAKeyDirectory string = "./data"
 var RSAKeyFile string = "private.pem"
 var RSAPublicKeyFile string = "public.pem"
 var HTTPOnly bool = false
-var RequireLogin bool = false // WARNING: this means no one has to authenticate to use the api!!!
+var RequireLogin bool = true // WARNING: this means no one has to authenticate to use the api!!!

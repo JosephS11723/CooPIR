@@ -8,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 export class DashboardComponent implements OnInit {
   menuItems = [
     {
-      label: 'Login',
+      label: 'Logout',
       icon: 'login',
       route: '/login'
     },    

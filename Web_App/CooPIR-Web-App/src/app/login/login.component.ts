@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-login',
@@ -8,16 +10,44 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private router: Router) { }
+  constructor(private cookieService:CookieService, private http: HttpClient, private router: Router) { }
 
   login()
   {
-    var username = (<HTMLInputElement>document.getElementById("username")).value;
+    const headers = new HttpHeaders();
+    const formData = new FormData();
+    
+    var email = (<HTMLInputElement>document.getElementById("email")).value;
     var password = (<HTMLInputElement>document.getElementById("password")).value;
-    console.log("Going to Dashboard");
-    console.log("Username: ", username);
+    
+    //const params = new HttpParams()
+    //.append('email', username)
+    //.append('password', password);
+
+    formData.append("email", email);
+    formData.append("password", password);
+
+    console.log(formData.getAll("email"));
+    
+    this.http.post("http://localhost:8080/api/v1/auth/login", formData, { 
+      observe: 'response', responseType: 'text'})
+      .subscribe(response => {
+        console.log("Logging response");
+        console.log(response.body);
+        if(response.body != null)
+        {
+          this.cookieService.set('test', response.body);
+        }
+        if(response.status === 200)
+        {
+          this.router.navigateByUrl('/dashboard', { replaceUrl: true});
+          //console.log(this.cookieService.get('test'));
+        }
+      });
+    
+    console.log("Email: ", email);
     console.log("Password: ", password);
-    this.router.navigateByUrl('/dashboard', { replaceUrl: true});  
+    //this.router.navigateByUrl('/dashboard', { replaceUrl: true});  
 }
 
 toggleVisibility()

@@ -2,6 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
+import { CookieService } from 'ngx-cookie-service';
 //import { Server } from 'http';
 
 @Component({
@@ -13,7 +14,7 @@ export class HomeComponent implements OnInit {
   fileName = '';
   path: string = "/assets/images/CooPIR_Pic.jpg";
   ImageAlt: string;
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(private cookieService:CookieService, private http: HttpClient, private router: Router) {
     //this.ImagePath = 'src/app/img/CooPir_Pic.jpg'
     this.ImageAlt = 'Fox dude'
    }
@@ -94,6 +95,9 @@ export class HomeComponent implements OnInit {
         {
             this.fileName = file.name;
             console.log(file);
+
+            console.log(this.cookieService.get('test'));
+
             //const params = new URLSearchParams();
             //params.set("caseName", caseName);
             //params.set("fileName", this.fileName);
@@ -103,6 +107,7 @@ export class HomeComponent implements OnInit {
             .append('filename', this.fileName);
 
             const headers = new HttpHeaders()
+            .append('Cookie', this.cookieService.get('test'));
             //.set('Access-Control-Allow-Origin', '*');
 
 
@@ -115,6 +120,7 @@ export class HomeComponent implements OnInit {
             {
               params: params,
               headers: headers,
+              withCredentials: true,
               observe: 'response'})
             .subscribe(response => {
               console.log("logging respose");
