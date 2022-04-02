@@ -1,3 +1,4 @@
 npm install --save @angular/material @angular/cdk @angular/animations
 npm install @angular/flex-layout --save
 npm install ngx-cookie-service
+npm install @ngxs/store --save

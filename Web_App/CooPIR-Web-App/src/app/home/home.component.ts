@@ -96,7 +96,7 @@ export class HomeComponent implements OnInit {
             this.fileName = file.name;
             console.log(file);
 
-            console.log(this.cookieService.get('test'));
+            //console.log(this.cookieService.get('test'));
 
             //const params = new URLSearchParams();
             //params.set("caseName", caseName);
@@ -107,7 +107,7 @@ export class HomeComponent implements OnInit {
             .append('filename', this.fileName);
 
             const headers = new HttpHeaders()
-            .append('Cookie', this.cookieService.get('test'));
+            //.append('Cookie', this.cookieService.get('test'));
             //.set('Access-Control-Allow-Origin', '*');
 
 
@@ -120,7 +120,6 @@ export class HomeComponent implements OnInit {
             {
               params: params,
               headers: headers,
-              withCredentials: true,
               observe: 'response'})
             .subscribe(response => {
               console.log("logging respose");

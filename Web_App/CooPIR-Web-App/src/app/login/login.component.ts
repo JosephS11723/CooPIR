@@ -33,9 +33,11 @@ export class LoginComponent implements OnInit {
       observe: 'response', responseType: 'text'})
       .subscribe(response => {
         console.log("Logging response");
-        console.log(response.body);
+        //console.log(response.body);
         if(response.body != null)
         {
+          //var cookieText = response.body.slice(10, response.body.length-2);
+          //console.log("Sliced: ", cookieText);
           this.cookieService.set('test', response.body);
         }
         if(response.status === 200)

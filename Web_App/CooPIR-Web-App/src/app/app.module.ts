@@ -17,6 +17,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatList, MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { CookieService } from 'ngx-cookie-service';
+import { httpInterceptProviders } from './Http-interceptors';
+
 
 @NgModule({
   declarations: [
@@ -38,7 +40,10 @@ import { CookieService } from 'ngx-cookie-service';
     MatDividerModule,
     MatListModule
   ],
-  providers: [CookieService],
+  providers: [
+    CookieService,
+    httpInterceptProviders
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
