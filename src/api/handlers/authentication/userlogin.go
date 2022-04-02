@@ -10,6 +10,7 @@ func userLogin(email string, password string) bool {
 	// get password hash from database
 	hash, err := dbInterface.RetrieveHashByEmail(email)
 
+	// could not retrieve hash from database (email not in database)
 	if err != nil {
 		return false
 	}
