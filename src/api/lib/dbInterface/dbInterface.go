@@ -341,6 +341,20 @@ func FindCaseUUIDByName(name string) (string, error) {
 	return dbCase.UUID, err
 }
 
+func FindFileByHash(hash string, dbCollection string) (string, error) {
+	var dbName string = "Files"
+	result, err := FindDocByFilter(dbName, dbCollection, bson.M{"sha512": hash})
+
+	if err != nil {
+		return "", err
+	}
+
+	var dbFile dbtypes.File
+	err = result.Decode(&dbFile)
+
+	return dbFile.UUID, err
+}
+
 // MakeFile creates a new File struct.
 func MakeFile(uuid string, hashes []string, tags []string, filename string, caseName string, fileDir string, uploadDate string, viewAccess string, editAccess string) (*mongo.InsertOneResult, error) {
 	caseUUID, err := FindCaseUUIDByName(caseName)
