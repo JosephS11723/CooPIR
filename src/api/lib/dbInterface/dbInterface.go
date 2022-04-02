@@ -268,9 +268,7 @@ func FindUserEmailByUUID(uuid string) string {
 		log.Panicln(err)
 	}
 
-	var userEmail string = dbUser.Email
-
-	return userEmail
+	return dbUser.Email
 }
 
 // Find the user's UUID with an email
@@ -287,9 +285,7 @@ func FindUserUUIDByEmail(email string) string {
 		log.Panicln(err)
 	}
 
-	var userUUID string = dbUser.UUID
-
-	return userUUID
+	return dbUser.UUID
 }
 
 // Finds the case name from CaseMetadata collection using the case UUID.
@@ -306,9 +302,7 @@ func FindCaseNameByUUID(uuid string) string {
 		log.Panicln(err)
 	}
 
-	var caseName string = dbCase.Name
-
-	return caseName
+	return dbCase.Name
 }
 
 // Finds the uuid of a case by the case name
@@ -325,9 +319,7 @@ func FindCaseUUIDByName(name string) string {
 		log.Panicln(err)
 	}
 
-	var caseUUID string = dbCase.UUID
-
-	return caseUUID
+	return dbCase.UUID
 }
 
 // MakeFile creates a new File struct.
@@ -481,8 +473,8 @@ func DoesCaseExist(name string) bool {
 func MakeUuid() string {
 	var id string
 	var exist bool
-	var Users []string = []string{"UserMetadata"}
-	var Cases []string = []string{"CaseMetadata", "File", "Log"}
+	var Users []string = findCollections("Users")
+	var Cases []string = findCollections("Cases")
 	// TODO: check more collections (all the collections for all the cases)
 
 	// Loop that makes a uuid and checks if it already exists in the database.
@@ -515,6 +507,35 @@ func MakeUuid() string {
 	}
 
 	return id
+}
+
+// Finds all collections in the database and returns a slice of strings
+// findCollections(bdName string) []string
+func findCollections(dbName string) []string {
+	// connect to db
+	client, ctx, cancel, err := dbConnect()
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	defer dbClose(client, ctx, cancel)
+
+	// Obtain the DB, by name. db will have the type
+	// *mongo.Database
+	db := client.Database(dbName)
+
+	// use a filter to only select all collections
+	result, err := db.ListCollectionNames(ctx, bson.D{{"options.capped", false}})
+
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	for _, coll := range result {
+		log.Println(coll)
+	}
+
+	return result
 }
 
 // Check if UUID exists in the collection. Returns true if the document exists.
