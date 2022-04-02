@@ -64,7 +64,7 @@ func DbUpdateCase(c *gin.Context) {
 	if err != nil {
 		log.Panicln(err)
 	}
-	
+
 	// TODO: check to see if case name already taken
 
 	dbInterface.UpdateCase("Cases", "CaseMetadata", json_request)

@@ -87,7 +87,7 @@ func InitMainRouter() *gin.Engine {
 
 	// group for unauthenticated actions
 	v3 := r.Group("/api/v1/auth")
-	
+
 	// login
 	v3.POST("/login", authentication.Login)
 

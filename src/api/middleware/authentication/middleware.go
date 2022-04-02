@@ -3,8 +3,8 @@ package authentication
 import (
 	"net/http"
 
-	"github.com/JosephS11723/CooPIR/src/api/lib/crypto"
 	"github.com/JosephS11723/CooPIR/src/api/config"
+	"github.com/JosephS11723/CooPIR/src/api/lib/crypto"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 )

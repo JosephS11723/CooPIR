@@ -20,7 +20,7 @@ func VerifyKeys() {
 	if _, err := os.Stat(config.RSAKeyDirectory); os.IsNotExist(err) {
 		os.Mkdir(config.RSAKeyDirectory, 0755)
 	}
-	
+
 	// check if key file exists
 	if _, err := os.Stat(config.RSAKeyDirectory + string(os.PathSeparator) + config.RSAKeyFile); os.IsNotExist(err) {
 		log.Println("No private key file file found. Generating new key...")

@@ -31,7 +31,6 @@ func CreateToken(c *gin.Context) (string, error) {
 	return "", nil
 }
 
-
 // RevokeToken revokes the current JWT token.
 func RevokeToken(c *gin.Context) error {
 	return nil

@@ -385,7 +385,7 @@ func MakeAccess(filename string, user string, date string) (*mongo.InsertOneResu
 	var dbName string = "Cases"
 	var dbCollection string = "Log"
 	var result *mongo.InsertOneResult
-	
+
 	id, err := MakeUuid()
 	if err != nil {
 		return nil, err
