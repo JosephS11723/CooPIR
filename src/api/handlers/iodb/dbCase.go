@@ -15,7 +15,6 @@ import (
 )
 
 func DbGetCaseInfo(c *gin.Context) {
-
 	var json_request map[string]interface{}
 
 	err := c.BindJSON(&json_request)
@@ -25,7 +24,7 @@ func DbGetCaseInfo(c *gin.Context) {
 	}
 
 	//dbInterface.FindCase("Case", "CaseMetadata", json_request)
-	var result = dbInterface.FindDocByFilter("Cases", "CaseMetadata", json_request)
+	result, err := dbInterface.FindDocByFilter("Cases", "CaseMetadata", json_request)
 
 	var dbCase dbtypes.Case
 

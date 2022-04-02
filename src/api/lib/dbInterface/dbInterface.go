@@ -290,7 +290,9 @@ func FindUserEmailByUUID(uuid string) (string, error) {
 		return "", err
 	}
 
-	return dbUser.Email, nil
+	var userEmail string = dbUser.Email
+
+	return userEmail, nil
 }
 
 // Find the user's UUID with an email
@@ -306,7 +308,9 @@ func FindUserUUIDByEmail(email string) (string, error) {
 	var dbUser dbtypes.User
 	err = result.Decode(&dbUser)
 
-	return dbUser.UUID, nil
+	var userUUID string = dbUser.UUID
+
+	return userUUID, err
 }
 
 // Finds the case name from CaseMetadata collection using the case UUID.
@@ -322,7 +326,9 @@ func FindCaseNameByUUID(uuid string) (string, error) {
 	var dbCase dbtypes.Case
 	err = result.Decode(&dbCase)
 
-	return dbCase.Name, err
+	var caseName string = dbCase.Name
+
+	return caseName, err
 }
 
 // Finds the uuid of a case by the case name
@@ -338,7 +344,9 @@ func FindCaseUUIDByName(name string) (string, error) {
 	var dbCase dbtypes.Case
 	err = result.Decode(&dbCase)
 
-	return dbCase.UUID, err
+	var caseUUID string = dbCase.UUID
+
+	return caseUUID, err
 }
 
 // MakeFile creates a new File struct.
@@ -377,6 +385,11 @@ func MakeAccess(filename string, user string, date string) (*mongo.InsertOneResu
 	var dbName string = "Cases"
 	var dbCollection string = "Log"
 	var result *mongo.InsertOneResult
+	
+	id, err := MakeUuid()
+	if err != nil {
+		return nil, err
+	}
 
 	id, err := MakeUuid()
 	if err != nil {
@@ -493,8 +506,8 @@ func MakeUuid() (string, error) {
 	var id string
 	var exist bool
 	var err error
-	var Users []string = findCollections("Users")
-	var Cases []string = findCollections("Cases")
+	var Users []string = []string{"UserMetadata"}
+	var Cases []string = []string{"CaseMetadata", "File", "Log"}
 	// TODO: check more collections (all the collections for all the cases)
 
 	// Loop that makes a uuid and checks if it already exists in the database.
