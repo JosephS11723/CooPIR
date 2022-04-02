@@ -391,7 +391,7 @@ func MakeAccess(filename string, user string, date string) (*mongo.InsertOneResu
 		return nil, err
 	}
 
-	id, err := MakeUuid()
+	id, err = MakeUuid()
 	if err != nil {
 		return nil, err
 	}
