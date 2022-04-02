@@ -146,7 +146,7 @@ func DbSingleInsert(dbname string, collection string, data interface{}) *mongo.I
 
 	// User struct case
 	case dbtypes.User:
-		if collection != "User" {
+		if collection != "UserMetadata" {
 			log.Panicf("[ERROR] Cannot insert data type %s into User collection", t)
 		} else {
 
