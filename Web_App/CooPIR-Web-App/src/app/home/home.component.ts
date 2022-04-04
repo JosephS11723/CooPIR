@@ -102,8 +102,11 @@ export class HomeComponent implements OnInit {
             //params.set("caseName", caseName);
             //params.set("fileName", this.fileName);
 
+            //hardcoded for testing
+            var caseuuid = '0701eb84-0b0c-4318-82d4-8a82991e6ffa';
+
             const params = new HttpParams()
-            .append('casename', caseName)
+            .append('caseuuid', caseuuid)
             .append('filename', this.fileName);
 
             const headers = new HttpHeaders()
@@ -114,7 +117,7 @@ export class HomeComponent implements OnInit {
             const formData = new FormData();
 
             formData.append("file", file);
-            //formData.
+         
 
             this.http.post("http://localhost:8080/api/v1/file", formData, 
             {

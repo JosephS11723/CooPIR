@@ -10,9 +10,10 @@ export class AuthHeadersInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler) {
     console.log('Auth interceptor dude');
     console.log(request.url);
-    const authToken = this.cookieService.get('test');
+    const authToken = {token: this.cookieService.get('token')};
     console.log("Auth token: ", authToken);
-    const authReq = request.clone({ setHeaders: { Authorization: authToken } });
+    var authReq = request.clone({ setHeaders: { Authorization: authToken.toString() }});
+    authReq = authReq.clone({withCredentials: true})
     return next.handle(authReq);
   }
 }
