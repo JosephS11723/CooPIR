@@ -387,7 +387,7 @@ func MakeFile(uuid string, hashes []string, tags []string, filename string, case
 }
 
 // MakeAccess creates a new Access struct.
-func MakeAccess(target string, user string, time string) (*mongo.InsertOneResult, error) {
+func MakeAccess(target string, caseuuid string, user string, time string) (*mongo.InsertOneResult, error) {
 	var err error
 	var dbName string = "Cases"
 	var dbCollection string = "Log"
