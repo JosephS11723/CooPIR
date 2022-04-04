@@ -54,12 +54,12 @@ func Login(c *gin.Context) {
 	c.SetCookie("token", token, 3600, "", "", false, config.HTTPOnly)
 
 	// send token
-	c.JSON(http.StatusOK, gin.H{"token": token})
+	//c.String(http.StatusOK, token)
 }
 
 // Logout deletes the token from the cookie
 func Logout(c *gin.Context) {
-	c.SetCookie("token", "", -1, "", "", false, config.HTTPOnly)
+	c.SetCookie("token", "", 1, "", "", false, config.HTTPOnly)
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully logged out"})
 }
 
