@@ -387,7 +387,7 @@ func MakeFile(uuid string, hashes []string, tags []string, filename string, case
 }
 
 // MakeAccess creates a new Access struct.
-func MakeAccess(filename string, user string, date string) (*mongo.InsertOneResult, error) {
+func MakeAccess(target string, user string, time string) (*mongo.InsertOneResult, error) {
 	var err error
 	var dbName string = "Cases"
 	var dbCollection string = "Log"
@@ -401,9 +401,9 @@ func MakeAccess(filename string, user string, date string) (*mongo.InsertOneResu
 
 	var NewAccess = dbtypes.Access{
 		UUID:     id,
-		Filename: filename,
+		Target:   target,
 		User:     user,
-		Date:     date,
+		Time:     time,
 	}
 
 	result, err = DbSingleInsert(dbName, dbCollection, NewAccess)

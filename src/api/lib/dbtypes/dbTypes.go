@@ -12,7 +12,7 @@ type User struct {
 type Case struct {
 	UUID          string   `json:"uuid"`
 	Name          string   `json:"name"`
-	Description	  string   `json:"description" default:""`
+	Description   string   `json:"description" default:""`
 	Date_created  string   `json:"dateCreated"`
 	View_access   string   `json:"viewAccess"`
 	Edit_access   string   `json:"editAccess"`
@@ -35,10 +35,10 @@ type File struct {
 }
 
 type Access struct {
-	UUID     string `json:"uuid"`
-	Filename string `json:"filename"`
-	User     string `json:"user"`
-	Date     string `json:"date"`
+	UUID   string `json:"uuid"`
+	Target string `json:"target"`
+	User   string `json:"user"`
+	Time   string `json:"time"`
 }
 
 type UpdateDoc struct {
