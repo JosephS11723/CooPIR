@@ -27,7 +27,8 @@ func DbGetUserInfo(c *gin.Context) {
 	result, err := dbInterface.FindDocByFilter("Users", "UserMetadata", json_request)
 
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, errors.New("could not retrieve user information"))
+		// 404 user not found
+		c.AbortWithError(http.StatusNotFound, errors.New("not found"))
 	}
 
 	var dbUser dbtypes.User
