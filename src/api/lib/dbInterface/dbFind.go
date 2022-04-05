@@ -216,6 +216,48 @@ func findCollections(dbName string) []string {
 	return result
 }
 
+// Find user role by user UUID
+// func findRolesbyUUID(uuid string) string {
+func FindRolebyUUID(uuid string) string {
+
+	result, err := FindDocByFilter("Users", "UserMetadata", bson.M{"uuid": uuid})
+
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	var dbUser dbtypes.User
+
+	err = result.Decode(&dbUser)
+
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	return dbUser.Role
+}
+
+// Get user uuid by email
+// func findUUIDbyEmail(email string) string {
+func FindUUIDbyEmail(email string) string {
+
+	result, err := FindDocByFilter("Users", "UserMetadata", bson.M{"email": email})
+
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	var dbUser dbtypes.User
+
+	err = result.Decode(&dbUser)
+
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	return dbUser.Role
+}
+
 // Check if UUID exists in the collection. Returns true if the document exists.
 func doesUuidExist(dbname string, collection string, uuid string) (bool, error) {
 	// connect to db
