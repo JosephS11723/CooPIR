@@ -38,7 +38,7 @@ export class LoginComponent implements OnInit {
         {
           var cookieText = response.body.slice(10, response.body.length-2);
           //console.log("Sliced: ", cookieText);
-          this.cookieService.set('token', cookieText);
+          //this.cookieService.set('token', cookieText);
         }
         if(response.status === 200)
         {
