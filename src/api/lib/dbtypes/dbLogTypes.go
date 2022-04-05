@@ -9,11 +9,11 @@ import (
 type Level int32
 
 const (
-	Critical Level = iota
-	Error
-	Warning
+	Debug Level = iota
 	Info
-	Debug
+	Warning
+	Error
+	Critical
 )
 
 func (s Level) String() string {
@@ -35,7 +35,7 @@ func (s Level) String() string {
 	return return_val
 }
 
-func (s Level) ID(lvl string) Level {
+func (s Level) toInt32(lvl string) Level {
 
 	var return_val Level
 
@@ -70,7 +70,7 @@ func (s *Level) UnmarshalJSON(b []byte) error {
 		return err
 	}
 	// Note that if the string cannot be found then it will be set to the zero value, 'Created' in this case.
-	*s = s.ID(j)
+	*s = s.toInt32(j)
 
 	return nil
 }
