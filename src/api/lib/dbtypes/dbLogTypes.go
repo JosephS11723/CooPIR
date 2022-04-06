@@ -77,28 +77,15 @@ func (s *ErrorLevel) UnmarshalJSON(b []byte) error {
 
 //-------------------------------------------------------------------------------------------------//
 
-type CaseLog struct {
-	Case    string      `json:"case"`
+type Log struct {
+	Uuid    string      `json:"uuid"`
 	Level   ErrorLevel  `json:"level"`
+	Type    string      `json:"type"`
 	Time    string      `json:"time"`
 	Content interface{} `json:"content"`
 }
 
-type UserLog struct {
-	User    string      `json:"case"`
-	Level   ErrorLevel  `json:"level"`
-	Time    string      `json:"time"`
-	Content interface{} `json:"content"`
-}
-
-type FileLog struct {
-	File    string      `json:"file"`
-	Case    string      `json:"case"`
-	Level   ErrorLevel  `json:"level"`
-	Time    string      `json:"time"`
-	Content interface{} `json:"content"`
-}
-
+/*
 type AuthLog struct {
 	User    string      `json:"user"`
 	IP      string      `json:"ip"`
@@ -106,3 +93,4 @@ type AuthLog struct {
 	Time    string      `json:"time"`
 	Content interface{} `json:"content"`
 }
+*/

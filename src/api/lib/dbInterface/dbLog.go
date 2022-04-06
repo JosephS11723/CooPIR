@@ -1,36 +1,24 @@
 package dbInterface
 
-import "go.mongodb.org/mongo-driver/mongo"
+import (
+	"time"
+	"go.mongodb.org/mongo-driver/mongo"
+	"https://github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
+)
 
-// MakeFile creates a new File struct.
-func MakeCaseLog() (*mongo.InsertOneResult, error) { //uuid string, hashes []string, tags []string, filename string, caseUUID string, fileDir string, uploadDate string, viewAccess string, editAccess string) (*mongo.InsertOneResult, error) {
+func MakeCaseLog(uuid string, level Level, logtype string, content interface{}) (*mongo.InsertOneResult, error) {
 
-	/*caseName, err := FindCaseNameByUUID(caseUUID)
-	if err != nil {
-		return nil, err
+	var unix_time = time.Now().Unix()
+
+	var NewLog = Log {
+		Uuid: uuid,
+		Level: level,
+		Type: logtype,
+		Time: unix_time,
+		Content: content,
 	}
 
-	var dbName string = "Cases"
-	var dbCollection string = caseUUID
-	var result *mongo.InsertOneResult
-
-	var NewFile = dbtypes.File{
-		UUID:        uuid,
-		MD5:         hashes[0],
-		SHA1:        hashes[1],
-		SHA256:      hashes[2],
-		SHA512:      hashes[3],
-		Tags:        tags,
-		Filename:    filename,
-		Case:        caseName,
-		File_dir:    fileDir,
-		Upload_date: uploadDate,
-		View_access: viewAccess,
-		Edit_access: editAccess,
-	}
-	*/
-
-	result, err = DbSingleInsert(dbName, dbCollection, NewFile)
+	result, err = DbSingleInsert("Logs", "Logs", NewLog)
 
 	return result, err
 }
