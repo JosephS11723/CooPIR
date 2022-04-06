@@ -10,9 +10,8 @@ import (
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
+	"github.com/JosephS11723/CooPIR/src/api/lib/handlers/authentication"
 	"github.com/gin-gonic/gin"
-	//"go.mongodb.org/mongo-driver/bson"
-	//"go.mongodb.org/mongo-driver/mongo"
 )
 
 func DbGetCaseInfo(c *gin.Context) {
@@ -75,4 +74,13 @@ func DbUpdateCase(c *gin.Context) {
 
 	// send ok
 	c.JSON(http.StatusOK, gin.H{"message": "Case updated"})
+}
+
+func GetUserViewCases(c *gin.Context) {
+
+	var uuid = c.GetString("identity")
+
+	var cases = authentication.UserCases(uuid)
+
+	c.JSON(http.StatusOK, gin.H{"cases": cases})
 }

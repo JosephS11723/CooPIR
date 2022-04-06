@@ -81,7 +81,7 @@ type Log struct {
 	Uuid    string      `json:"uuid"`
 	Level   ErrorLevel  `json:"level"`
 	Type    string      `json:"type"`
-	Time    string      `json:"time"`
+	Time    int64       `json:"time"`
 	Content interface{} `json:"content"`
 }
 
