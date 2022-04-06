@@ -110,7 +110,7 @@ func DbFindTest(c *gin.Context) {
 	filter := bson.M{"email": "test@test.com"}
 
 	// find user by filter
-	result := dbInterface.FindDocsByFilter(dbName, dbCollection, filter)
+	result, _ := dbInterface.FindDocsByFilter(dbName, dbCollection, filter)
 
 	// iterate through results
 	for _, user := range result {
