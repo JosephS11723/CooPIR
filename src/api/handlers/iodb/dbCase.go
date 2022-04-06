@@ -8,9 +8,9 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/JosephS11723/CooPIR/src/api/handlers/authentication"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
-	"github.com/JosephS11723/CooPIR/src/api/handlers/authentication"
 	"github.com/gin-gonic/gin"
 )
 
