@@ -27,7 +27,7 @@ func (s AccessLevel) Int() int {
 	return return_val
 }
 
-func (s AccessLevel) toInt(lvl string) AccessLevel {
+func (s AccessLevel) ToInt(lvl string) AccessLevel {
 	var return_val AccessLevel
 
 	switch lvl {
