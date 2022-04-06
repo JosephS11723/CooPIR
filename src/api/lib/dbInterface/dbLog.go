@@ -3,7 +3,7 @@ package dbInterface
 import (
 	"time"
 	"go.mongodb.org/mongo-driver/mongo"
-	"https://github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
+	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 )
 
 func MakeCaseLog(uuid string, level Level, logtype string, content interface{}) (*mongo.InsertOneResult, error) {
