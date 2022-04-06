@@ -1,6 +1,7 @@
 package authentication
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/JosephS11723/CooPIR/src/api/config"
@@ -44,6 +45,18 @@ func AuthenticationMiddleware(c *gin.Context) {
 
 	// get the identity from the token
 	identity := parsedToken.Claims.(jwt.MapClaims)["identity"]
+
+	// if the identity is not a string, return unauthorized
+	if identity.(string) == "" {
+		c.AbortWithError(http.StatusUnauthorized, errors.New("Invalid identity"))
+		return
+	}
+
+	// if the identity is an empty string, return unauthorized
+	if identity.(string) == "" {
+		c.AbortWithError(http.StatusUnauthorized, errors.New("Invalid identity"))
+		return
+	}
 
 	// set the identity to the context
 	c.Set("identity", identity)

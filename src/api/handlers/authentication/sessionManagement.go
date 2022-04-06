@@ -15,6 +15,7 @@ import (
 
 // Login verifies user credentials and returns a token
 func Login(c *gin.Context) {
+
 	// get email from parameter
 	email := c.PostForm("email")
 	if email == "" {

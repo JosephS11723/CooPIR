@@ -1,6 +1,8 @@
 package authentication
 
 import (
+	"log"
+
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/security"
 )
@@ -19,4 +21,19 @@ func userLogin(email string, password string) bool {
 	result := security.CheckPass(password, hash)
 
 	return result
+}
+
+// Function that returns all cases that the user can view
+func UserCases(userUUID string) []string {
+
+	// Get the cases with the user's UUID
+	cases, err := dbInterface.RetrieveViewCasesByUserUUID(userUUID)
+
+	// Could not retrieve cases from database
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+
+	return cases
 }

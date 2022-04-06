@@ -35,11 +35,11 @@ type File struct {
 }
 
 type Access struct {
-	UUID   		string `json:"uuid"`
-	Caseuuid	string `json:"caseuuid"`
-	Target 		string `json:"target"`
-	User   		string `json:"user"`
-	Time   		string `json:"time"`
+	UUID     string `json:"uuid"`
+	Caseuuid string `json:"caseuuid"`
+	Target   string `json:"target"`
+	User     string `json:"user"`
+	Time     string `json:"time"`
 }
 
 type UpdateDoc struct {
