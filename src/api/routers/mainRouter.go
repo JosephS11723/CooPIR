@@ -62,6 +62,7 @@ func InitMainRouter() *gin.Engine {
 	v1.GET("/db/user", iodb.DbGetUserInfo)
 	v1.POST("/db/user/new", iodb.DbCreateUser)
 	v1.POST("/db/user/update", iodb.DbUpdateUser)
+	v1.GET("/db/cases", iodb.GetUserViewCases)
 
 	// Authentication
 	v1.POST("/auth/renew", authentication.RenewToken)
@@ -87,7 +88,7 @@ func InitMainRouter() *gin.Engine {
 
 	// group for unauthenticated actions
 	v3 := r.Group("/api/v1/auth")
-	
+
 	// login
 	v3.POST("/login", authentication.Login)
 

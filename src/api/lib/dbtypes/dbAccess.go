@@ -31,13 +31,13 @@ func (s AccessLevel) ToInt(lvl string) AccessLevel {
 	var return_val AccessLevel
 
 	switch lvl {
-	case "Users":
+	case "users":
 		return_val = Users
-	case "Responder":
+	case "responder":
 		return_val = Responder
-	case "Supervisor":
+	case "supervisor":
 		return_val = Supervisor
-	case "Admin":
+	case "admin":
 		return_val = Admin
 	}
 	return return_val
