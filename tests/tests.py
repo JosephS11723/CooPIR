@@ -368,12 +368,12 @@ def dbNewCaseTest():
         # request ping page
         r = s.post(
             url=apiBasePath + "/db/case/new", json={
-                    "UUID":None,
-	                "Name":casename,
-                    "Date_created":"today :D",
-                    "View_access":"supervisor",
-                    "Edit_access":"supervisor",
-                    "Collaborators":["Brandon Ship", "Me lol"]
+                    "uuid":None,
+	                "name":casename,
+                    "date_created":"today :D",
+                    "view_access":"supervisor",
+                    "edit_access":"supervisor",
+                    "collaborators":["Brandon Ship", "Me lol"]
                 }
             )
 
@@ -467,11 +467,11 @@ def dbNewUserTest():
         # request ping page
         r = s.post(
             url=apiBasePath + "/db/user/new", json={
-	                "Name":"testuser",
-                    "Email":"testemail@emailservice.com",
-                    "Role":"responder",
-                    "Cases":["The Case"],
-                    "Password":"football"
+	                "name":"testuser",
+                    "email":"testemail@emailservice.com",
+                    "role":"responder",
+                    "cases":["The Case"],
+                    "password":"football"
                 }
             )
 
@@ -500,11 +500,11 @@ def dbUpdateUserTest():
             url=apiBasePath + "/db/user/update", json={
                 "filter":{"name":"testuser"},
                 "update":{
-                    "Name":"testcase",
-                    "Email":"thenewummmmemail@emailservice.com",
-                    "Role":"rEsPoNDeR",
-                    "Cases":["The Case", "The OTHER Case ;)"],
-                    "Password":"football123"
+                    "name":"testcase",
+                    "email":"thenewummmmemail@emailservice.com",
+                    "role":"rEsPoNDeR",
+                    "cases":["The Case", "The OTHER Case ;)"],
+                    "password":"football123"
                     }
                 }
             )
