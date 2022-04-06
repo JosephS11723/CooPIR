@@ -106,7 +106,9 @@ func FindCaseUUIDByName(name string) (string, error) {
 func retrieveCasesByViewRole(role string) ([]string, error) {
 	var dbName string = "Cases"
 	var dbCollection string = "CaseMetadata"
-	result, err := FindDocsByFilter(dbName, dbCollection, bson.M{"viewAccess": role})
+	result, err := FindDocsByFilter(dbName, dbCollection, bson.M{})
+
+	log.Println(result)
 
 	if err != nil {
 		return nil, err
@@ -118,7 +120,9 @@ func retrieveCasesByViewRole(role string) ([]string, error) {
 
 	// TODO: Might not work
 	for _, doc := range result {
-		if Access.ToInt(role) >= doc["viewAccess"].(dbtypes.AccessLevel) {
+		log.Println("View access:", doc["viewAccess"])
+		log.Println("Access level:", Access.ToInt(role))
+		if Access.ToInt(role) >= Access.ToInt(doc["viewAccess"].(string)) {
 			caseList = append(caseList, doc["uuid"].(string))
 		}
 	}
@@ -129,6 +133,8 @@ func retrieveCasesByViewRole(role string) ([]string, error) {
 // Takes a user UUID and returns a slice of Case UUIDS the user can view
 func RetrieveViewCasesByUserUUID(uuid string) ([]string, error) {
 	role, err := findUserRoleByUUID(uuid)
+
+	log.Println("USER ROLE", role)
 
 	if err != nil {
 		return nil, err
@@ -189,13 +195,10 @@ func FindDocsByFilter(dbname string, collection string, filter bson.M) ([]bson.M
 		var doc bson.M
 		err := cur.Decode(&doc)
 
-		// remove _id from doc
-		delete(doc, "_id")
-
 		if err != nil {
 			return nil, err
 		}
-		//log.Println("[DEBUG] internal result: ", doc)
+		// log.Println("[DEBUG] internal result: ", doc)
 
 		// append doc to docList
 		docList = append(docList, doc)

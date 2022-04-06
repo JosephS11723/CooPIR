@@ -23,9 +23,8 @@ func userLogin(email string, password string) bool {
 	return result
 }
 
-// Function that returns all cases that the user can view
+// UserCases returns all cases that the user can view
 func UserCases(userUUID string) []string {
-
 	// Get the cases with the user's UUID
 	cases, err := dbInterface.RetrieveViewCasesByUserUUID(userUUID)
 

@@ -37,8 +37,10 @@ func UpdateCase(dbName string, dbCollection string, caseUpdate dbtypes.UpdateDoc
 	//get the filter, which will act as a bson.M
 	var filter map[string]interface{} = caseUpdate.Filter
 
-	//get the update field and the proceed with removing UUID and Date_created
+	//get the update field and the proceed with removing UUID and dateCreated
 	var unchecked_update map[string]interface{} = caseUpdate.Update
+
+	// TODO: make sure user has permission to mess with case information. also check for used name so no name duplicates or collisions
 
 	delete(unchecked_update, "uuid")
 
@@ -55,7 +57,7 @@ func UpdateUser(dbName string, dbCollection string, caseUpdate dbtypes.UpdateDoc
 	// get the filter, which will act as a bson.M
 	var filter map[string]interface{} = caseUpdate.Filter
 
-	// get the update field and the proceed with removing UUID and Date_created
+	// get the update field and the proceed with removing UUID and dateCreated
 	var unchecked_update map[string]interface{} = caseUpdate.Update
 
 	delete(unchecked_update, "uuid")

@@ -370,9 +370,9 @@ def dbNewCaseTest():
             url=apiBasePath + "/db/case/new", json={
                     "uuid":None,
 	                "name":casename,
-                    "date_created":"today :D",
-                    "view_access":"supervisor",
-                    "edit_access":"supervisor",
+                    "dateCreated":"today :D",
+                    "viewAccess":"supervisor",
+                    "editAccess":"supervisor",
                     "collaborators":["Brandon Ship", "Me lol"]
                 }
             )
@@ -397,19 +397,20 @@ def dbUpdateCaseTest():
     """Attempts to update a case to the database
     """
     try:
+        global caseuuid
         # print function name
         print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
         # request ping page
         r = s.post(
             url=apiBasePath + "/db/case/update", json={
-                "filter":{"name":"testcase"},
+                "filter":{"uuid":caseuuid},
                 "update":{
-                    "uuid":"3333-3333-3333-6969",
+                    "uuid":caseuuid,
 	                "name":"testcase",
-                    "date_created":"June 4th, 1776",
-                    "view_access":"mega-supervisor",
-                    "edit_access":"responder",
+                    "dateCreated":"June 4th, 1776",
+                    "viewAccess":"responder",
+                    "editAccess":"responder",
                     "collaborators":["Brandon Ship", "Me lol", "Alex Johnson Petty"]
                     }
                 }
@@ -502,7 +503,7 @@ def dbUpdateUserTest():
                 "update":{
                     "name":"testcase",
                     "email":"thenewummmmemail@emailservice.com",
-                    "role":"rEsPoNDeR",
+                    "role":"responder",
                     "cases":["The Case", "The OTHER Case ;)"],
                     "password":"football123"
                     }
