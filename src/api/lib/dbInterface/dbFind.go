@@ -13,6 +13,26 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// Find the user's Role with an UUID
+func findUserRoleByUUID(uuid string) (string, error) {
+	var dbName string = "Users"
+	var dbCollection string = "UserMetadata"
+	result, err := FindDocByFilter(dbName, dbCollection, bson.M{"uuid": uuid})
+
+	if err != nil {
+		return "", err
+	}
+
+	var dbUser dbtypes.User
+	err = result.Decode(&dbUser)
+
+	if err != nil {
+		return "", err
+	}
+
+	return dbUser.Role, nil
+}
+
 // Find the user's email with an UUID
 func FindUserEmailByUUID(uuid string) (string, error) {
 	var dbName string = "Users"
@@ -81,6 +101,48 @@ func FindCaseUUIDByName(name string) (string, error) {
 	return dbCase.UUID, err
 }
 
+// Returns a list of Cases that a role can view
+// Returns a slice of Case UUIDs or an error when no cases are found
+func retrieveCasesByViewRole(role string) ([]string, error) {
+	var dbName string = "Cases"
+	var dbCollection string = "CaseMetadata"
+	result, err := FindDocsByFilter(dbName, dbCollection, bson.M{"viewAccess": role})
+
+	if err != nil {
+		return nil, err
+	}
+
+	var caseList []string
+	// var Access dbtypes.AccessLevel.ToInt(role)
+	var Access dbtypes.AccessLevel
+
+	// TODO: Might not work
+	for _, doc := range result {
+		if Access.ToInt(role) >= doc["viewAccess"].(dbtypes.AccessLevel) {
+			caseList = append(caseList, doc["uuid"].(string))
+		}
+	}
+
+	return caseList, nil
+}
+
+// Takes a user UUID and returns a slice of Case UUIDS the user can view
+func RetrieveViewCasesByUserUUID(uuid string) ([]string, error) {
+	role, err := findUserRoleByUUID(uuid)
+
+	if err != nil {
+		return nil, err
+	}
+
+	caseList, err := retrieveCasesByViewRole(role)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return caseList, nil
+}
+
 func FindFileByHash(hash string, dbCollection string) (string, error) {
 	var dbName string = "Cases"
 	result, err := FindDocByFilter(dbName, dbCollection, bson.M{"sha512": hash})
@@ -95,8 +157,9 @@ func FindFileByHash(hash string, dbCollection string) (string, error) {
 	return dbFile.UUID, err
 }
 
-// FindDocsByFilter finds multiple documents in a collection by a filter and RETURN a slice of documents (bson.m)
-func FindDocsByFilter(dbname string, collection string, filter bson.M) []bson.M {
+// FindDocsByFilter finds multiple documents in a collection by a filter and
+// RETURN a slice of documents (bson.m)
+func FindDocsByFilter(dbname string, collection string, filter bson.M) ([]bson.M, error) {
 	// connect to db
 	client, ctx, cancel, err := dbConnect()
 
@@ -104,7 +167,7 @@ func FindDocsByFilter(dbname string, collection string, filter bson.M) []bson.M 
 	defer dbClose(client, ctx, cancel)
 
 	if err != nil {
-		log.Panicln(err)
+		return nil, err
 	}
 
 	// get collection
@@ -114,7 +177,7 @@ func FindDocsByFilter(dbname string, collection string, filter bson.M) []bson.M 
 	cur, err := coll.Find(ctx, filter)
 
 	if err != nil {
-		log.Panicln(err)
+		return nil, err
 	}
 
 	// create slice to hold documents
@@ -130,16 +193,16 @@ func FindDocsByFilter(dbname string, collection string, filter bson.M) []bson.M 
 		delete(doc, "_id")
 
 		if err != nil {
-			log.Panicln(err)
+			return nil, err
 		}
-		log.Println("[DEBUG] internal result: ", doc)
+		//log.Println("[DEBUG] internal result: ", doc)
 
 		// append doc to docList
 		docList = append(docList, doc)
 	}
 
 	// return list of documents
-	return docList
+	return docList, nil
 }
 
 // FindDocByFilter finds a single document in a collection by a filter and RETURN a document (*mongo.SingleResult)

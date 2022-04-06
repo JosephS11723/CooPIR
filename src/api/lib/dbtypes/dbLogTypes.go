@@ -6,17 +6,17 @@ import (
 )
 
 //log level number
-type Level int32
+type ErrorLevel int32
 
 const (
-	Debug Level = iota
+	Debug ErrorLevel = iota
 	Info
 	Warning
 	Error
 	Critical
 )
 
-func (s Level) String() string {
+func (s ErrorLevel) String() string {
 
 	var return_val string
 
@@ -35,9 +35,9 @@ func (s Level) String() string {
 	return return_val
 }
 
-func (s Level) toInt32(lvl string) Level {
+func (s ErrorLevel) toInt32(lvl string) ErrorLevel {
 
-	var return_val Level
+	var return_val ErrorLevel
 
 	switch lvl {
 	case "Critical":
@@ -55,7 +55,7 @@ func (s Level) toInt32(lvl string) Level {
 }
 
 // MarshalJSON marshals the enum as a quoted json string
-func (s Level) MarshalJSON() ([]byte, error) {
+func (s ErrorLevel) MarshalJSON() ([]byte, error) {
 	buffer := bytes.NewBufferString(`"`)
 	buffer.WriteString(s.String())
 	buffer.WriteString(`"`)
@@ -63,7 +63,7 @@ func (s Level) MarshalJSON() ([]byte, error) {
 }
 
 // UnmarshalJSON unmashals a quoted json string to the enum value
-func (s *Level) UnmarshalJSON(b []byte) error {
+func (s *ErrorLevel) UnmarshalJSON(b []byte) error {
 	var j string
 	err := json.Unmarshal(b, &j)
 	if err != nil {
@@ -79,14 +79,14 @@ func (s *Level) UnmarshalJSON(b []byte) error {
 
 type CaseLog struct {
 	Case    string      `json:"case"`
-	Level   Level       `json:"level"`
+	Level   ErrorLevel  `json:"level"`
 	Time    string      `json:"time"`
 	Content interface{} `json:"content"`
 }
 
 type UserLog struct {
 	User    string      `json:"case"`
-	Level   Level       `json:"level"`
+	Level   ErrorLevel  `json:"level"`
 	Time    string      `json:"time"`
 	Content interface{} `json:"content"`
 }
@@ -94,7 +94,7 @@ type UserLog struct {
 type FileLog struct {
 	File    string      `json:"file"`
 	Case    string      `json:"case"`
-	Level   Level       `json:"level"`
+	Level   ErrorLevel  `json:"level"`
 	Time    string      `json:"time"`
 	Content interface{} `json:"content"`
 }
@@ -102,7 +102,7 @@ type FileLog struct {
 type AuthLog struct {
 	User    string      `json:"user"`
 	IP      string      `json:"ip"`
-	Level   Level       `json:"level"`
+	Level   ErrorLevel  `json:"level"`
 	Time    string      `json:"time"`
 	Content interface{} `json:"content"`
 }
