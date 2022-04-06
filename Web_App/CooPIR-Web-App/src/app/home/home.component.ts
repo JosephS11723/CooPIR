@@ -103,7 +103,7 @@ export class HomeComponent implements OnInit {
             //params.set("fileName", this.fileName);
 
             //hardcoded for testing
-            var caseuuid = '0701eb84-0b0c-4318-82d4-8a82991e6ffa';
+            var caseuuid = 'e6c60293-0e3b-43b6-8a7c-2599d7bfda07';
 
             const params = new HttpParams()
             .append('caseuuid', caseuuid)

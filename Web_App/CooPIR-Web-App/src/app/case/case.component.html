@@ -20,38 +20,8 @@
 </mat-toolbar>
 
 
-<head>
-<style>
-table {
-  font-family: arial, sans-serif;
-  border-collapse: collapse;
-  width: 100%;
-}
-
-td, th {
-  border: 1px solid #545050;
-  text-align: left;
-  padding: 8px;
-}
-
-tr:nth-child(even) {
-  background-color: #dddddd;
-}
-</style>
-</head>
-<body>
-<table name="valid-cases" id="valid-cases">
-    <tr>
-        <th>Name</th>
-        <th>Supervisor</th>
-        <th>Last Modified</th>
-    </tr>
-      <tr *ngFor="let item of caseList" [routerLink]="item.route">
-         <td><button class="btn btn-primary btn-lg mr-2" style="width:100%">{{item.name}}</button></td>
-         <td>{{item.supervisor}}</td>
-         <td>{{item.last_modified}}</td>
-      </tr>
- </table> 
- </body>
-
-
+<label for="uploader">Upload a file:</label>
+<br><br>
+<input type="file" id="uploader" class="file-input"
+(change)="onFileSelected($event)" #fileUpload>
+<button type="submit" id="submit_file" class="btn btn-primary btn-lg mr-2" (click)="submitFile($event)" disabled>Submit File</button>

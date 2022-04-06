@@ -27,18 +27,18 @@ export class LoginComponent implements OnInit {
     formData.append("email", email);
     formData.append("password", password);
 
-    console.log(formData.getAll("email"));
+    //console.log(formData.getAll("email"));
     
     this.http.post("http://localhost:8080/api/v1/auth/login", formData, { 
       observe: 'response', responseType: 'text'})
       .subscribe(response => {
-        console.log("Logging response");
-        console.log(response.body);
+        //console.log("Logging response");
+        //console.log(response.body);
         if(response.body != null)
         {
           var cookieText = response.body.slice(10, response.body.length-2);
           //console.log("Sliced: ", cookieText);
-          this.cookieService.set('token', cookieText);
+          this.cookieService.set('k', cookieText);
         }
         if(response.status === 200)
         {
@@ -47,8 +47,8 @@ export class LoginComponent implements OnInit {
         }
       });
     
-    console.log("Email: ", email);
-    console.log("Password: ", password);
+    //console.log("Email: ", email);
+    //console.log("Password: ", password);
     //this.router.navigateByUrl('/dashboard', { replaceUrl: true});  
 }
 

@@ -18,6 +18,7 @@ import { MatList, MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { CookieService } from 'ngx-cookie-service';
 import { httpInterceptProviders } from './Http-interceptors';
+import { CaseComponent } from './case/case.component';
 
 
 @NgModule({
@@ -25,7 +26,8 @@ import { httpInterceptProviders } from './Http-interceptors';
     AppComponent,
     HomeComponent,
     LoginComponent,
-    DashboardComponent
+    DashboardComponent,
+    CaseComponent
   ],
   imports: [
     BrowserModule,
