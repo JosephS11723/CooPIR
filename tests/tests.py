@@ -550,7 +550,29 @@ def dbFindUserTest():
     except Exception as e:
         error(e)
 
-tests = [loginTest, pingTest, dbNewCaseTest, uploadTest, uploadTest, uploadTest, dbUpdateCaseTest, dbFindCaseTest, dbNewUserTest, dbUpdateUserTest, dbFindUserTest, downloadTest]
+def dbGetUserCasesTest():
+    """Attempts to find all user cases in database
+    """
+    try:
+        # print function name
+        print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
+
+        # request ping page
+        r = s.get(
+            url=apiBasePath + "/db/cases"
+            )
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+        else:
+            success()
+            print(r.content, end="")
+            
+    except Exception as e:
+        error(e)
+
+tests = [loginTest, pingTest, dbNewCaseTest, uploadTest, uploadTest, uploadTest, dbUpdateCaseTest, dbFindCaseTest, dbNewUserTest, dbUpdateUserTest, dbFindUserTest, downloadTest, dbGetUserCasesTest]
 def runAllTests():
     for test in tests:
         test()

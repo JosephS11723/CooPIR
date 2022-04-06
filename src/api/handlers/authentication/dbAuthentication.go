@@ -1,6 +1,8 @@
 package authentication
 
 import (
+	"log"
+
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/security"
 )
@@ -29,6 +31,7 @@ func UserCases(userUUID string) []string {
 
 	// Could not retrieve cases from database
 	if err != nil {
+		log.Println(err)
 		return nil
 	}
 
