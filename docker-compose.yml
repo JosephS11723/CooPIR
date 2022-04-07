@@ -8,7 +8,7 @@ services:
   #   container_name: web-app
   #   build: ./Web_App/CooPIR-Web-App
   #   ports:
-  #     - "80:80"
+  #     - "4200:4200"
   #   networks:
   #     hostnetwork: 
   #       ipv4_address: 20.20.20.5

@@ -17,8 +17,8 @@ FROM nginx:alpine
 
 COPY --from=node /app/dist/CooPIR-Web-App /usr/share/nginx/html
 
-# COPY --from=node /app/nginx.conf /etc/nginx/nginx.conf
+COPY --from=node /app/nginx.conf /etc/nginx/nginx.conf
 
-EXPOSE 80
+EXPOSE 4200
 
 # CMD ["nginx", "-g", "daemon off;"]
