@@ -4,11 +4,11 @@ services:
 
 
   # # Node web face
-  # Web-App:
+  # web-app:
   #   container_name: web-app
   #   build: ./Web_App/CooPIR-Web-App
   #   ports:
-  #     - "8080:8080"
+  #     - "80:80"
   #   networks:
   #     hostnetwork: 
   #       ipv4_address: 20.20.20.5
