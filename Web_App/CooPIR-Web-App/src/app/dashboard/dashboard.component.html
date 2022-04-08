@@ -1,3 +1,4 @@
+<!--toolbar stuff-->
 <mat-toolbar fxLayout="row" color="primary">
     <span fxFlex>CooPIR</span>
     <button mat-button *ngFor="let item of menuItems" fxHide.xs [routerLink]="item.route">
@@ -21,6 +22,7 @@
 
 
 <head>
+<!--Style for the table of cases is defined-->
 <style>
 table {
   font-family: arial, sans-serif;
@@ -39,17 +41,21 @@ tr:nth-child(even) {
 }
 </style>
 </head>
+<!--Table to display the cases-->
 <body>
 <table name="valid-cases" id="valid-cases">
+    <!--Bolded text that defines the categories-->
     <tr>
         <th>Name</th>
         <th>Supervisor</th>
         <th>Last Modified</th>
     </tr>
-      <tr *ngFor="let item of caseList" [routerLink]="item.route">
-         <td><button class="btn btn-primary btn-lg mr-2" style="width:100%">{{item.name}}</button></td>
-         <td>{{item.supervisor}}</td>
-         <td>{{item.last_modified}}</td>
+    <!--Each case is placed in the table-->
+    <!--The first item is ignored because it is just a placeholder-->
+      <tr *ngFor="let item of caseList; let i=index" [routerLink]="item.route">
+         <td *ngIf="i != 0"><button class="btn btn-primary btn-lg mr-2" style="width:100%">{{item.name}}</button></td>
+         <td *ngIf="i != 0">{{item.supervisor}}</td>
+         <td *ngIf="i != 0">{{item.last_modified}}</td>
       </tr>
  </table> 
  </body>
