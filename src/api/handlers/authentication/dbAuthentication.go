@@ -14,6 +14,7 @@ func userLogin(email string, password string) bool {
 
 	// could not retrieve hash from database (email not in database)
 	if err != nil {
+		log.Println("Failed to retrieve hash from database")
 		return false
 	}
 
