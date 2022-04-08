@@ -15,7 +15,6 @@ import (
 
 // Login verifies user credentials and returns a token
 func Login(c *gin.Context) {
-
 	// get email from parameter
 	email := c.PostForm("email")
 	if email == "" {
@@ -37,12 +36,12 @@ func Login(c *gin.Context) {
 	}
 
 	// create token
-	//uuid, err := dbInterface.FindUUIDByEmail(email)
-	uuid := "00000000-0000-0000-0000-000000000000"
-	/*if err != nil {
+	uuid, err := dbInterface.FindUserUUIDByEmail(email)
+	if err != nil {
 		log.Println("Failed to find user uuid by email")
-		c.AbortWithError(http.StatusUnauthorized, errors.New("Invalid credentials"))
-	}*/
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
 
 	token, err := crypto.CreateToken(uuid)
 
