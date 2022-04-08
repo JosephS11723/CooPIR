@@ -297,7 +297,7 @@ def dbPingTest():
         print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
         # request ping page
-        r = s.get(url=apiBasePath + "/db/test")
+        r = s.get(url=apiBasePath + "/test")
 
         # check if good request
         if r.status_code != 200:
@@ -319,7 +319,7 @@ def dbInsertTest():
         print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
         # request ping page
-        r = s.post(url=apiBasePath + "/db/test")
+        r = s.post(url=apiBasePath + "/test")
 
         # check if good request
         if r.status_code != 200:
@@ -342,7 +342,7 @@ def dbFindTest():
         print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
 
         # request ping page
-        r = s.get(url=apiBasePath + "/db/test/find")
+        r = s.get(url=apiBasePath + "/test/find")
 
         # check if good request
         if r.status_code != 200:
@@ -367,7 +367,7 @@ def dbNewCaseTest():
 
         # request ping page
         r = s.post(
-            url=apiBasePath + "/db/case/new", json={
+            url=apiBasePath + "/case/new", json={
                     "uuid":None,
 	                "name":casename,
                     "dateCreated":"today :D",
@@ -403,7 +403,7 @@ def dbUpdateCaseTest():
 
         # request ping page
         r = s.post(
-            url=apiBasePath + "/db/case/update", json={
+            url=apiBasePath + "/case/update", json={
                 "filter":{"uuid":caseuuid},
                 "update":{
                     "uuid":caseuuid,
@@ -440,7 +440,7 @@ def dbFindCaseTest():
 
         # request ping page
         r = s.get(
-            url=apiBasePath + "/db/case", json={
+            url=apiBasePath + "/case", json={
                 "name":casename
                 }
             )
@@ -467,7 +467,7 @@ def dbNewUserTest():
 
         # request ping page
         r = s.post(
-            url=apiBasePath + "/db/user/new", json={
+            url=apiBasePath + "/user/new", json={
 	                "name":"testuser",
                     "email":"testemail@emailservice.com",
                     "role":"responder",
@@ -498,7 +498,7 @@ def dbUpdateUserTest():
 
         # request ping page
         r = s.post(
-            url=apiBasePath + "/db/user/update", json={
+            url=apiBasePath + "/user/update", json={
                 "filter":{"name":"testuser"},
                 "update":{
                     "name":"testcase",
@@ -533,7 +533,7 @@ def dbFindUserTest():
 
         # request ping page
         r = s.get(
-            url=apiBasePath + "/db/user", json={
+            url=apiBasePath + "/user", json={
                 "name":"testuser"
                 }
             )
@@ -560,7 +560,7 @@ def dbGetUserCasesTest():
 
         # request ping page
         r = s.get(
-            url=apiBasePath + "/db/cases"
+            url=apiBasePath + "/cases"
             )
 
         # check if good request

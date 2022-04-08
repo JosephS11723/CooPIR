@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/JosephS11723/CooPIR/src/api/handlers/authentication"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 	"github.com/gin-gonic/gin"
@@ -69,5 +70,15 @@ func DbUpdateUser(c *gin.Context) {
 	c.BindJSON(&json_request)
 
 	dbInterface.UpdateUser("Users", "UserMetadata", json_request)
+
+}
+
+func GetUserMakeCase(c *gin.Context) {
+
+	var uuid = c.GetString("identity")
+
+	var allow = authentication.UserSupervisorPermission(uuid)
+
+	c.JSON(http.StatusOK, gin.H{"allow": allow})
 
 }

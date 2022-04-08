@@ -44,25 +44,26 @@ func InitMainRouter() *gin.Engine {
 	v1.DELETE("/file", ioseaweed.SWDELETE)
 
 	// MONGO-DB Tests
-	// v1.GET("/db/test", iodb.DbPingTest)
-	// v1.POST("/db/test", iodb.DbUploadTest)
-	// v1.GET("/db/test/find", iodb.DbFindTest)
-	// v1.POST("/db/test/find", iodb.DbUpdateTest)
+	// v1.GET("/test", iodb.DbPingTest)
+	// v1.POST("/test", iodb.DbUploadTest)
+	// v1.GET("/test/find", iodb.DbFindTest)
+	// v1.POST("/test/find", iodb.DbUpdateTest)
 
 	// MONGO-DB Final
 	//v1.POST("/case/add", iodb.DbCreateCase)
 	//v1.POST("/case/update", iodb.DbUpdateCase)
-	//v1.GET("db/case/find", iodb.DbGetCaseInfo)
+	//v1.GET("/case/find", iodb.DbGetCaseInfo)
 
 	//MONGO-DB
 
-	v1.GET("/db/case", iodb.DbGetCaseInfo)
-	v1.POST("/db/case/new", iodb.DbCreateCase)
-	v1.POST("/db/case/update", iodb.DbUpdateCase)
-	v1.GET("/db/user", iodb.DbGetUserInfo)
-	v1.POST("/db/user/new", iodb.DbCreateUser)
-	v1.POST("/db/user/update", iodb.DbUpdateUser)
-	v1.GET("/db/cases", iodb.GetUserViewCases)
+	v1.GET("/case", iodb.DbGetCaseInfo)
+	v1.POST("/case/new", iodb.DbCreateCase)
+	v1.POST("/case/update", iodb.DbUpdateCase)
+	v1.GET("/user", iodb.DbGetUserInfo)
+	v1.POST("/user/new", iodb.DbCreateUser)
+	v1.POST("/user/update", iodb.DbUpdateUser)
+	v1.GET("/cases", iodb.GetUserViewCases)
+	v1.GET("/case/make", iodb.GetUserMakeCase)
 
 	// Authentication
 	v1.POST("/auth/renew", authentication.RenewToken)

@@ -387,3 +387,17 @@ func RetrieveHashByEmail(email string) (string, error) {
 
 	return hash, nil
 }
+
+// Function to check if user has supervisor rights
+func FindSupervisorByUUID(uuid string) (bool, error) {
+
+	result, err := findUserRoleByUUID(uuid)
+
+	if err != nil {
+		return false, err
+	}
+
+	var Access dbtypes.AccessLevel
+
+	return Access.ToInt(result) >= Access.ToInt("supervisor"), nil
+}

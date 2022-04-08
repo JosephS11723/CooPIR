@@ -36,3 +36,16 @@ func UserCases(userUUID string) []string {
 
 	return cases
 }
+
+// Returns true the user has supervisor rights
+func UserSupervisorPermission(userUUID string) bool {
+	// Find if user has supervisor rights
+	result, err := dbInterface.FindSupervisorByUUID(userUUID)
+
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+
+	return result
+}
