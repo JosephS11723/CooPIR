@@ -12,6 +12,7 @@ import (
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func DbGetCaseInfo(c *gin.Context) {
@@ -23,8 +24,14 @@ func DbGetCaseInfo(c *gin.Context) {
 		log.Panicln(err)
 	}
 
+	var caseUUID = json_request["caseUUID"].(string)
+
 	//dbInterface.FindCase("Case", "CaseMetadata", json_request)
-	result, err := dbInterface.FindDocByFilter("Cases", "CaseMetadata", json_request)
+	result, err := dbInterface.FindDocByFilter("Cases", "CaseMetadata", bson.M{"uuid": caseUUID})
+
+	if err != nil {
+		c.AbortWithError(http.StatusNotFound, errors.New("file not found"))
+	}
 
 	var dbCase dbtypes.Case
 
@@ -51,7 +58,7 @@ func DbCreateCase(c *gin.Context) {
 	_, caseUUID, err := dbInterface.MakeCase(json_request)
 
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, errors.New("Case already exists"))
+		c.AbortWithError(http.StatusBadRequest, errors.New("case already exists"))
 	}
 
 	// send ok

@@ -12,6 +12,7 @@ import (
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 	//"go.mongodb.org/mongo-driver/bson"
 	//"go.mongodb.org/mongo-driver/mongo"
 )
@@ -25,7 +26,9 @@ func DbGetUserInfo(c *gin.Context) {
 		log.Panicln(err)
 	}
 
-	result, err := dbInterface.FindDocByFilter("Users", "UserMetadata", json_request)
+	var userUUID = json_request["userUUID"].(string)
+
+	result, err := dbInterface.FindDocByFilter("Users", "UserMetadata", bson.M{"uuid": userUUID})
 
 	if err != nil {
 		// 404 user not found
