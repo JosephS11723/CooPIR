@@ -17,6 +17,8 @@ import (
 	//"go.mongodb.org/mongo-driver/mongo"
 )
 
+// Requires json to have userUUID field in request body
+// Returns all user metadata
 func DbGetUserInfo(c *gin.Context) {
 	var json_request map[string]interface{}
 

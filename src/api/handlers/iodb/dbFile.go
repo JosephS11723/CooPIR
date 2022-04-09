@@ -14,7 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// Takes the case UUID and File UUID from json_request and returns the file metadata
+// Takes the caseUUID and fileUUID from json_request and returns the file metadata
 func GetFileInfo(c *gin.Context) {
 	var json_request map[string]interface{}
 

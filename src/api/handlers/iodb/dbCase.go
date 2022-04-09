@@ -15,6 +15,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+// Requires json to have caseUUID field in request body
+// Returns all case metadata
 func DbGetCaseInfo(c *gin.Context) {
 	var json_request map[string]interface{}
 
