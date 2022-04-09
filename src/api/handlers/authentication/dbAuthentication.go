@@ -50,3 +50,16 @@ func UserSupervisorPermission(userUUID string) bool {
 
 	return result
 }
+
+// Returns true if the user has admin rights
+func UserAdminPermission(userUUID string) bool {
+	// Find if user has admin rights
+	result, err := dbInterface.FindAdminByUUID(userUUID)
+
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+
+	return result
+}

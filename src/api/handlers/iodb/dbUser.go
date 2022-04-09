@@ -78,6 +78,7 @@ func DbUpdateUser(c *gin.Context) {
 
 }
 
+// Returns true if the user can edit or make cases
 func GetUserMakeCase(c *gin.Context) {
 
 	var uuid = c.GetString("identity")
@@ -86,4 +87,13 @@ func GetUserMakeCase(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"allow": allow})
 
+}
+
+// Returns true if the user can edit or make users
+func GetUserEditUser(c *gin.Context) {
+	var uuid = c.GetString("identity")
+
+	var allow = authentication.UserAdminPermission(uuid)
+
+	c.JSON(http.StatusOK, gin.H{"allow": allow})
 }

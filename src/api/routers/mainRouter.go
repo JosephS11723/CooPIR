@@ -61,6 +61,7 @@ func InitMainRouter() *gin.Engine {
 	v1.POST("/case/update", iodb.DbUpdateCase)
 	v1.GET("/user", iodb.DbGetUserInfo)
 	v1.POST("/user/new", iodb.DbCreateUser)
+	v1.GET("/user/edit", iodb.GetUserEditUser)
 	v1.POST("/user/update", iodb.DbUpdateUser)
 	v1.GET("/cases", iodb.GetUserViewCases)
 	v1.GET("/case/make", iodb.GetUserMakeCase)
