@@ -39,7 +39,7 @@ export class DashboardComponent implements OnInit {
   getCases(): void
   {
     //get the case list from the db
-    this.http.get("http://localhost:8080/api/v1/db/cases", { observe: 'response'})
+    this.http.get("http://localhost:8080/api/v1/cases", { observe: 'response'})
       .subscribe(response => {
         console.log("Logging response");
         console.log(response.body);
