@@ -389,6 +389,20 @@ func RetrieveHashByEmail(email string) (string, error) {
 }
 
 // Function to check if user has supervisor rights
+func FindResponderByUUID(uuid string) (bool, error) {
+
+	result, err := findUserRoleByUUID(uuid)
+
+	if err != nil {
+		return false, err
+	}
+
+	var Access dbtypes.AccessLevel
+
+	return Access.ToInt(result) >= Access.ToInt("responder"), nil
+}
+
+// Function to check if user has supervisor rights
 func FindSupervisorByUUID(uuid string) (bool, error) {
 
 	result, err := findUserRoleByUUID(uuid)

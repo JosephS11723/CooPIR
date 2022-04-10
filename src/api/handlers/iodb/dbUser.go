@@ -97,3 +97,12 @@ func GetUserEditUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"allow": allow})
 }
+
+// Returns true if the user can edit or make users
+func GetUserAddFile(c *gin.Context) {
+	var uuid = c.GetString("identity")
+
+	var allow = authentication.UserResponderPermission(uuid)
+
+	c.JSON(http.StatusOK, gin.H{"allow": allow})
+}
