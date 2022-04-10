@@ -55,7 +55,7 @@ func GetCaseFiles(c *gin.Context) {
 		log.Panicln(err)
 	}
 
-	var caseUUID = json_request["caseUUID"].(string)
+	var caseUUID = json_request["uuid"].(string)
 
 	files, err := dbInterface.FindFilesByCase(caseUUID)
 
