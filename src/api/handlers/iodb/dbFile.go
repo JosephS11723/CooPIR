@@ -47,15 +47,21 @@ func GetFileInfo(c *gin.Context) {
 
 // Takes the case UUID and returns all the files in the case
 func GetCaseFiles(c *gin.Context) {
-	var json_request map[string]interface{}
 
-	err := c.BindJSON(&json_request)
+	//var json_request map[string]interface{}
 
-	if err != nil {
-		log.Panicln(err)
+	//err := c.BindJSON(&json_request)
+
+	var caseUUID string = c.Params.ByName("uuid")
+
+	if caseUUID == "" {
+		c.AbortWithError(http.StatusNotFound, errors.New("files not found"))
 	}
 
-	var caseUUID = json_request["uuid"].(string)
+	/*
+		if err != nil {
+			log.Panicln(err)
+		}*/
 
 	files, err := dbInterface.FindFilesByCase(caseUUID)
 
