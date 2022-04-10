@@ -55,7 +55,7 @@ func GetCaseFiles(c *gin.Context) {
 	var caseUUID string = c.Params.ByName("uuid")
 
 	if caseUUID == "" {
-		c.AbortWithError(http.StatusNotFound, errors.New("files not found"))
+		c.AbortWithError(http.StatusBadRequest, errors.New("request should contain 'uuid'"))
 	}
 
 	/*
