@@ -61,9 +61,12 @@ func InitMainRouter() *gin.Engine {
 	v1.POST("/case/update", iodb.DbUpdateCase)
 	v1.GET("/user", iodb.DbGetUserInfo)
 	v1.POST("/user/new", iodb.DbCreateUser)
+	v1.GET("/user/edit", iodb.GetUserEditUser)
 	v1.POST("/user/update", iodb.DbUpdateUser)
 	v1.GET("/cases", iodb.GetUserViewCases)
 	v1.GET("/case/make", iodb.GetUserMakeCase)
+	v1.GET("/file/info", iodb.GetFileInfo)
+	v1.GET("/case/files", iodb.GetCaseFiles)
 
 	// Authentication
 	v1.POST("/auth/renew", authentication.RenewToken)

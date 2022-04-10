@@ -401,3 +401,33 @@ func FindSupervisorByUUID(uuid string) (bool, error) {
 
 	return Access.ToInt(result) >= Access.ToInt("supervisor"), nil
 }
+
+func FindAdminByUUID(uuid string) (bool, error) {
+
+	result, err := findUserRoleByUUID(uuid)
+
+	if err != nil {
+		return false, err
+	}
+
+	var Access dbtypes.AccessLevel
+
+	return Access.ToInt(result) >= Access.ToInt("admin"), nil
+}
+
+// Returns UUIDs of files in a case collection
+func FindFilesByCase(caseUUID string) ([]string, error) {
+	result, err := FindDocsByFilter("Cases", caseUUID, bson.M{})
+
+	if err != nil {
+		return nil, err
+	}
+
+	var fileList []string
+
+	for _, doc := range result {
+		fileList = append(fileList, doc["uuid"].(string))
+	}
+
+	return fileList, nil
+}

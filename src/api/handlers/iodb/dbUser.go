@@ -12,10 +12,13 @@ import (
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 	//"go.mongodb.org/mongo-driver/bson"
 	//"go.mongodb.org/mongo-driver/mongo"
 )
 
+// Requires json to have userUUID field in request body
+// Returns all user metadata
 func DbGetUserInfo(c *gin.Context) {
 	var json_request map[string]interface{}
 
@@ -25,7 +28,9 @@ func DbGetUserInfo(c *gin.Context) {
 		log.Panicln(err)
 	}
 
-	result, err := dbInterface.FindDocByFilter("Users", "UserMetadata", json_request)
+	var userUUID = json_request["userUUID"].(string)
+
+	result, err := dbInterface.FindDocByFilter("Users", "UserMetadata", bson.M{"uuid": userUUID})
 
 	if err != nil {
 		// 404 user not found
@@ -73,6 +78,7 @@ func DbUpdateUser(c *gin.Context) {
 
 }
 
+// Returns true if the user can edit or make cases
 func GetUserMakeCase(c *gin.Context) {
 
 	var uuid = c.GetString("identity")
@@ -81,4 +87,13 @@ func GetUserMakeCase(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"allow": allow})
 
+}
+
+// Returns true if the user can edit or make users
+func GetUserEditUser(c *gin.Context) {
+	var uuid = c.GetString("identity")
+
+	var allow = authentication.UserAdminPermission(uuid)
+
+	c.JSON(http.StatusOK, gin.H{"allow": allow})
 }
