@@ -26,7 +26,7 @@ func DbGetCaseInfo(c *gin.Context) {
 		log.Panicln(err)
 	}
 
-	var caseUUID = json_request["caseUUID"].(string)
+	var caseUUID = json_request["uuid"].(string)
 
 	//dbInterface.FindCase("Case", "CaseMetadata", json_request)
 	result, err := dbInterface.FindDocByFilter("Cases", "CaseMetadata", bson.M{"uuid": caseUUID})
