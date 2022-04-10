@@ -23,6 +23,11 @@ export class CaseComponent implements OnInit {
       icon: 'note_add',
       route: '/home'
     },
+    {
+      label: 'Dashboard',
+      icon: 'assignment',
+      route: '/dashboard'
+    }
   ];
   constructor() { }
 

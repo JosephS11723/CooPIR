@@ -36,7 +36,7 @@ export class LoginComponent implements OnInit {
         //console.log(response.body);
         if(response.body != null)
         {
-          var cookieText = response.body.slice(10, response.body.length-2);
+          //var cookieText = response.body.slice(10, response.body.length-2);
           //console.log("Sliced: ", cookieText);
 
           //this.cookieService.set('token', cookieText);
@@ -66,6 +66,17 @@ toggleVisibility()
   }
 }
 
-  ngOnInit(): void {}
+  ngOnInit(): void 
+  {
+    this.http.post("http://localhost:8080/api/v1/auth/logout", { observe: 'response'})
+    .subscribe(response => {
+      console.log("cookie gone now");
+    }, error => {
+      if(error != null)
+      {
+        console.log("There was an error, but hopfully it's fine")
+      }
+    });
+  }
 
 }
