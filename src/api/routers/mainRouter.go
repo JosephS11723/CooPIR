@@ -66,7 +66,7 @@ func InitMainRouter() *gin.Engine {
 	v1.GET("/cases", iodb.GetUserViewCases)
 	v1.GET("/case/make", iodb.GetUserMakeCase)
 	v1.GET("/file/info", iodb.GetFileInfo)
-	v1.GET("/case/files/:uuid", iodb.GetCaseFiles)
+	v1.GET("/case/files", iodb.GetCaseFiles)
 
 	// Authentication
 	v1.POST("/auth/renew", authentication.RenewToken)

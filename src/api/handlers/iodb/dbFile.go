@@ -52,7 +52,7 @@ func GetCaseFiles(c *gin.Context) {
 
 	//err := c.BindJSON(&json_request)
 
-	var caseUUID string = c.Param("uuid")
+	var caseUUID string = c.Query("uuid")
 
 	if caseUUID == "" {
 		c.AbortWithError(http.StatusBadRequest, errors.New("request should contain 'uuid'"))
