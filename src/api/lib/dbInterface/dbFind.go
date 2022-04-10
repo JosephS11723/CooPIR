@@ -431,6 +431,7 @@ func FindAdminByUUID(uuid string) (bool, error) {
 
 // Returns UUIDs of files in a case collection
 func FindFilesByCase(caseUUID string) ([]string, error) {
+
 	result, err := FindDocsByFilter("Cases", caseUUID, bson.M{})
 
 	if err != nil {
