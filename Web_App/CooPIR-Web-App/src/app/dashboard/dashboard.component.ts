@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { GlobalConstants } from '../common/global-constraints';
 //import { getPackedSettings } from 'http2';
 
 @Component({
@@ -29,7 +30,8 @@ export class DashboardComponent implements OnInit {
       name: '',
       supervisor: '',
       last_modified: '',
-      route: ''
+      route: '',
+      function: this.emptyClick()
     }
   ];
   
@@ -51,12 +53,13 @@ export class DashboardComponent implements OnInit {
           //push each case the user has access to into the cases to be displayed
           for(var index = 0; index < retrievedCases.cases.length; index++)
           {
-            console.log(retrievedCases.cases[index]);
+            //console.log(retrievedCases.cases[index]);
             this.caseList.push({
               name: retrievedCases.cases[index],
               supervisor: 'Joseph',
               last_modified: 'sometime',
-              route: '/case'
+              route: '/case',
+              function: this.goToCase(retrievedCases.cases[index])
             });
           }
         }
@@ -70,6 +73,12 @@ export class DashboardComponent implements OnInit {
   emptyClick(): void
   {
 
+  }
+
+  goToCase(uuid: string): void 
+  {
+    console.log("Going to: ", uuid);
+    GlobalConstants.currentCase = uuid;
   }
 
   //cases are retrieved as soon as someone logs in

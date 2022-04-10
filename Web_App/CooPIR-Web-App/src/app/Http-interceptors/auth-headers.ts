@@ -8,8 +8,8 @@ export class AuthHeadersInterceptor implements HttpInterceptor {
   constructor(private cookieService:CookieService) { }
 
   intercept(request: HttpRequest<any>, next: HttpHandler) {
-    console.log('Auth interceptor dude');
-    console.log(request.url);
+    //console.log('Auth interceptor dude');
+    //console.log(request.url);
     const authToken = {token: this.cookieService.get('token')};
     //console.log("Auth token: ", authToken);
     //var authReq = request.clone({ setHeaders: { Authorization: authToken.toString() }});

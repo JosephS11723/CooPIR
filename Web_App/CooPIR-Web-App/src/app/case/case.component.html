@@ -1,5 +1,5 @@
 <mat-toolbar fxLayout="row" color="primary">
-    <span fxFlex>CooPIR</span>
+    <span fxFlex>Case</span>
     <button mat-button *ngFor="let item of menuItems" fxHide.xs [routerLink]="item.route">
         <mat-icon class="mr">{{item.icon}}</mat-icon>
         {{item.label}}
@@ -20,7 +20,47 @@
 </mat-toolbar>
 
 
-<label for="uploader">Upload a file:</label>
+<head>
+    <!--Style for the table of files is defined-->
+    <style>
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    td, th {
+      border: 1px solid #545050;
+      text-align: left;
+      padding: 8px;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+    </style>
+    </head>
+    <!--Table to display the cases-->
+    <body>
+    <table name="valid-cases" id="valid-cases">
+        <!--Bolded text that defines the categories-->
+        <tr>
+            <th>File Name</th>
+            <th>Created</th>
+            <th>Last Modified</th>
+        </tr>
+        <!--Each case is placed in the table-->
+        <!--The first item is ignored because it is just a placeholder-->
+          <tr *ngFor="let item of fileList; let i=index" [routerLink]="item.route">
+             <td *ngIf="i != 0"><button id="item.name" (click)="getFileInfo(item.name)" class="btn btn-primary btn-lg mr-2" style="width:100%">{{item.name}}</button></td>
+             <td *ngIf="i != 0">{{item.created}}</td>
+             <td *ngIf="i != 0">{{item.last_modified}}</td>
+          </tr>
+     </table> 
+     </body>
+
+
+
 <br><br>
 <input type="file" id="uploader" class="file-input"
 (change)="onFileSelected($event)" #fileUpload>
