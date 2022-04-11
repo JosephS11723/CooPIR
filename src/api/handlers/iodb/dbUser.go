@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/JosephS11723/CooPIR/src/api/handlers/authentication"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 	"github.com/gin-gonic/gin"
@@ -83,7 +82,7 @@ func GetUserMakeCase(c *gin.Context) {
 
 	var uuid = c.GetString("identity")
 
-	var allow = authentication.UserSupervisorPermission(uuid)
+	var allow = dbInterface.UserSupervisorPermission(uuid)
 
 	c.JSON(http.StatusOK, gin.H{"allow": allow})
 
@@ -93,7 +92,7 @@ func GetUserMakeCase(c *gin.Context) {
 func GetUserEditUser(c *gin.Context) {
 	var uuid = c.GetString("identity")
 
-	var allow = authentication.UserAdminPermission(uuid)
+	var allow = dbInterface.UserAdminPermission(uuid)
 
 	c.JSON(http.StatusOK, gin.H{"allow": allow})
 }
@@ -102,7 +101,7 @@ func GetUserEditUser(c *gin.Context) {
 func GetUserAddFile(c *gin.Context) {
 	var uuid = c.GetString("identity")
 
-	var allow = authentication.UserResponderPermission(uuid)
+	var allow = dbInterface.UserResponderPermission(uuid)
 
 	c.JSON(http.StatusOK, gin.H{"allow": allow})
 }

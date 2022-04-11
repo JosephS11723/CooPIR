@@ -1,16 +1,15 @@
-package authentication
+package dbInterface
 
 import (
 	"log"
 
-	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/security"
 )
 
 // Basic user login fucntion
-func userLogin(email string, password string) bool {
+func UserLogin(email string, password string) bool {
 	// get password hash from database
-	hash, err := dbInterface.RetrieveHashByEmail(email)
+	hash, err := RetrieveHashByEmail(email)
 
 	// could not retrieve hash from database (email not in database)
 	if err != nil {
@@ -27,7 +26,7 @@ func userLogin(email string, password string) bool {
 // UserCases returns all cases that the user can view
 func UserCases(userUUID string) []string {
 	// Get the cases with the user's UUID
-	cases, err := dbInterface.RetrieveViewCasesByUserUUID(userUUID)
+	cases, err := RetrieveViewCasesByUserUUID(userUUID)
 
 	// Could not retrieve cases from database
 	if err != nil {
@@ -41,7 +40,7 @@ func UserCases(userUUID string) []string {
 // Returns true the user has responder rights
 func UserResponderPermission(userUUID string) bool {
 	// Find if user has supervisor rights
-	result, err := dbInterface.FindResponderByUUID(userUUID)
+	result, err := FindResponderByUUID(userUUID)
 
 	if err != nil {
 		log.Println(err)
@@ -54,7 +53,7 @@ func UserResponderPermission(userUUID string) bool {
 // Returns true the user has supervisor rights
 func UserSupervisorPermission(userUUID string) bool {
 	// Find if user has supervisor rights
-	result, err := dbInterface.FindSupervisorByUUID(userUUID)
+	result, err := FindSupervisorByUUID(userUUID)
 
 	if err != nil {
 		log.Println(err)
@@ -67,7 +66,7 @@ func UserSupervisorPermission(userUUID string) bool {
 // Returns true if the user has admin rights
 func UserAdminPermission(userUUID string) bool {
 	// Find if user has admin rights
-	result, err := dbInterface.FindAdminByUUID(userUUID)
+	result, err := FindAdminByUUID(userUUID)
 
 	if err != nil {
 		log.Println(err)

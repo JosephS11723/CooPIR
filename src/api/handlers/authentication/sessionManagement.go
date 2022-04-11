@@ -30,7 +30,7 @@ func Login(c *gin.Context) {
 	}
 
 	// check login credentials
-	if !userLogin(email, password) {
+	if !dbInterface.UserLogin(email, password) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
 	}

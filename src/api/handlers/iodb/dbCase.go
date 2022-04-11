@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/JosephS11723/CooPIR/src/api/handlers/authentication"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 	"github.com/gin-gonic/gin"
@@ -89,7 +88,7 @@ func GetUserViewCases(c *gin.Context) {
 
 	var uuid = c.GetString("identity")
 
-	var cases = authentication.UserCases(uuid)
+	var cases = dbInterface.UserCases(uuid)
 
 	c.JSON(http.StatusOK, gin.H{"cases": cases})
 }
