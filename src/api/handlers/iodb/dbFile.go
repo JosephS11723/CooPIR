@@ -10,6 +10,7 @@ import (
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
+	"github.com/JosephS11723/CooPIR/src/api/lib/logtypes"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -27,6 +28,14 @@ func GetFileInfo(c *gin.Context) {
 	var caseUUID string = json_request["caseUUID"].(string)
 	var fileUUID string = json_request["fileUUID"].(string)
 
+	// log
+	_, err = dbInterface.MakeCaseLog(c, caseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.GetFileInfoAttempt, gin.H{"fileUUID": fileUUID})
+
+	if err != nil {
+		// failed to log
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+	}
+
 	//dbInterface.FindCase("Case", "CaseMetadata", json_request)
 	result, err := dbInterface.FindDocByFilter("Cases", caseUUID, bson.M{"uuid": fileUUID})
 
@@ -40,6 +49,14 @@ func GetFileInfo(c *gin.Context) {
 
 	if err != nil {
 		log.Panicln(err)
+	}
+
+	// log
+	_, err = dbInterface.MakeCaseLog(c, caseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.GetFileInfo, gin.H{"fileUUID": fileUUID})
+
+	if err != nil {
+		// failed to log
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
 	}
 
 	c.JSON(http.StatusOK, gin.H{"file": dbFile})
@@ -58,6 +75,15 @@ func GetCaseFiles(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, errors.New("request should contain 'uuid'"))
 	}
 
+	// log
+	_, err := dbInterface.MakeCaseLog(c, caseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.GetCaseFilesAttempt, nil)
+
+	if err != nil {
+		// failed to log
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+	}
+
+
 	/*
 		if err != nil {
 			log.Panicln(err)
@@ -67,6 +93,14 @@ func GetCaseFiles(c *gin.Context) {
 
 	if err != nil {
 		c.AbortWithError(http.StatusNotFound, errors.New("files not found"))
+	}
+
+	// log
+	_, err = dbInterface.MakeCaseLog(c, caseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.GetCaseFiles, nil)
+
+	if err != nil {
+		// failed to log
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
 	}
 
 	c.JSON(http.StatusOK, gin.H{"files": files})

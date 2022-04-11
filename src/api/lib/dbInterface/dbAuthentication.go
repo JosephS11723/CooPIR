@@ -6,7 +6,7 @@ import (
 	"github.com/JosephS11723/CooPIR/src/api/lib/security"
 )
 
-// Basic user login fucntion
+// Basic user login function
 func UserLogin(email string, password string) bool {
 	// get password hash from database
 	hash, err := RetrieveHashByEmail(email)

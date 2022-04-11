@@ -39,7 +39,7 @@ coll = db.getCollection("UserMetadata");
 
 coll.insert(
   { 
-    "uuid":"00000000-0000-0000-0000-000000000000",
+    "uuid":"00000000-0000-0000-0000-000000000001",
     "name":"default",
     "email":"default@coopir.edu",
     "role":"admin",
@@ -106,3 +106,8 @@ db.createUser(
         ]
       }
   )
+
+
+// create logs database and collection
+db = conn.getDB("Logs")
+db.createCollection("Logs")

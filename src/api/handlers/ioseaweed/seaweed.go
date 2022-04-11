@@ -12,6 +12,8 @@ import (
 	"github.com/JosephS11723/CooPIR/src/api/config"
 	libcrypto "github.com/JosephS11723/CooPIR/src/api/lib/crypto"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
+	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
+	"github.com/JosephS11723/CooPIR/src/api/lib/logtypes"
 	swi "github.com/JosephS11723/CooPIR/src/api/lib/seaweedInterface"
 	"github.com/gin-gonic/gin"
 )
@@ -23,27 +25,40 @@ func SWGET(c *gin.Context) {
 
 	// error if filename not provided
 	if !success {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no filename provided"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no filename provided"})
 		return
 	}
 
 	caseUUID, success := c.GetQuery("caseuuid")
 	// error if caseuuid not provided
 	if !success {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no caseuuid provided"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no caseuuid provided"})
 		return
+	}
+
+	// log file download
+	_, err := dbInterface.MakeCaseLog(c, caseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.FileDownloadAttempt, filename)
+	if err != nil {
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
 	}
 
 	// TODO: verify user is authorized to download file
 
 	// download file through lib
-	err := swi.GETFile(filename, caseUUID, c)
+	err = swi.GETFile(filename, caseUUID, c)
 
 	// internal server error: failed to retrieve file data
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "failed to retrieve data"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve data"})
 		return
 	}
+
+	// log file download
+	_, err = dbInterface.MakeCaseLog(c, caseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.FileDownload, filename)
+	if err != nil {
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+	}
+
 	c.Status(http.StatusOK)
 }
 
@@ -54,33 +69,39 @@ func SWPOST(c *gin.Context) {
 	caseUUID, success := c.GetQuery("caseuuid")
 	// error if caseuuid not provided
 	if !success {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no caseuuid provided"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no caseuuid provided"})
 		return
 	}
 
 	originalFilename, success := c.GetQuery("filename")
 	// error if filedir not provided
 	if !success {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no filedir provided"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no filedir provided"})
 		return
 	}
 
 	// get file multipart stream
 	filestream, _, err := c.Request.FormFile("file")
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no file received"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no file received"})
 		log.Panicln(err)
 	}
 
 	// ensure case name is valid
-	fmt.Println(caseUUID)
 	_, err = dbInterface.FindCaseNameByUUID(caseUUID)
 
 	if err != nil {
 		log.Println(err)
 		// case does not exist
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Invalid case UUID"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid case UUID"})
 		return
+	}
+
+	// log file upload
+	_, err = dbInterface.MakeCaseLog(c, caseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.FileUploadAttempt, nil)
+	if err != nil {
+		// failed to log file upload
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
 	}
 
 	// TODO: ensure user is authorized to upload file to case
@@ -91,7 +112,7 @@ func SWPOST(c *gin.Context) {
 
 	// error if failed to generate uuid
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "failed to generate uuid"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "failed to generate uuid"})
 		return
 	}
 
@@ -176,22 +197,24 @@ func SWPOST(c *gin.Context) {
 		err = <-errChan
 		if err != nil {
 			// upload failed, panic!
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "upload error"})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "upload error"})
 			log.Panicln(err)
 		}
 	}
 
 	// check mongo for file existence and remove if duplicate
-	_, err = dbInterface.FindFileByHash(hex.EncodeToString(filesha512Hash), caseUUID)
-	
+	conflictUUID, err := dbInterface.FindFileByHash(hex.EncodeToString(filesha512Hash), caseUUID)
+
 	if err == nil {
 		// file already exists, remove it
 		err = swi.DELETEFile(filename, caseUUID, c)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "failed to delete file"})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "failed to delete file"})
 			log.Panicln(err)
 		}
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "file already exists"})
+		// log file already exist
+		dbInterface.MakeCaseLog(c, caseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.FileUploadFailure, gin.H{"error": "file already exists", "fileUUID": conflictUUID})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "file already exists"})
 		return
 	}
 
@@ -213,8 +236,15 @@ func SWPOST(c *gin.Context) {
 	)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "failed to create file"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "failed to create file"})
 		log.Panicln(err)
+	}
+
+	// log file upload
+	_, err = dbInterface.MakeCaseLog(c, caseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.FileUpload, gin.H{"fileUUID": filename})
+	if err != nil {
+		// failed to log file upload
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
 	}
 
 	// upload succeeded
@@ -228,22 +258,35 @@ func SWDELETE(c *gin.Context) {
 
 	// error if filename not provided
 	if !success {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no filename provided"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no filename provided"})
 	}
 
 	caseUUID, success := c.GetQuery("caseuuid")
 	// error if caseuuid not provided
 	if !success {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "no caseuuid provided"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no caseuuid provided"})
 		return
+	}
+
+	// log file deletion
+	_, err := dbInterface.MakeCaseLog(c, caseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.FileDeleteAttempt, nil)
+	if err != nil {
+		// failed to log
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
 	}
 
 	// TODO: verify user is authorized to delete file  and case files are marked as editable (not likely)
 
-	// run delete function from lib
-	err := swi.DELETEFile(filename, caseUUID, c)
+	// log file deletion
+	_, err = dbInterface.MakeCaseLog(c, caseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.FileDelete, nil)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "failed to delete"})
+		// failed to log
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+	}
+
+	// run delete function from lib
+	err = swi.DELETEFile(filename, caseUUID, c)
+	if err != nil {
 		log.Panicln("INTERNAL SERVER ERROR: DELETE FAILED")
 	}
 }

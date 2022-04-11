@@ -8,6 +8,7 @@ import (
 	"github.com/JosephS11723/CooPIR/src/api/lib/crypto"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
+	"github.com/JosephS11723/CooPIR/src/api/lib/logtypes"
 	"github.com/JosephS11723/CooPIR/src/api/lib/security"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
@@ -29,9 +30,22 @@ func Login(c *gin.Context) {
 		return
 	}
 
+	// log
+	_, err := dbInterface.MakeCaseLog(c, "", "", dbtypes.Info, logtypes.LoginAttempt, gin.H{"email": email})
+	if err != nil {
+		// failed to log
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+	}
+
 	// check login credentials
 	if !dbInterface.UserLogin(email, password) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		// log
+		_, err = dbInterface.MakeCaseLog(c, "", "", dbtypes.Info, logtypes.LoginFailure, gin.H{"email": email})
+		if err != nil {
+			// failed to log
+			log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+		}
 		return
 	}
 
@@ -48,6 +62,13 @@ func Login(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create token"})
 		return
+	}
+
+	// log
+	_, err = dbInterface.MakeCaseLog(c, "", uuid, dbtypes.Info, logtypes.Login, gin.H{"email": email})
+	if err != nil {
+		// failed to log
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
 	}
 
 	// set token in cookie
@@ -112,7 +133,7 @@ func RenewToken(c *gin.Context) {
 func AddUser(c *gin.Context) {
 	// verify token
 	/*if !security.VerifyRegistrationToken(c) {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "invalid token"})
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
 		log.Println("INVALID REGISTRATION TOKEN")
 
 		// http 401
@@ -124,14 +145,14 @@ func AddUser(c *gin.Context) {
 	// get email
 	email, success := c.GetPostForm("email")
 	if !success {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "No email provided"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "No email provided"})
 		return
 	}
 
 	// get password
 	password, success := c.GetPostForm("password")
 	if !success {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "No password provided"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "No password provided"})
 		return
 	}
 
@@ -139,14 +160,14 @@ func AddUser(c *gin.Context) {
 	// add role
 	role, success := c.GetPostForm("role")
 	if !success {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "No role provided"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "No role provided"})
 		return
 	}
 
 	// hash password
 	hashedPassword, err := security.HashPass(password)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Failed to hash password"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
 		return
 	}
 
@@ -164,7 +185,7 @@ func AddUser(c *gin.Context) {
 	)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "failed to add user"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "failed to add user"})
 		return
 	}
 

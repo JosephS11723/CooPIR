@@ -10,6 +10,7 @@ import (
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
+	"github.com/JosephS11723/CooPIR/src/api/lib/logtypes"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	//"go.mongodb.org/mongo-driver/bson"
@@ -29,6 +30,14 @@ func DbGetUserInfo(c *gin.Context) {
 
 	var userUUID = json_request["userUUID"].(string)
 
+	// log
+	_, err = dbInterface.MakeCaseLog(c, "", c.MustGet("identity").(string), dbtypes.Info, logtypes.GetUserInfoAttempt, gin.H{"userUUID": userUUID})
+
+	if err != nil {
+		// failed to log
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+	}
+
 	result, err := dbInterface.FindDocByFilter("Users", "UserMetadata", bson.M{"uuid": userUUID})
 
 	if err != nil {
@@ -44,14 +53,22 @@ func DbGetUserInfo(c *gin.Context) {
 		log.Panicln(err)
 	}
 
+	// TODO: why can't we just not return this field??? we can make a custom json from the db query
 	dbUser.SaltedHash = "no password hash for you ;)"
+
+	// log
+	_, err = dbInterface.MakeCaseLog(c, "", c.MustGet("identity").(string), dbtypes.Info, logtypes.GetUserInfo, gin.H{"userUUID": userUUID})
+
+	if err != nil {
+		// failed to log
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+	}
 
 	c.JSON(http.StatusOK, gin.H{"user": dbUser})
 
 }
 
 func DbCreateUser(c *gin.Context) {
-
 	var json_request dbtypes.NewUser
 
 	err := c.BindJSON(&json_request)
@@ -60,7 +77,23 @@ func DbCreateUser(c *gin.Context) {
 		log.Panicln(err)
 	}
 
+	// log
+	_, err = dbInterface.MakeCaseLog(c, "", c.MustGet("identity").(string), dbtypes.Info, logtypes.CreateUserAttempt, nil)
+
+	if err != nil {
+		// failed to log
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+	}
+
 	_, err = dbInterface.MakeUser(json_request)
+
+	// log
+	_, err = dbInterface.MakeCaseLog(c, "", c.MustGet("identity").(string), dbtypes.Info, logtypes.CreateUser, nil)
+
+	if err != nil {
+		// failed to log
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+	}
 
 	if err != nil {
 		log.Panicln(err)
@@ -68,21 +101,34 @@ func DbCreateUser(c *gin.Context) {
 }
 
 func DbUpdateUser(c *gin.Context) {
-
+	// TODO: add target user and new information to log entries
+	// TODO: add log attempt
 	var json_request dbtypes.UpdateDoc
 
 	c.BindJSON(&json_request)
 
 	dbInterface.UpdateUser("Users", "UserMetadata", json_request)
 
+	// log
+	_, err := dbInterface.MakeCaseLog(c, "", c.MustGet("identity").(string), dbtypes.Info, logtypes.UpdateUser, nil)
+	if err != nil {
+		// failed to log
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+	}
 }
 
 // Returns true if the user can edit or make cases
 func GetUserMakeCase(c *gin.Context) {
-
 	var uuid = c.GetString("identity")
 
 	var allow = dbInterface.UserSupervisorPermission(uuid)
+
+	// log
+	_, err := dbInterface.MakeCaseLog(c, "", c.MustGet("identity").(string), dbtypes.Info, logtypes.GetUserMakeCase, nil)
+	if err != nil {
+		// failed to log
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+	}
 
 	c.JSON(http.StatusOK, gin.H{"allow": allow})
 
@@ -92,6 +138,13 @@ func GetUserMakeCase(c *gin.Context) {
 func GetUserEditUser(c *gin.Context) {
 	var uuid = c.GetString("identity")
 
+	// log
+	_, err := dbInterface.MakeCaseLog(c, "", c.MustGet("identity").(string), dbtypes.Info, logtypes.GetUserEditUser, nil)
+	if err != nil {
+		// failed to log
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+	}
+
 	var allow = dbInterface.UserAdminPermission(uuid)
 
 	c.JSON(http.StatusOK, gin.H{"allow": allow})
@@ -99,7 +152,16 @@ func GetUserEditUser(c *gin.Context) {
 
 // Returns true if the user can edit or make users
 func GetUserAddFile(c *gin.Context) {
+	// TODO: add logs to this function
 	var uuid = c.GetString("identity")
+
+	// log
+	_, err := dbInterface.MakeCaseLog(c, "", c.MustGet("identity").(string), dbtypes.Info, logtypes.GetUserAddFile, nil)
+
+	if err != nil {
+		// failed to log
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+	}
 
 	var allow = dbInterface.UserResponderPermission(uuid)
 

@@ -502,7 +502,7 @@ def dbUpdateUserTest():
                 "filter":{"name":"testuser"},
                 "update":{
                     "name":"testcase",
-                    "email":"thenewummmmemail@emailservice.com",
+                    "email":"thenewemail@emailservice.com",
                     "role":"responder",
                     "cases":["The Case", "The OTHER Case ;)"],
                     "password":"football123"

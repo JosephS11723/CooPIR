@@ -8,6 +8,7 @@ import (
 //log level number
 type ErrorLevel int32
 
+// levels for log files
 const (
 	Debug ErrorLevel = iota
 	Info
@@ -17,7 +18,6 @@ const (
 )
 
 func (s ErrorLevel) String() string {
-
 	var return_val string
 
 	switch s {
@@ -36,7 +36,6 @@ func (s ErrorLevel) String() string {
 }
 
 func (s ErrorLevel) toInt32(lvl string) ErrorLevel {
-
 	var return_val ErrorLevel
 
 	switch lvl {
@@ -79,9 +78,10 @@ func (s *ErrorLevel) UnmarshalJSON(b []byte) error {
 
 type Log struct {
 	Uuid    string      `json:"uuid"`
+	User	string      `json:"user"`
 	Level   ErrorLevel  `json:"level"`
 	Type    string      `json:"type"`
-	Time    int64       `json:"time"`
+	Time    int64       `json:"time"` // milliseconds since epoch
 	Content interface{} `json:"content"`
 }
 

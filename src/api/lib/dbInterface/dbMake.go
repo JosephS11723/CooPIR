@@ -100,6 +100,25 @@ func DbSingleInsert(dbname string, collection string, data interface{}) (*mongo.
 			return result, nil
 		}
 
+	// Log struct
+	case dbtypes.Log:
+		if collection != "Logs" {
+			log.Panicf("[ERROR] Cannot insert data type %s into Log collection", t)
+		} else {
+
+			data := data.(dbtypes.Log)
+
+			coll := client.Database(dbname).Collection(collection)
+
+			result, err := coll.InsertOne(ctx, data)
+
+			if err != nil {
+				return result, err
+			}
+
+			return result, nil
+		}
+
 	// default case: panic
 	default:
 		log.Panic("[ERROR] Unknown type for db insert!")

@@ -10,6 +10,7 @@ import (
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
+	"github.com/JosephS11723/CooPIR/src/api/lib/logtypes"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -26,6 +27,14 @@ func DbGetCaseInfo(c *gin.Context) {
 	}
 
 	var caseUUID = json_request["uuid"].(string)
+
+	// log case info request
+	_, err = dbInterface.MakeCaseLog(c, caseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.GetCaseInfo, nil)
+
+	if err != nil {
+		// failed to log
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+	}
 
 	//dbInterface.FindCase("Case", "CaseMetadata", json_request)
 	result, err := dbInterface.FindDocByFilter("Cases", "CaseMetadata", bson.M{"uuid": caseUUID})
@@ -46,6 +55,7 @@ func DbGetCaseInfo(c *gin.Context) {
 }
 
 func DbCreateCase(c *gin.Context) {
+	// TODO: check if user is able to create cases
 
 	var json_request dbtypes.Case
 
@@ -55,11 +65,28 @@ func DbCreateCase(c *gin.Context) {
 		log.Panicln(err)
 	}
 
-	// call make case (it does the sanity checks for us)
+	// log
+	_, err = dbInterface.MakeCaseLog(c, "", c.MustGet("identity").(string), dbtypes.Info, logtypes.CreateCaseAttempt, nil)
+
+	if err != nil {
+		// failed to log
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+	}
+
+	// call make case (it does the sanity checks for us). // TODO: figure out where to put CreateCaseFailure log
 	_, caseUUID, err := dbInterface.MakeCase(json_request)
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, errors.New("case already exists"))
+		return
+	}
+
+	// log
+	_, err = dbInterface.MakeCaseLog(c, caseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.CreateCase, nil)
+
+	if err != nil {
+		// failed to log
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
 	}
 
 	// send ok
@@ -67,7 +94,7 @@ func DbCreateCase(c *gin.Context) {
 }
 
 func DbUpdateCase(c *gin.Context) {
-
+	//TODO: the log functions require the case uuid that is being specified in the request body.
 	var json_request dbtypes.UpdateDoc
 
 	err := c.BindJSON(&json_request)
@@ -76,19 +103,43 @@ func DbUpdateCase(c *gin.Context) {
 		log.Panicln(err)
 	}
 
+	// log
+	_, err = dbInterface.MakeCaseLog(c, "", c.MustGet("identity").(string), dbtypes.Info, logtypes.UpdateCaseAttempt, nil)
+
+	if err != nil {
+		// failed to log
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+	}
+
 	// TODO: check to see if case name already taken
+	// TODO: add UpdateCaseFailure log if user does not have permission to update case info
 
 	dbInterface.UpdateCase("Cases", "CaseMetadata", json_request)
+
+	// log
+	_, err = dbInterface.MakeCaseLog(c, "", c.MustGet("identity").(string), dbtypes.Info, logtypes.UpdateCase, nil)
+
+	if err != nil {
+		// failed to log
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+	}
 
 	// send ok
 	c.JSON(http.StatusOK, gin.H{"message": "Case updated"})
 }
 
 func GetUserViewCases(c *gin.Context) {
-
 	var uuid = c.GetString("identity")
 
 	var cases = dbInterface.UserCases(uuid)
+
+	// log
+	_, err := dbInterface.MakeCaseLog(c, "", c.MustGet("identity").(string), dbtypes.Info, logtypes.GetCases, gin.H{"cases": cases})
+
+	if err != nil {
+		// failed to log
+		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+	}
 
 	c.JSON(http.StatusOK, gin.H{"cases": cases})
 }
