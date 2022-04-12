@@ -253,7 +253,7 @@ paths:
                   error:
                     type: string
                     description: The error message
-  /logout:
+  /auth/logout:
     post:
       description: Logout
       operationId: logout
@@ -295,7 +295,7 @@ paths:
                   error:
                     type: string
                     description: The error message
-  /renew:
+  /auth/renew:
     post:
       description: Renew token
       operationId: renew
@@ -337,3 +337,374 @@ paths:
                   error:
                     type: string
                     description: The error message
+  /case:
+    get: 
+      description: returns all case metadata
+      parameters:
+        - name: json_request
+          in: query
+          description: JSON request for cases
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Operation Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: the success message
+        500:
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Internal Server Error                    
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Case not found
+  /cases: 
+    get:
+      description: Get all cases the user can see
+      parameters:
+        - name: json_request
+          in: query
+          description: request to get all cases
+          required: true
+          schema:
+            type: string
+      responses:
+        500:
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Internal Server Error
+        200:
+          description: Operation Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: list of all cases
+  /case/make: 
+    get:
+      description: returns true if the user can edit or make cases
+      parameters:
+        - name: uuid
+          in: query
+          description: uuid of user
+          required: true
+          schema:
+            type: string
+      responses:
+        500:
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Internal Server Error
+        200:
+          description: Operation Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Operation Successful  
+  /case/files: 
+    get:
+      description: returns all files in case
+      parameters:
+        - name: caseUUID
+          in: query
+          description: request to get all cases
+          required: true
+          schema:
+            type: string
+      responses:
+        500:
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Internal Server Error
+        200:
+          description: Operation Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Operation Successful
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Bad Request
+        404:
+          description: Not Found
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Not Found
+  /case/new:
+    post:
+      description: Creates a new case
+      parameters:
+        - name: json_request
+          in: query
+          description: request to create new case
+          required: true
+          schema:
+            type: string
+      responses:
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: 
+                  error:
+                    type: string
+                    description: Case already exists
+        500:
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Internal Server Error
+        200:
+          description: Operation Successful
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Successful Creation of Case
+  /case/update:
+    post:
+      description: Updates the selected case
+      parameters:
+        - name: json_request
+          in: query
+          description: request to update case
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Operation Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Successful Update of Case
+        500:
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Internal Server Error
+  /user:
+    get:
+      description: returns all user metadata
+      parameters:
+        - name: json_request
+          in: query
+          description: request for user info
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Operation Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: successful query of user info
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Internal Server Error
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: User Not Found
+  /user/new:
+    post:
+      description: creates new user
+      parameters:
+        - name: json_request
+          in: query
+          description: request to make new user
+          required: true
+          schema:
+            type: string
+      responses:
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Internal Server Error
+  /user/edit:
+    get:
+      description: returns true if user can edit
+      parameters:
+        - name: uuid
+          in: query
+          description: checks the uuid of user
+          required: true
+          schema:
+            type: string
+      responses:
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Internal Server Error      
+        200:
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Successful Operation
+  /user/update:
+    post:
+      description: updates user info
+      parameters:
+        - name: json_request
+          in: query
+          description: updates user info
+          required: true
+          schema:
+            type: string
+      responses:
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Internal Server Error 
+  /file/info:
+    get:
+      description: returns file metadata
+      parameters:
+        - name: json_request
+          in: query
+          description: returns file metadata
+          required: true
+          schema:
+            type: string
+      responses:
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Internal Server Error
+        200: 
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Successful Operation
