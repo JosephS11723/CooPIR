@@ -10,6 +10,7 @@ import (
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 	"github.com/JosephS11723/CooPIR/src/api/lib/logtypes"
 	"github.com/JosephS11723/CooPIR/src/api/lib/security"
+	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 )
@@ -161,6 +162,12 @@ func AddUser(c *gin.Context) {
 	role, success := c.GetPostForm("role")
 	if !success {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "No role provided"})
+		return
+	}
+
+	// ensure email is actually an email
+	if !govalidator.IsEmail(email) {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid email"})
 		return
 	}
 
