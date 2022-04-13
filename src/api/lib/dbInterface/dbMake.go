@@ -3,6 +3,7 @@ package dbInterface
 import (
 	"errors"
 	"log"
+	"time"
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 	"github.com/JosephS11723/CooPIR/src/api/lib/security"
@@ -333,4 +334,26 @@ func MakeUuid() (string, error) {
 	}
 
 	return id, nil
+}
+
+func MakeJob(new_job dbtypes.NewJob) (string, error) {
+
+	// create uuid for job
+	uuid, err := MakeUuid()
+
+	if err != nil {
+		return "", err
+	}
+
+	job_to_insert := dbtypes.Job{
+		JobUUID:       uuid,
+		Arguments:     new_job.Arguments,
+		Name:          new_job.Name,
+		JobType:       new_job.JobType,
+		Status:        dbtypes.Queued,
+		StartTime:     time.Now().UnixMilli(),
+		EndTime:       -1,
+		JobResultUUID: "",
+	}
+
 }
