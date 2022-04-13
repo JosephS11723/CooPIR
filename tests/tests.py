@@ -109,7 +109,7 @@ def uploadTest(fileData = None):
             else:
                 success()
                 global fileUUID
-                fileUUID = r.content
+                fileUUID = r.content.decode()
         else:
             # parallel upload test with a particular file
             # contents of test file
@@ -159,6 +159,45 @@ def downloadTest(filename : str = None):
 
             # download file
             r = s.get(url, timeout=10, params=params)
+
+            # check if good request
+            if r.status_code != 200:
+                error(r.status_code)
+                return False
+            else:
+                return True
+        
+    except Exception as e:
+        error(e)
+
+def downloadTestWithParameters(filename : str = None):
+    '''Attempts to download the file we just uploaded'''
+    try:
+        global caseuuid
+        global fileUUID
+        if filename == None:
+            # normal download test with sample file
+            # print function name
+            print(inspect.getframeinfo(inspect.currentframe()).function, end=" ", flush=True)
+            
+            url = "{}/file/{}/{}".format(apiBasePath, fileUUID, caseuuid)
+
+            # download file
+            r = s.get(url, timeout=20)#, params=params)
+
+            # check if good request
+            if r.status_code != 200:
+                error(str(r.status_code) + " " + r.content.decode())
+            else:
+                success()
+        else:
+            # test if a particular file can be downloaded
+            url = apiBasePath + '/file/' + fileUUID + '/' + caseuuid
+
+            #params = {"filename" : filename}
+
+            # download file
+            r = s.get(url, timeout=10)#, params=params)
 
             # check if good request
             if r.status_code != 200:
@@ -573,7 +612,7 @@ def dbGetUserCasesTest():
     except Exception as e:
         error(e)
 
-tests = [loginTest, pingTest, dbNewCaseTest, uploadTest, uploadTest, uploadTest, dbUpdateCaseTest, dbFindCaseTest, dbNewUserTest, dbUpdateUserTest, dbFindUserTest, downloadTest, dbGetUserCasesTest]
+tests = [loginTest, pingTest, dbNewCaseTest, uploadTest, uploadTest, uploadTest, downloadTest, downloadTestWithParameters, dbUpdateCaseTest, dbFindCaseTest, dbNewUserTest, dbUpdateUserTest, dbFindUserTest, dbGetUserCasesTest]
 def runAllTests():
     for test in tests:
         test()
