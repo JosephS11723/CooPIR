@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { GlobalConstants } from '../common/global-constraints';
+import { CookieService } from 'ngx-cookie-service';
 //import { getPackedSettings } from 'http2';
 
 @Component({
@@ -35,7 +36,7 @@ export class DashboardComponent implements OnInit {
     }
   ];
   
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private cookieService:CookieService) { }
 
   //gets the cases that the user has access to
   getCases(): void
@@ -78,7 +79,9 @@ export class DashboardComponent implements OnInit {
   goToCase(uuid: string): void 
   {
     console.log("Going to: ", uuid);
+    this.cookieService.set("currentUUID", GlobalConstants.currentCase);
     GlobalConstants.currentCase = uuid;
+
   }
 
   //cases are retrieved as soon as someone logs in

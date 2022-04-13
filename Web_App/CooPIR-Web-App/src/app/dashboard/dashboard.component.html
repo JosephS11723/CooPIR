@@ -1,6 +1,6 @@
 <!--toolbar stuff-->
 <mat-toolbar fxLayout="row" color="primary">
-    <span fxFlex>CooPIR</span>
+    <span fxFlex>CooPIR Cases</span>
     <button mat-button *ngFor="let item of menuItems" fxHide.xs [routerLink]="item.route">
         <mat-icon class="mr">{{item.icon}}</mat-icon>
         {{item.label}}
@@ -46,7 +46,7 @@ tr:nth-child(even) {
 <table name="valid-cases" id="valid-cases">
     <!--Bolded text that defines the categories-->
     <tr>
-        <th>Name</th>
+        <th>Case Name</th>
         <th>Supervisor</th>
         <th>Last Modified</th>
     </tr>
