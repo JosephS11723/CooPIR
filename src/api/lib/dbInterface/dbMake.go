@@ -356,4 +356,6 @@ func MakeJob(new_job dbtypes.NewJob) (string, error) {
 		JobResultUUID: "",
 	}
 
+	result, err = DbSingleInsert(dbName, dbCollection, NewCase)
+
 }

@@ -2,7 +2,6 @@ package jobs
 
 // handles incoming job requests
 import (
-	"errors"
 	"net/http"
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
@@ -50,13 +49,6 @@ func CreateJob(c *gin.Context) {
 			},
 		)
 
-	}
-
-	// create uuid for job
-	uuid, err := dbInterface.MakeUuid()
-
-	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, errors.New("could not generate uuid"))
 	}
 
 	// add job to database
