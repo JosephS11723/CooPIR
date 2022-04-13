@@ -17,19 +17,29 @@ import (
 
 // Takes the caseUUID and fileUUID from json_request and returns the file metadata
 func GetFileInfo(c *gin.Context) {
-	var json_request map[string]interface{}
 
-	err := c.BindJSON(&json_request)
+	//var json_request map[string]string
 
-	if err != nil {
-		log.Panicln(err)
+	//err := c.BindJSON(&json_request)
+
+	/*
+		if err != nil {
+			log.Panicln(err)
+		}*/
+
+	var caseUUID string = c.Query("caseUUID")
+
+	if caseUUID == "" {
+		c.AbortWithError(http.StatusBadRequest, errors.New("no caseUUID in query"))
 	}
 
-	var caseUUID string = json_request["caseUUID"].(string)
-	var fileUUID string = json_request["fileUUID"].(string)
+	var fileUUID string = c.Query("fileUUID")
 
+	if fileUUID == "" {
+		c.AbortWithError(http.StatusBadRequest, errors.New("no fileUUID in query"))
+	}
 	// log
-	_, err = dbInterface.MakeCaseLog(c, caseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.GetFileInfoAttempt, gin.H{"fileUUID": fileUUID})
+	_, err := dbInterface.MakeCaseLog(c, caseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.GetFileInfoAttempt, gin.H{"fileUUID": fileUUID})
 
 	if err != nil {
 		// failed to log
@@ -82,7 +92,6 @@ func GetCaseFiles(c *gin.Context) {
 		// failed to log
 		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
 	}
-
 
 	/*
 		if err != nil {

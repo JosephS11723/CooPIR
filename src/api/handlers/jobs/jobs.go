@@ -1,14 +1,16 @@
 package jobs
-/*
+
 // handles incoming job requests
 import (
+	"errors"
 	"net/http"
 
-	"github.com/JosephS11723/CooPIR/src/api/handlers/iodb"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
+	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 	"github.com/gin-gonic/gin"
 )
 
+/*
 // GetStatus returns the status of a job
 func GetInfo(c *gin.Context) {
 	var job iodb.Job
@@ -30,51 +32,45 @@ func GetInfo(c *gin.Context) {
 	// TODO: change to job status variable
 	c.JSON(200, job)
 }
-
+*/
 // CreateJob creates a new job from parameters given in the request
 func CreateJob(c *gin.Context) {
+
+	var new_job_request dbtypes.NewJob
+
+	err := c.ShouldBind(&new_job_request)
+
+	if err != nil {
+
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				"error":  "request could not be marshalled into a NewJob",
+				"Andrew": "of the Merrow sort",
+			},
+		)
+
+	}
+
 	// create uuid for job
-	uuid := dbInterface.MakeUuid()
+	uuid, err := dbInterface.MakeUuid()
 
-	// get job name
-	jobName := c.PostForm("jobName")
-
-	// empty field check
-	if jobName == "" {
-		c.JSON(400, gin.H{"error": "jobName is empty"})
-		return
-	}
-
-	// get job type
-	jobType := c.PostForm("jobType")
-
-	// empty field check
-	if jobType == "" {
-		c.JSON(400, gin.H{"error": "jobType is empty"})
-		return
-	}
-
-	// get job parameters
-	jobParams := c.PostForm("jobParams")
-
-	// empty field check
-	if jobParams == "" {
-		c.JSON(400, gin.H{"error": "jobParams is empty"})
-		return
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, errors.New("could not generate uuid"))
 	}
 
 	// add job to database
-	err := iodb.AddJob(uuid, jobName, jobType, jobParams)
+	err := dbInterface.MakeJob(new_job_request)
 
 	if err != nil {
-		c.JSON(400, gin.H{"error": "Failed to add job to database"})
-		return
+		c.AbortWithStatusJSON(400, gin.H{"error": "Failed to add job to database"})
 	}
 
 	// return job id
 	c.JSON(200, gin.H{"uuid": uuid})
 }
 
+/*
 // GetWork returns a job that matches one of the given capable job types
 func GetWork(c *gin.Context) {
 	// get job type
