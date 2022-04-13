@@ -96,7 +96,7 @@ def uploadTest(fileData = None):
 
             # add params
             params = {
-                "filename" : "/home/test/test.txt",
+                "fileuuid" : "/home/test/test.txt",
                 "caseuuid" : caseuuid,
             }
 
@@ -139,7 +139,7 @@ def downloadTest(filename : str = None):
             url = apiBasePath + '/file'
 
             params = {
-                "filename" : fileUUID,
+                "fileuuid" : fileUUID,
                 "caseuuid" : caseuuid,
             }
 
@@ -155,7 +155,7 @@ def downloadTest(filename : str = None):
             # test if a particular file can be downloaded
             url = apiBasePath + '/file'
 
-            params = {"filename" : filename}
+            params = {"fileuuid" : filename}
 
             # download file
             r = s.get(url, timeout=10, params=params)
@@ -220,7 +220,7 @@ def deleteTest(filename : str = None):
 
             url = apiBasePath + '/file'
 
-            params = {"filename" : fileUUID}
+            params = {"fileuuid" : fileUUID}
             
             # request to delete file
             r = s.delete(url, timeout=20, params=params)

@@ -40,7 +40,7 @@ func InitMainRouter() *gin.Engine {
 
 	// seaweedfs file storage transfer routes
 	v1.GET("/file", ioseaweed.SWGETQuery)
-	v1.GET("/file/:caseuuid/:filename", ioseaweed.SWGETPath)
+	v1.GET("/file/:caseuuid/:fileuuid", ioseaweed.SWGETPath)
 	v1.POST("/file", ioseaweed.SWPOST)
 	v1.DELETE("/file", ioseaweed.SWDELETE)
 

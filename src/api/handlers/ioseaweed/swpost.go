@@ -29,7 +29,7 @@ func SWPOST(c *gin.Context) {
 		return
 	}
 
-	originalFilename, success := c.GetQuery("filename")
+	originalFilename, success := c.GetQuery("fileuuid")
 	// error if filedir not provided
 	if !success {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no filedir provided"})

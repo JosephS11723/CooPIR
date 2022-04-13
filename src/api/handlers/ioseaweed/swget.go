@@ -14,11 +14,11 @@ import (
 // SWGETQuery gets a file from the seaweedfs server and returns it to the client with query parameters
 func SWGETQuery(c *gin.Context) {
 	// get filename
-	filename, success := c.GetQuery("filename")
+	filename, success := c.GetQuery("fileuuid")
 
 	// error if filename not provided
 	if !success {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no filename provided"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no fileuuid provided"})
 		return
 	}
 
@@ -36,11 +36,11 @@ func SWGETQuery(c *gin.Context) {
 // SWGETPath gets a file from the seaweedfs server and returns it to the client using the path parameters
 func SWGETPath(c *gin.Context) {
 	// get filename
-	filename, success := c.Params.Get("filename")
+	filename, success := c.Params.Get("fileuuid")
 
 	// error if filename not provided
 	if !success {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no filename provided"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no fileuuid provided"})
 		return
 	}
 

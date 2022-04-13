@@ -14,11 +14,11 @@ import (
 // SWDELETE deletes a file from seaweedfs
 func SWDELETE(c *gin.Context) {
 	// get filename
-	filename, success := c.GetQuery("filename")
+	filename, success := c.GetQuery("fileuuid")
 
 	// error if filename not provided
 	if !success {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no filename provided"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no fileuuid provided"})
 	}
 
 	caseUUID, success := c.GetQuery("caseuuid")
