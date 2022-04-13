@@ -351,7 +351,7 @@ func MakeJob(new_job dbtypes.NewJob) (string, error) {
 		Name:          new_job.Name,
 		JobType:       new_job.JobType,
 		Status:        dbtypes.Queued,
-		StartTime:     time.Now().UnixMilli(),
+		StartTime:     int(time.Now().UnixMilli()),
 		EndTime:       -1,
 		JobResultUUID: "",
 	}
