@@ -1,13 +1,6 @@
 package jobs
 
 // handles incoming job requests
-import (
-	"net/http"
-
-	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
-	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
-	"github.com/gin-gonic/gin"
-)
 
 /*
 // GetStatus returns the status of a job
@@ -32,6 +25,7 @@ func GetInfo(c *gin.Context) {
 	c.JSON(200, job)
 }
 */
+/*
 // CreateJob creates a new job from parameters given in the request
 func CreateJob(c *gin.Context) {
 
@@ -61,7 +55,7 @@ func CreateJob(c *gin.Context) {
 	// return job id
 	c.JSON(200, gin.H{"uuid": uuid})
 }
-
+*/
 /*
 // GetWork returns a job that matches one of the given capable job types
 func GetWork(c *gin.Context) {

@@ -30,13 +30,14 @@ func GetFileInfo(c *gin.Context) {
 	var caseUUID string = c.Query("caseUUID")
 
 	if caseUUID == "" {
-		c.AbortWithError(http.StatusBadRequest, errors.New("no caseUUID in query"))
+		log.Println(c.Request.RequestURI)
+		c.AbortWithError(http.StatusConflict, errors.New("no caseUUID in query"))
 	}
 
 	var fileUUID string = c.Query("fileUUID")
 
 	if fileUUID == "" {
-		c.AbortWithError(http.StatusBadRequest, errors.New("no fileUUID in query"))
+		c.AbortWithError(http.StatusConflict, errors.New("no fileUUID in query"))
 	}
 	// log
 	_, err := dbInterface.MakeCaseLog(c, caseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.GetFileInfoAttempt, gin.H{"fileUUID": fileUUID})
