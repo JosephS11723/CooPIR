@@ -1,5 +1,13 @@
 package jobs
 
+import (
+	"net/http"
+
+	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
+	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
+	"github.com/gin-gonic/gin"
+)
+
 // handles incoming job requests
 
 /*
@@ -25,7 +33,7 @@ func GetInfo(c *gin.Context) {
 	c.JSON(200, job)
 }
 */
-/*
+
 // CreateJob creates a new job from parameters given in the request
 func CreateJob(c *gin.Context) {
 
@@ -46,7 +54,7 @@ func CreateJob(c *gin.Context) {
 	}
 
 	// add job to database
-	err := dbInterface.MakeJob(new_job_request)
+	uuid, err := dbInterface.MakeJob(new_job_request)
 
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{"error": "Failed to add job to database"})
@@ -55,7 +63,7 @@ func CreateJob(c *gin.Context) {
 	// return job id
 	c.JSON(200, gin.H{"uuid": uuid})
 }
-*/
+
 /*
 // GetWork returns a job that matches one of the given capable job types
 func GetWork(c *gin.Context) {
