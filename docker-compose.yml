@@ -4,7 +4,7 @@ services:
 
 
   # # Node web face
-  # web-app:
+ # web-app:
   #   container_name: web-app
   #   build: ./Web_App/CooPIR-Web-App
   #   ports:
@@ -14,7 +14,7 @@ services:
   #       ipv4_address: 20.20.20.5
   #     network1:
   #       ipv4_address: 10.10.10.5
-
+         
   # Allows quick access to the mongo database
   # REMOVE BEFORE DEPLOYMENT
   mongo-express:
