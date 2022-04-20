@@ -19,6 +19,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { CookieService } from 'ngx-cookie-service';
 import { httpInterceptProviders } from './Http-interceptors';
 import { CaseComponent } from './case/case.component';
+import { NgxDocViewerModule } from 'ngx-doc-viewer';
 
 
 @NgModule({
@@ -40,7 +41,8 @@ import { CaseComponent } from './case/case.component';
     MatMenuModule,
     MatButtonModule,
     MatDividerModule,
-    MatListModule
+    MatListModule,
+    NgxDocViewerModule
   ],
   providers: [
     CookieService,

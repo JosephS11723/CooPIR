@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { GlobalConstants } from '../common/global-constraints';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-case',
@@ -10,6 +11,7 @@ import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 export class CaseComponent implements OnInit {
   file:any;
   fileName = '';
+  doc = ""
   menuItems = [
     {
       label: 'Logout',
@@ -41,14 +43,15 @@ export class CaseComponent implements OnInit {
       route: ''
     }
   ];
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private cookieService:CookieService) { }
 
 
   getFiles(): void
   {
     //console.log("Getting files");
     const params = new HttpParams()
-    .append('uuid', GlobalConstants.currentCase);
+    .append('uuid', this.cookieService.get("currentUUID"));
+    //.append('uuid', GlobalConstants.currentCase);
 
     console.log("Getting files for: ", GlobalConstants.currentCase);
     //get all the files in the selected case
@@ -82,8 +85,18 @@ export class CaseComponent implements OnInit {
 
   getFileInfo(uuid: any): void
   {
+    var testFile: any;
+    testFile = this.http.get("http://localhost:8080/api/v1/file/" + uuid  + "/" + GlobalConstants.currentCase, {observe: 'response'})
+    .subscribe( response => {
+      console.log("Response to file down load: ", response);
+    });
+
+    console.log("Here is the testFile: ", testFile);
+
+    //this.doc = "https://www.google.com/"
     var fileParams = new HttpParams()
-    .append('uuid', uuid);
+    .append('caseUUID', GlobalConstants.currentCase)
+    .append('fileUUID', uuid);
     this.http.get("http://localhost:8080/api/v1/file/info", {params: fileParams, observe: 'response'})
     .subscribe( response => {
         console.log("Here is the file info: ", response);
@@ -105,6 +118,7 @@ export class CaseComponent implements OnInit {
   }
   ngOnInit(): void 
   {
+    console.log("Cookie test: ", this.cookieService.get("currentUUID"));
     console.log("Inside case: ", GlobalConstants.currentCase);
     this.getFiles();
   }

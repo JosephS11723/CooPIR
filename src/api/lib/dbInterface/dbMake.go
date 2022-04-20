@@ -3,7 +3,6 @@ package dbInterface
 import (
 	"errors"
 	"log"
-	"time"
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 	"github.com/JosephS11723/CooPIR/src/api/lib/security"
@@ -336,6 +335,7 @@ func MakeUuid() (string, error) {
 	return id, nil
 }
 
+/*
 func MakeJob(new_job dbtypes.NewJob) (string, error) {
 
 	// create uuid for job
@@ -358,4 +358,4 @@ func MakeJob(new_job dbtypes.NewJob) (string, error) {
 
 	result, err = DbSingleInsert(dbName, dbCollection, NewCase)
 
-}
+}*/

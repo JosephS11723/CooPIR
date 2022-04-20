@@ -1,5 +1,5 @@
 <mat-toolbar fxLayout="row" color="primary">
-    <span fxFlex>Case</span>
+    <span fxFlex>Case Files</span>
     <button mat-button *ngFor="let item of menuItems" fxHide.xs [routerLink]="item.route">
         <mat-icon class="mr">{{item.icon}}</mat-icon>
         {{item.label}}
@@ -65,3 +65,11 @@
 <input type="file" id="uploader" class="file-input"
 (change)="onFileSelected($event)" #fileUpload>
 <button type="submit" id="submit_file" class="btn btn-primary btn-lg mr-2" (click)="submitFile($event)" disabled>Submit File</button>
+
+
+<!--Doc viewer stuff-->
+<ngx-doc-viewer
+  [url]="doc"
+  viewer="google"
+  style="width:100%;height:50vh;"
+></ngx-doc-viewer>

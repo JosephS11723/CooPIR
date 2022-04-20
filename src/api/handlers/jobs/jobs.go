@@ -25,6 +25,7 @@ func GetInfo(c *gin.Context) {
 	c.JSON(200, job)
 }
 */
+/*
 // CreateJob creates a new job from parameters given in the request
 /*func CreateJob(c *gin.Context) {
 
