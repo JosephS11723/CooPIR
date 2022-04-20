@@ -85,13 +85,13 @@ func InitMainRouter() *gin.Engine {
 
 	/*
 		// get work
-		v2.GET("/work", jobs.GetWork)
+		v2.GET("/job", jobs.GetWork)
+
+		// get file for work
+		v2.GET("/job/file", jobs.GetWorkFile)
 
 		// submit work
-		v2.POST("/work", jobs.SubmitWork)
-
-		// get job results
-		v2.GET("/results", jobs.GetResults)
+		v2.POST("/job", jobs.SubmitWork)
 	*/
 
 	// group for unauthenticated actions
