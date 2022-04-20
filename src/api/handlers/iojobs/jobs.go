@@ -1,31 +1,73 @@
-package jobs
+package iojobs
+
+import (
+	"net/http"
+
+	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
+	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
+	"github.com/gin-gonic/gin"
+)
 
 // handles incoming job requests
 
-/*
 // GetStatus returns the status of a job
-func GetInfo(c *gin.Context) {
-	var job iodb.Job
+func GetStatus(c *gin.Context) {
+
+	var status dbtypes.JobStatus
 	var err error
 
 	// get job id
-	jobUUID := c.Param("uuid")
+	jobUUID := c.Query("uuid")
+
+	if jobUUID == "" {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				"error": "query did not contain job uuid",
+			},
+		)
+	}
 
 	// get job from db
-	job, err = iodb.GetJobInfo(jobUUID)
+	status, err = dbInterface.FindJobStatusByUUID(jobUUID)
+
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(400, gin.H{"error": err})
 		return
 	}
 
-	//TODO: get status from job information
+	c.JSON(200, status.String())
+}
 
-	// return job status
-	// TODO: change to job status variable
+//just gets the job document
+func GetJobInfo(c *gin.Context) {
+
+	var job dbtypes.Job
+	var json_request map[string]interface{}
+	var err error
+
+	err = c.BindJSON(&json_request)
+
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				"error": "could not serialize request info",
+			},
+		)
+	}
+
+	// get job from db
+	job, err = dbInterface.FindJobByFilter(json_request)
+
+	if err != nil {
+		c.JSON(400, gin.H{"error": err})
+		return
+	}
+
 	c.JSON(200, job)
 }
-*/
-/*
+
 // CreateJob creates a new job from parameters given in the request
 /*func CreateJob(c *gin.Context) {
 
@@ -46,6 +88,7 @@ func GetInfo(c *gin.Context) {
 	}
 
 	// add job to database
+
 	job, err := dbInterface.MakeJob(new_job_request)
 
 	if err != nil {
@@ -55,21 +98,20 @@ func GetInfo(c *gin.Context) {
 	// return job id
 	c.JSON(200, gin.H{"uuid": uuid})
 }
-*/
-/*
+
 // GetWork returns a job that matches one of the given capable job types
 func GetWork(c *gin.Context) {
 	// get job type
-	jobTypes := c.QueryArray("jobTypes")
+	jobType := c.Query("jobtype")
 
 	// empty field check
-	if len(jobTypes) == 0 {
-		c.JSON(400, gin.H{"error": "jobTypes is empty"})
+	if jobType == "" {
+		c.JSON(400, gin.H{"error": "jobtype is empty"})
 		return
 	}
 
 	// get list of incomplete jobs from database for each job type
-	incompleteJobs, err := iodb.GetIncompleteJobs()
+	incompleteJobs, err := dbInterface.FindAvailableJobs(jobType)
 
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Failed to get incomplete jobs"})
@@ -78,7 +120,7 @@ func GetWork(c *gin.Context) {
 
 	// if not jobs found, return not job to user
 	if len(incompleteJobs) == 0 {
-		c.JSON(200, gin.H{"uuid": "none"})
+		c.JSON(404, gin.H{"uuid": "none"})
 		return
 	}
 
@@ -213,4 +255,3 @@ func SubmitWork(c *gin.Context) {
 
 // GetResults sends the results of a job as a multipart to the client
 func GetResults(c *gin.Context) {}
-*/
