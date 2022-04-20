@@ -149,10 +149,60 @@ func GetWork(c *gin.Context) {
 				return
 
 			}
-
 		}
-
 	}
+}
+
+//this is just for receiving work from workers
+func SubmitWork(c *gin.Context) {
+
+	jobUUID := c.Query("jobuuid")
+
+	if jobUUID == "" {
+		c.JSON(
+			http.StatusBadRequest,
+			gin.H{
+				"error": "no job uuid in the query",
+			},
+		)
+	}
+
+	resultType := c.Query("resulttype")
+
+	if resultType == "" {
+		c.JSON(
+			http.StatusBadRequest,
+			gin.H{
+				"error": "no resulttype in the query",
+			},
+		)
+	}
+
+	done := c.Query("resulttype")
+
+	if done == "" {
+		c.JSON(
+			http.StatusBadRequest,
+			gin.H{
+				"error": "no parameter 'done' in the query",
+			},
+		)
+	}
+
+	name := c.Query("name")
+
+	if name == "" {
+		c.JSON(
+			http.StatusBadRequest,
+			gin.H{
+				"error": "no name in the query",
+			},
+		)
+	}
+
+	tags := c.QueryArray("tags")
+	relations := c.QueryArray("relations")
+
 }
 
 /*
@@ -264,7 +314,8 @@ func SubmitWork(c *gin.Context) {
 	// return success (200)
 	c.Status(http.StatusOK)
 }
-*/
+
 
 // GetResults sends the results of a job as a multipart to the client
 func GetResults(c *gin.Context) {}
+*/

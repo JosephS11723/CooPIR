@@ -72,6 +72,7 @@ func UpdateUser(dbName string, dbCollection string, caseUpdate dbtypes.UpdateDoc
 	return UpdateDoc(dbName, dbCollection, filter, update)
 }
 
+//this just modifies the job document in the Jobs server
 func ModifyJobStatus(jobUUID string, status dbtypes.JobStatus) error {
 
 	_ = UpdateDoc("Jobs", "JobQueue", bson.M{"jobuuid": jobUUID}, bson.D{{"$set", bson.M{"jobstatus": status}}})
