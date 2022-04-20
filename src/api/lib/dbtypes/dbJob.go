@@ -1,11 +1,11 @@
 package dbtypes
 
 type Job struct {
-	JobUUID       string   `json:"jobuuid"`
-	Arguments     []string `json:"arguments"`
-	Name          string   `json:"name"`
-	JobType       string   `json:"jobtype"`
-	Files         []string
+	JobUUID       string    `json:"jobuuid"`
+	Arguments     []string  `json:"arguments"`
+	Files         []string  `json:"files"`
+	Name          string    `json:"name"`
+	JobType       string    `json:"jobtype"`
 	Status        JobStatus `json:"status"`
 	StartTime     int       `json:"starttime"`
 	EndTime       int       `json:"endtime"`
@@ -47,6 +47,7 @@ func (s JobStatus) String() string {
 
 type NewJob struct {
 	Arguments []string `json:"arguments"`
+	Files     []string `json:"files"`
 	Name      string   `json:"name"`
 	JobType   string   `json:"jobtype"`
 }

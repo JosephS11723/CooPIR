@@ -74,6 +74,7 @@ func UpdateUser(dbName string, dbCollection string, caseUpdate dbtypes.UpdateDoc
 
 func ModifyJobStatus(jobUUID string, status dbtypes.JobStatus) error {
 
-	return nil
+	_ = UpdateDoc("Jobs", "JobQueue", bson.M{"jobuuid": jobUUID}, bson.D{{"$set", bson.M{"jobstatus": status}}})
 
+	return nil
 }

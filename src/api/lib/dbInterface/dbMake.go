@@ -371,6 +371,7 @@ func MakeJob(new_job dbtypes.NewJob) (string, error) {
 	job_to_insert := dbtypes.Job{
 		JobUUID:       uuid,
 		Arguments:     new_job.Arguments,
+		Files:         new_job.Files,
 		Name:          new_job.Name,
 		JobType:       new_job.JobType,
 		Status:        dbtypes.Queued,
