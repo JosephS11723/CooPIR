@@ -112,7 +112,7 @@ func SWPOST(c *gin.Context) {
 	go libcrypto.Sha1FromReaderAsync(sha1Reader, &doWait, errChan, hashsha1Chan)
 	go libcrypto.Sha256FromReaderAsync(sha256Reader, &doWait, errChan, hashsha256Chan)
 	go libcrypto.Sha512FromReaderAsync(sha512Reader, &doWait, errChan, hashsha512Chan)
-	go swi.POSTFile(filename, caseUUID, POSTReader, c.Copy(), &doWait, errChan)
+	go swi.POSTFile(c.Copy(), filename, caseUUID, POSTReader, &doWait, errChan)
 
 	go func() {
 		// after completing the copy, we need to close
@@ -163,7 +163,7 @@ func SWPOST(c *gin.Context) {
 
 	if err == nil {
 		// file already exists, remove it
-		err = swi.DELETEFile(filename, caseUUID, c)
+		err = swi.DELETEFile(c, filename, caseUUID)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "failed to delete file"})
 			log.Panicln(err)
