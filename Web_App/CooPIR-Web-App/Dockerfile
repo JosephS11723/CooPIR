@@ -1,4 +1,4 @@
-FROM node:16 as node
+FROM node:16.14 as node
 
 WORKDIR /app
 
@@ -6,9 +6,10 @@ COPY . .
 
 RUN npm install
 
-RUN npm audit fix --force
+#RUN npm audit fix --force
 
-RUN npm run build --prod
+RUN npm run build 
+#--prod
 
 # RUN ng serve -o --liveReload=true
 

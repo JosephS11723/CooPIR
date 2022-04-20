@@ -14,11 +14,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var filerAddress string = "http://filer"
-var filerPort string = "8888"
-
 // GETs a file from seaweed and streams it to the ctx writer
-func GETFile(filename string, casename string, c *gin.Context) error {
+func GETFile(c *gin.Context, filename string, casename string) error {
 	// create http client
 	client := &http.Client{}
 
@@ -26,7 +23,7 @@ func GETFile(filename string, casename string, c *gin.Context) error {
 	var resp *http.Response
 
 	// create request
-	req, err := http.NewRequest(http.MethodGet, filerAddress+":"+filerPort+"/files/"+casename+"/"+filename, nil)
+	req, err := http.NewRequest(http.MethodGet, config.SWfilerAddress+":"+config.SWfilerPort+"/files/"+casename+"/"+filename, nil)
 	if err != nil {
 		return err
 	}
@@ -52,7 +49,7 @@ func GETFile(filename string, casename string, c *gin.Context) error {
 }
 
 // PUTs a file to seaweed using the io reader passed
-func POSTFile(filename string, casename string, r io.Reader, c *gin.Context, ss *sync.WaitGroup, errChan chan error) {
+func POSTFile(c *gin.Context, filename string, casename string, r io.Reader, ss *sync.WaitGroup, errChan chan error) {
 	// defer job finish
 	defer ss.Done()
 
@@ -92,8 +89,8 @@ func POSTFile(filename string, casename string, r io.Reader, c *gin.Context, ss 
 	}
 
 	// create request
-	resp, err := http.Post(filerAddress+":"+filerPort+"/files/"+casename+"/"+fileStat, mpw.FormDataContentType(), rr)
-	log.Println(filerAddress + ":" + filerPort + "/files/" + casename + "/" + fileStat)
+	resp, err := http.Post(config.SWfilerAddress+":"+config.SWfilerPort+"/files/"+casename+"/"+fileStat, mpw.FormDataContentType(), rr)
+	log.Println(config.SWfilerAddress + ":" + config.SWfilerPort + "/files/" + casename + "/" + fileStat)
 	if err != nil {
 		log.Println(err)
 		errChan <- err
@@ -112,12 +109,12 @@ func POSTFile(filename string, casename string, r io.Reader, c *gin.Context, ss 
 }
 
 // DELETEs a file on seaweed given its name
-func DELETEFile(filename string, casename string, c *gin.Context) error {
+func DELETEFile(c *gin.Context, filename string, casename string) error {
 	// create http agent
 	client := &http.Client{}
 
 	// create request
-	req, err := http.NewRequest(http.MethodDelete, filerAddress+":"+filerPort+"/files/"+casename+"/"+filename, nil)
+	req, err := http.NewRequest(http.MethodDelete, config.SWfilerAddress+":"+config.SWfilerPort+"/files/"+casename+"/"+filename, nil)
 
 	if err != nil {
 		log.Println(err)

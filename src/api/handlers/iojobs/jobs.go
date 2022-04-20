@@ -69,7 +69,7 @@ func GetJobInfo(c *gin.Context) {
 }
 
 // CreateJob creates a new job from parameters given in the request
-func CreateJob(c *gin.Context) {
+/*func CreateJob(c *gin.Context) {
 
 	var new_job_request dbtypes.NewJob
 
@@ -88,7 +88,8 @@ func CreateJob(c *gin.Context) {
 	}
 
 	// add job to database
-	uuid, err := dbInterface.MakeJob(new_job_request)
+
+	job, err := dbInterface.MakeJob(new_job_request)
 
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{"error": "Failed to add job to database"})

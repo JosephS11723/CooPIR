@@ -86,10 +86,12 @@ export class CaseComponent implements OnInit {
   getFileInfo(uuid: any): void
   {
     var testFile: any;
-    this.http.get("http://localhost:8080/api/v1/file/" + GlobalConstants.currentCase + "/" + uuid, {observe: 'response'})
+    testFile = this.http.get("http://localhost:8080/api/v1/file/" + uuid  + "/" + GlobalConstants.currentCase, {observe: 'response'})
     .subscribe( response => {
       console.log("Response to file down load: ", response);
     });
+
+    console.log("Here is the testFile: ", testFile);
 
     //this.doc = "https://www.google.com/"
     var fileParams = new HttpParams()

@@ -16,7 +16,9 @@ var FtpTimeout int = 100 // seconds
 // seaweedfs config
 var UpTaskCount int = 5          // the number of tasks performed on a file when it is uploaded
 var DoUploadLogging bool = true // whether or not the upload process should be logged with hashes
-var ReadOnlyFiles bool = true    // whether files uploaded to seaweedfs should be read-only
+var ReadOnlyFiles bool = true    // whether files uploaded to seaweedfs should be read-
+var SWfilerAddress string = "http://filer"
+var SWfilerPort string = "8888"
 
 // mongo config
 var MongoConnectionTimeout int = 30

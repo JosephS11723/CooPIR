@@ -66,7 +66,7 @@ func SWGET(c *gin.Context, filename string, caseUUID string) {
 	// TODO: verify user is authorized to download file
 
 	// download file through lib
-	err = swi.GETFile(filename, caseUUID, c)
+	err = swi.GETFile(c, filename, caseUUID)
 
 	// internal server error: failed to retrieve file data
 	if err != nil {
