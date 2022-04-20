@@ -5,8 +5,10 @@ import (
 
 	"os"
 	"os/signal"
+	"runtime"
 	"syscall"
 
+	"github.com/JosephS11723/CooPIR/src/jobWorker/instance/jobs"
 	"github.com/JosephS11723/CooPIR/src/jobWorker/golib/worker"
 )
 
@@ -18,10 +20,11 @@ func ctrlCExit() {
 }
 
 func main() {
-	// create an instance of the worker
-	worker := worker.NewJobWorker()
+	// create an instance of the worker for each cpu core
+	worker := worker.NewJobWorker(runtime.NumCPU())
 
 	// add a job that can be done
+	worker.AddJobWithFunction("Determine-MimeType", jobs.DetermineMimeType)
 
 	// start the worker
 	worker.Start()
