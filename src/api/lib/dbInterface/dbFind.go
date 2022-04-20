@@ -490,33 +490,44 @@ func FindJobByFilter(jobFilter interface{}) (dbtypes.Job, error) {
 }
 
 //finds jobs that are available inside of the job queue
-func FindAvailableJobs(jobType string) ([]dbtypes.Job, error) {
+func FindAvailableJobs(jobTypes []string) (map[string][]dbtypes.Job, error) {
 
 	var decodedJobResult dbtypes.Job
-	var jobResults []dbtypes.Job
+	var jobResults map[string][]dbtypes.Job = make(map[string][]dbtypes.Job)
 
-	results, err := FindDocsByFilter("Jobs", "JobQueue", bson.M{"jobtype": jobType})
+	//for each type of job
+	for _, jobType := range jobTypes {
 
-	if err != nil {
-		return nil, err
-	}
+		//create an empty slice (the 5 is abitrary)
+		jobResults[jobType] = make([]dbtypes.Job, 5)
 
-	for _, jobDoc := range results {
+		//get the results
+		results, err := FindDocsByFilter("Jobs", "JobQueue", bson.M{"jobtype": jobType})
 
-		bsonBytes, err := bson.Marshal(jobDoc)
-
+		//hee-hoo error handling
+		//go to the next type since apparently no jobs of that type exist
 		if err != nil {
-			log.Panicln("INTERNAL SERVER ERROR: UNMARSHALLING JOB BSON FAILED")
+			continue
 		}
 
-		err = bson.Unmarshal(bsonBytes, &decodedJobResult)
+		//marshal each document into a Job struct and then append it to the array
+		for _, jobDoc := range results {
 
-		if err != nil {
-			log.Panicln("INTERNAL SERVER ERROR: UNMARSHALLING JOB BSON FAILED")
+			bsonBytes, err := bson.Marshal(jobDoc)
+
+			if err != nil {
+				log.Panicln("INTERNAL SERVER ERROR: UNMARSHALLING JOB BSON FAILED")
+			}
+
+			err = bson.Unmarshal(bsonBytes, &decodedJobResult)
+
+			if err != nil {
+				log.Panicln("INTERNAL SERVER ERROR: UNMARSHALLING JOB BSON FAILED")
+			}
+
+			jobResults[jobType] = append(jobResults[jobType], decodedJobResult)
+
 		}
-
-		jobResults = append(jobResults, decodedJobResult)
-
 	}
 
 	return jobResults, nil

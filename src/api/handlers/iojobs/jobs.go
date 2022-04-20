@@ -101,16 +101,16 @@ func CreateJob(c *gin.Context) {
 // GetWork returns a job that matches one of the given capable job types
 func GetWork(c *gin.Context) {
 	// get job type
-	jobType := c.Query("jobtype")
+	jobTypes := c.QueryArray("jobTypes")
 
 	// empty field check
-	if jobType == "" {
+	if len(jobTypes) == 0 {
 		c.JSON(400, gin.H{"error": "jobtype is empty"})
 		return
 	}
 
 	// get list of incomplete jobs from database for each job type
-	incompleteJobs, err := dbInterface.FindAvailableJobs(jobType)
+	incompleteJobs, err := dbInterface.FindAvailableJobs(jobTypes)
 
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Failed to get incomplete jobs"})
@@ -124,25 +124,38 @@ func GetWork(c *gin.Context) {
 	}
 
 	// iterate through job types and find a job that matches one of the given job types
-	for _, job := range incompleteJobs {
-		for _, jobType := range jobTypes {
-			if job.JobType == jobType {
-				// mark job as in progress in database
-				err = iodb.ModifyJobStatus(job.UUID, "in progress")
+	//I literally hate this nested for loop nonsense, but this is how golang works
+	for jobListType, jobList := range incompleteJobs {
 
+		//check to see if there is a job type that the worker can do
+		for _, jobType := range jobTypes {
+			if jobType == jobListType {
+
+				//get the first out of the list;
+				//it should be in order because of indexing in collection
+				job_to_send := jobList[0]
+
+				// mark job as in progress in database
+				err = dbInterface.ModifyJobStatus(job_to_send.JobUUID, dbtypes.InProgress)
+
+				//if err, then err
 				if err != nil {
 					c.JSON(400, gin.H{"error": "Failed to mark job as in progress"})
 					return
 				}
 
 				// return job to user and return
-				c.JSON(200, gin.H{"uuid": job.UUID})
+				c.JSON(200, gin.H{"uuid": job_to_send.JobUUID})
 				return
+
 			}
+
 		}
+
 	}
 }
 
+/*
 // SubmitWork submits a job result to the database.
 // the job result is sent in pieces which must be added sequentially
 func SubmitWork(c *gin.Context) {
@@ -251,6 +264,7 @@ func SubmitWork(c *gin.Context) {
 	// return success (200)
 	c.Status(http.StatusOK)
 }
+*/
 
 // GetResults sends the results of a job as a multipart to the client
 func GetResults(c *gin.Context) {}

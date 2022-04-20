@@ -71,3 +71,9 @@ func UpdateUser(dbName string, dbCollection string, caseUpdate dbtypes.UpdateDoc
 
 	return UpdateDoc(dbName, dbCollection, filter, update)
 }
+
+func ModifyJobStatus(jobUUID string, status dbtypes.JobStatus) error {
+
+	return nil
+
+}
