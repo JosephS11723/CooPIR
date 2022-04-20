@@ -488,3 +488,36 @@ func FindJobByFilter(jobFilter interface{}) (dbtypes.Job, error) {
 	return jobFromResult, nil
 
 }
+
+//finds jobs that are available inside of the job queue
+func FindAvailableJobs(jobType string) ([]dbtypes.Job, error) {
+
+	var decodedJobResult dbtypes.Job
+	var jobResults []dbtypes.Job
+
+	results, err := FindDocsByFilter("Jobs", "JobQueue", bson.M{"jobtype": jobType})
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, jobDoc := range results {
+
+		bsonBytes, err := bson.Marshal(jobDoc)
+
+		if err != nil {
+			log.Panicln("INTERNAL SERVER ERROR: UNMARSHALLING JOB BSON FAILED")
+		}
+
+		err = bson.Unmarshal(bsonBytes, &decodedJobResult)
+
+		if err != nil {
+			log.Panicln("INTERNAL SERVER ERROR: UNMARSHALLING JOB BSON FAILED")
+		}
+
+		jobResults = append(jobResults, decodedJobResult)
+
+	}
+
+	return jobResults, nil
+}

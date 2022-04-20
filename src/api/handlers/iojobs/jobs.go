@@ -98,20 +98,19 @@ func CreateJob(c *gin.Context) {
 	c.JSON(200, gin.H{"uuid": uuid})
 }
 
-/*
 // GetWork returns a job that matches one of the given capable job types
 func GetWork(c *gin.Context) {
 	// get job type
-	jobTypes := c.QueryArray("jobTypes")
+	jobType := c.Query("jobtype")
 
 	// empty field check
-	if len(jobTypes) == 0 {
-		c.JSON(400, gin.H{"error": "jobTypes is empty"})
+	if jobType == "" {
+		c.JSON(400, gin.H{"error": "jobtype is empty"})
 		return
 	}
 
 	// get list of incomplete jobs from database for each job type
-	incompleteJobs, err := iodb.GetIncompleteJobs()
+	incompleteJobs, err := dbInterface.FindAvailableJobs(jobType)
 
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Failed to get incomplete jobs"})
@@ -120,7 +119,7 @@ func GetWork(c *gin.Context) {
 
 	// if not jobs found, return not job to user
 	if len(incompleteJobs) == 0 {
-		c.JSON(200, gin.H{"uuid": "none"})
+		c.JSON(404, gin.H{"uuid": "none"})
 		return
 	}
 
@@ -255,4 +254,3 @@ func SubmitWork(c *gin.Context) {
 
 // GetResults sends the results of a job as a multipart to the client
 func GetResults(c *gin.Context) {}
-*/
