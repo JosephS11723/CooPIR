@@ -13,7 +13,7 @@ import (
 // GetStatus returns the status of a job
 func GetStatus(c *gin.Context) {
 
-	var status dbtypes.Status
+	var status dbtypes.JobStatus
 	var err error
 
 	// get job id
@@ -37,6 +37,35 @@ func GetStatus(c *gin.Context) {
 	}
 
 	c.JSON(200, status.String())
+}
+
+//just gets the job document
+func GetJobInfo(c *gin.Context) {
+
+	var job dbtypes.Job
+	var json_request map[string]interface{}
+	var err error
+
+	err = c.BindJSON(&json_request)
+
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				"error": "could not serialize request info",
+			},
+		)
+	}
+
+	// get job from db
+	job, err = dbInterface.FindJobByFilter(json_request)
+
+	if err != nil {
+		c.JSON(400, gin.H{"error": err})
+		return
+	}
+
+	c.JSON(200, job)
 }
 
 // CreateJob creates a new job from parameters given in the request

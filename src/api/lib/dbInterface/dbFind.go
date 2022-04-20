@@ -448,7 +448,7 @@ func FindFilesByCase(caseUUID string) ([]string, error) {
 }
 
 //returns the job
-func FindJobStatusByUUID(jobUUID string) (dbtypes.Status, error) {
+func FindJobStatusByUUID(jobUUID string) (dbtypes.JobStatus, error) {
 
 	result, err := FindDocByFilter("Jobs", "JobQueue", bson.M{"jobuuid": jobUUID})
 
@@ -465,4 +465,26 @@ func FindJobStatusByUUID(jobUUID string) (dbtypes.Status, error) {
 	}
 
 	return jobFromResult.Status, nil
+}
+
+//search for a job;
+//this can be used for getting the UUID
+func FindJobByFilter(jobFilter interface{}) (dbtypes.Job, error) {
+
+	result, err := FindDocByFilter("Jobs", "JobQueue", bson.M{"jobuuid": jobFilter})
+
+	if err != nil {
+		return dbtypes.Job{}, err
+	}
+
+	var jobFromResult dbtypes.Job
+
+	err = result.Decode(&jobFromResult)
+
+	if err != nil {
+		return dbtypes.Job{}, err
+	}
+
+	return jobFromResult, nil
+
 }
