@@ -71,6 +71,7 @@ db.createCollection("JobResults");
 coll = db.getCollection("JobQueue")
 
 coll.createIndex(
+  {"jobtype":1},
   {"starttime":-1}
 );
 

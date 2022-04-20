@@ -357,6 +357,7 @@ func MakeUuid() (string, error) {
 	return id, nil
 }
 
+//creates a new job from a NewJob structure
 func MakeJob(new_job dbtypes.NewJob) (string, error) {
 
 	// create uuid for job
@@ -366,13 +367,14 @@ func MakeJob(new_job dbtypes.NewJob) (string, error) {
 		return "", err
 	}
 
+	//construct the job
 	job_to_insert := dbtypes.Job{
 		JobUUID:       uuid,
 		Arguments:     new_job.Arguments,
 		Name:          new_job.Name,
 		JobType:       new_job.JobType,
 		Status:        dbtypes.Queued,
-		StartTime:     int(time.Now().UnixMilli()),
+		StartTime:     time.Now().UnixMilli(),
 		EndTime:       -1,
 		JobResultUUID: "",
 	}

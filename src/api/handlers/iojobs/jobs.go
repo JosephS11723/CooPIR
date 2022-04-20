@@ -1,4 +1,4 @@
-package jobs
+package iojobs
 
 import (
 	"net/http"
@@ -10,29 +10,34 @@ import (
 
 // handles incoming job requests
 
-/*
 // GetStatus returns the status of a job
-func GetInfo(c *gin.Context) {
-	var job iodb.Job
+func GetStatus(c *gin.Context) {
+
+	var status dbtypes.Status
 	var err error
 
 	// get job id
-	jobUUID := c.Param("uuid")
+	jobUUID := c.Query("uuid")
+
+	if jobUUID == "" {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				"error": "query did not contain job uuid",
+			},
+		)
+	}
 
 	// get job from db
-	job, err = iodb.GetJobInfo(jobUUID)
+	status, err = dbInterface.FindJobStatusByUUID(jobUUID)
+
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(400, gin.H{"error": err})
 		return
 	}
 
-	//TODO: get status from job information
-
-	// return job status
-	// TODO: change to job status variable
-	c.JSON(200, job)
+	c.JSON(200, status.String())
 }
-*/
 
 // CreateJob creates a new job from parameters given in the request
 func CreateJob(c *gin.Context) {

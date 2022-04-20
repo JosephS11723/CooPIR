@@ -25,6 +25,25 @@ const (
 	Cancelled  Status = "cancelled"
 )
 
+func (s Status) String() string {
+	var return_val string
+
+	switch s {
+	case Queued:
+		return_val = "queued"
+	case InProgress:
+		return_val = "in-progress"
+	case Finished:
+		return_val = "finished"
+	case JobError:
+		return_val = "error"
+	case Cancelled:
+		return_val = "cancelled"
+	}
+
+	return return_val
+}
+
 type NewJob struct {
 	Arguments []string `json:"arguments"`
 	Name      string   `json:"name"`

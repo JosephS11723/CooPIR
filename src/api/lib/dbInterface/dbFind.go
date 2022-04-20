@@ -446,3 +446,23 @@ func FindFilesByCase(caseUUID string) ([]string, error) {
 
 	return fileList, nil
 }
+
+//returns the job
+func FindJobStatusByUUID(jobUUID string) (dbtypes.Status, error) {
+
+	result, err := FindDocByFilter("Jobs", "JobQueue", bson.M{"jobuuid": jobUUID})
+
+	if err != nil {
+		return "", err
+	}
+
+	var jobFromResult dbtypes.Job
+
+	err = result.Decode(&jobFromResult)
+
+	if err != nil {
+		return "", err
+	}
+
+	return jobFromResult.Status, nil
+}
