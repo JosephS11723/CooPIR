@@ -3,6 +3,7 @@ package dbInterface
 import (
 	"errors"
 	"log"
+	"time"
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 	"github.com/JosephS11723/CooPIR/src/api/lib/security"
@@ -118,6 +119,27 @@ func DbSingleInsert(dbname string, collection string, data interface{}) (*mongo.
 
 			return result, nil
 		}
+
+		// Log struct
+	case dbtypes.Job:
+
+		/*
+			if collection != "Logs" {
+				log.Panicf("[ERROR] Cannot insert data type %s into Log collection", t)
+			} else {*/
+
+		data := data.(dbtypes.Job)
+
+		coll := client.Database(dbname).Collection(collection)
+
+		result, err := coll.InsertOne(ctx, data)
+
+		if err != nil {
+			return result, err
+		}
+
+		return result, nil
+		//}
 
 	// default case: panic
 	default:
@@ -335,7 +357,7 @@ func MakeUuid() (string, error) {
 	return id, nil
 }
 
-/*
+//creates a new job from a NewJob structure
 func MakeJob(new_job dbtypes.NewJob) (string, error) {
 
 	// create uuid for job
@@ -345,6 +367,7 @@ func MakeJob(new_job dbtypes.NewJob) (string, error) {
 		return "", err
 	}
 
+	//construct the job
 	job_to_insert := dbtypes.Job{
 		JobUUID:       uuid,
 		Arguments:     new_job.Arguments,
@@ -356,6 +379,14 @@ func MakeJob(new_job dbtypes.NewJob) (string, error) {
 		JobResultUUID: "",
 	}
 
-	result, err = DbSingleInsert(dbName, dbCollection, NewCase)
+	_, err = DbSingleInsert("Jobs", "JobQueue", job_to_insert)
 
-}*/
+	if err != nil {
+
+		return "", err
+
+	}
+
+	return uuid, nil
+
+}

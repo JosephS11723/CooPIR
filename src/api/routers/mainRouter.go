@@ -4,6 +4,7 @@ import (
 	"github.com/JosephS11723/CooPIR/src/api/handlers/authentication"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/debug"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/iodb"
+	"github.com/JosephS11723/CooPIR/src/api/handlers/iojobs"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/ioseaweed"
 	authmw "github.com/JosephS11723/CooPIR/src/api/middleware/authentication"
 	"github.com/gin-contrib/cors"
@@ -74,22 +75,24 @@ func InitMainRouter() *gin.Engine {
 	v1.POST("/auth/logout", authentication.Logout)
 
 	// group for job server requests
-	/*v2 := r.Group("/api/v1/jobs")
+	v2 := r.Group("/api/v1/jobs")
 
 	// get status of a job
-	v2.GET("/status", jobs.GetInfo)
+	v2.GET("/status", iojobs.GetStatus)
 
 	// submit a job
-	v2.POST("new", jobs.CreateJob)
+	v2.POST("new", iojobs.CreateJob)
 
-	// get work
-	v2.GET("/work", jobs.GetWork)
+	/*
+		// get work
+		v2.GET("/work", jobs.GetWork)
 
-	// submit work
-	v2.POST("/work", jobs.SubmitWork)
+		// submit work
+		v2.POST("/work", jobs.SubmitWork)
 
-	// get job results
-	v2.GET("/results", jobs.GetResults)*/
+		// get job results
+		v2.GET("/results", jobs.GetResults)
+	*/
 
 	// group for unauthenticated actions
 	v3 := r.Group("/api/v1/auth")

@@ -612,6 +612,63 @@ def dbGetUserCasesTest():
     except Exception as e:
         error(e)
 
+def createJobTest():
+    """Attempts to create a new job
+    """
+    try:
+        # print function name
+        print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
+
+        # request ping page
+        r = s.post(
+            url=apiBasePath + "/jobs/new",
+            json = {
+                "arguments":[],
+                "name":"test_job_1",
+                "jobtype":"log_analysis",
+            }
+        )
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+        else:
+            success()
+            print(r.content, end="")
+            
+    except Exception as e:
+        error(e)
+
+
+def createSearchJobAndFindByUUIDTest():
+    """Attempts to create a new job
+    """
+    try:
+        # print function name
+        print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
+
+        '''
+        # request ping page
+        r = s.post(
+            url=apiBasePath + "/jobs/new",
+            json = {
+                "arguments":[],
+                "name":"test_job_1",
+                "jobtype":"log_analysis",
+            }
+        )
+        '''
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+        else:
+            success()
+            print(r.content, end="")
+            
+    except Exception as e:
+        error(e)
+
 tests = [loginTest, pingTest, dbNewCaseTest, uploadTest, uploadTest, uploadTest, downloadTest, downloadTestWithParameters, dbUpdateCaseTest, dbFindCaseTest, dbNewUserTest, dbUpdateUserTest, dbFindUserTest, dbGetUserCasesTest]
 def runAllTests():
     for test in tests:
