@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { GlobalConstants } from '../common/global-constraints';
 import { CookieService } from 'ngx-cookie-service';
+import { analyzeAndValidateNgModules } from '@angular/compiler';
 //import { getPackedSettings } from 'http2';
 
 @Component({
@@ -31,12 +32,14 @@ export class DashboardComponent implements OnInit {
       name: '',
       supervisor: '',
       last_modified: '',
-      route: '',
-      function: this.emptyClick()
+      route: ''
     }
   ];
   
   constructor(private http: HttpClient, private cookieService:CookieService) { }
+
+
+
 
   //gets the cases that the user has access to
   getCases(): void
@@ -54,13 +57,18 @@ export class DashboardComponent implements OnInit {
           //push each case the user has access to into the cases to be displayed
           for(var index = 0; index < retrievedCases.cases.length; index++)
           {
+            var fileParams = new HttpParams()
+            .append('uuid', retrievedCases.cases[index]);
+            this.http.get("http://localhost:8080/api/v1/case", {params: fileParams, observe: 'response'})
+            .subscribe(response => {
+              console.log("Case metadata: ", response);
+            })
             //console.log(retrievedCases.cases[index]);
             this.caseList.push({
               name: retrievedCases.cases[index],
               supervisor: 'Joseph',
               last_modified: 'sometime',
-              route: '/case',
-              function: this.goToCase(retrievedCases.cases[index])
+              route: '/case'
             });
           }
         }
@@ -88,6 +96,26 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void 
   {
     //console.log("Running oninit")
+    console.log("Can the user make a case (before)", GlobalConstants.canUserMakeCase)
+    let caseMaker: any;
+    this.http.get("http://localhost:8080/api/v1/case/make", {observe: 'response'})
+    .subscribe( response =>
+      { 
+        caseMaker = response.body
+        GlobalConstants.canUserMakeCase = caseMaker.allow;
+        console.log("Can the user make a case (after):", GlobalConstants.canUserMakeCase);
+
+      });
+    if(GlobalConstants.canUserMakeCase === true)
+    {
+      this.menuItems.push(
+        {
+          label: "Make Case",
+          icon: 'library_add',
+          route: '/dashboard'
+        }
+      )
+    }
     this.getCases();
   }
 

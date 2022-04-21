@@ -3,3 +3,4 @@ npm install @angular/flex-layout --save
 npm install ngx-cookie-service
 npm install @ngxs/store --save
 npm install ngx-doc-viewer --save
+npm install file-saver ngx-filesaver --save
