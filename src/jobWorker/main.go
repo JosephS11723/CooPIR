@@ -3,6 +3,7 @@ package main
 import (
 	// import worker lib
 
+	"fmt"
 	"os"
 	"os/signal"
 	"runtime"
@@ -28,6 +29,9 @@ func main() {
 
 	// start the worker
 	worker.Start()
+
+	// print press ctrl+c to exit
+	fmt.Println("Press ctrl+c to exit")
 
 	// stop worker if user presses ctrl+c
 	ctrlCExit()

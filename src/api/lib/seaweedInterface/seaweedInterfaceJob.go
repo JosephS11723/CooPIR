@@ -129,7 +129,7 @@ func POSTFileJob(caseUUID string, r io.Reader) (string, error) {
 		}
 
 		// file deleted, return conflict uuid
-		return conflictUUID, nil
+		return conflictUUID, errors.New("file already exists")
 	}
 
 	// return the uuid
