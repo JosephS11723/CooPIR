@@ -81,7 +81,7 @@ func InitMainRouter() *gin.Engine {
 	v2.GET("/status", iojobs.GetStatus)
 
 	// submit a job
-	v2.POST("new", iojobs.CreateJob)
+	//v2.POST("new", iojobs.CreateJob)
 
 	/*
 		// get work

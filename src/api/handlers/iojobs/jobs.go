@@ -254,4 +254,4 @@ func SubmitWork(c *gin.Context) {
 }
 
 // GetResults sends the results of a job as a multipart to the client
-func GetResults(c *gin.Context) {}
+func GetResults(c *gin.Context) {}*/
