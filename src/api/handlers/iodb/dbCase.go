@@ -18,7 +18,8 @@ import (
 // Requires json to have caseUUID field in request body
 // Returns all case metadata
 func DbGetCaseInfo(c *gin.Context) {
-	var json_request map[string]interface{}
+
+	/*var json_request map[string]interface{}
 
 	err := c.BindJSON(&json_request)
 
@@ -26,10 +27,19 @@ func DbGetCaseInfo(c *gin.Context) {
 		log.Panicln(err)
 	}
 
-	var caseUUID = json_request["uuid"].(string)
+	var caseUUID = json_request["uuid"].(string)*/
+
+	caseUUID := c.Query("jobuuid")
+
+	if caseUUID == "" {
+		c.JSON(gin.H{
+			"error": "no jobuuid in query",
+		})
+		return
+	}
 
 	// log case info request
-	_, err = dbInterface.MakeCaseLog(c, caseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.GetCaseInfo, nil)
+	_, err := dbInterface.MakeCaseLog(c, caseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.GetCaseInfo, nil)
 
 	if err != nil {
 		// failed to log
