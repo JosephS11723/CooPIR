@@ -62,6 +62,9 @@ type JobResult struct {
 
 	// done is a bool that indicates if the result is the final result
 	Done bool `json:"done"`
+
+	// FileUUID references the file that the result is associated with
+	FileUUID string `json:"fileuuid" default:"new"`
 }
 
 type JobFunc func(*dbtypes.Job, chan JobResult)
