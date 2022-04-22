@@ -49,7 +49,7 @@ func GETFile(c *gin.Context, filename string, casename string) error {
 }
 
 // PUTs a file to seaweed using the io reader passed
-func POSTFile(c *gin.Context, filename string, casename string, r io.Reader, ss *sync.WaitGroup, errChan chan error) {
+func POSTFile(filename string, casename string, r io.Reader, ss *sync.WaitGroup, errChan chan error) {
 	// defer job finish
 	defer ss.Done()
 
@@ -109,7 +109,7 @@ func POSTFile(c *gin.Context, filename string, casename string, r io.Reader, ss 
 }
 
 // DELETEs a file on seaweed given its name
-func DELETEFile(c *gin.Context, filename string, casename string) error {
+func DELETEFile(filename string, casename string) error {
 	// create http agent
 	client := &http.Client{}
 

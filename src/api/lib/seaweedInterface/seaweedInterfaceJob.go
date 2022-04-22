@@ -1,68 +1,29 @@
-package ioseaweed
+package seaweedInterface
 
 import (
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
 	"log"
-	"net/http"
 	"sync"
-	"time"
 
 	"github.com/JosephS11723/CooPIR/src/api/config"
 	libcrypto "github.com/JosephS11723/CooPIR/src/api/lib/crypto"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
-	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
-	"github.com/JosephS11723/CooPIR/src/api/lib/logtypes"
-	swi "github.com/JosephS11723/CooPIR/src/api/lib/seaweedInterface"
-	"github.com/gin-gonic/gin"
 )
 
-// SWPOST uploads a file to seaweedfs from the client multipart form
-func SWPOST(c *gin.Context) {
-	var err error
-
-	caseUUID, success := c.GetQuery("caseuuid")
-	// error if caseuuid not provided
-	if !success {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no caseuuid provided"})
-		return
-	}
-
-	// get file multipart stream
-	filestream, _, err := c.Request.FormFile("file")
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no file received"})
-		log.Panicln(err)
-	}
-
-	// ensure case name is valid
-	_, err = dbInterface.FindCaseNameByUUID(caseUUID)
-
-	if err != nil {
-		log.Println(err)
-		// case does not exist
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid case UUID"})
-		return
-	}
-
-	// log file upload
-	_, err = dbInterface.MakeCaseLog(c, caseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.FileUploadAttempt, nil)
-	if err != nil {
-		// failed to log file upload
-		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
-	}
-
-	// TODO: ensure user is authorized to upload file to case
-
+// POSTFileJob allows the job result processing function to attempt to upload a job to the seaweed filer.
+// This function automatically handles file conflicts and returns the UUID of the conflicting file in that event.
+// If there is a conflict, it will be returned as an error. Handle it!
+func POSTFileJob(caseUUID string, r io.Reader) (string, error) {
 	// set filename to randomly generated name. change after hash operation
 	// Use MakeUuid from dbInterface to ensure unique filename
 	filename, err := dbInterface.MakeUuid()
 
 	// error if failed to generate uuid
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "failed to generate uuid"})
-		return
+		return "", err
 	}
 
 	// create pipes
@@ -105,7 +66,7 @@ func SWPOST(c *gin.Context) {
 	go libcrypto.Sha1FromReaderAsync(sha1Reader, &doWait, errChan, hashsha1Chan)
 	go libcrypto.Sha256FromReaderAsync(sha256Reader, &doWait, errChan, hashsha256Chan)
 	go libcrypto.Sha512FromReaderAsync(sha512Reader, &doWait, errChan, hashsha512Chan)
-	go swi.POSTFile(filename, caseUUID, POSTReader, &doWait, errChan)
+	go POSTFile(filename, caseUUID, POSTReader, &doWait, errChan)
 
 	go func() {
 		// after completing the copy, we need to close
@@ -121,7 +82,7 @@ func SWPOST(c *gin.Context) {
 		mw := io.MultiWriter(md5Writer, sha1Writer, sha256Writer, sha512Writer, POSTWriter)
 
 		// copy the data into the multiwriter
-		io.Copy(mw, filestream)
+		io.Copy(mw, r)
 	}()
 
 	// read hash output from functions
@@ -151,9 +112,8 @@ func SWPOST(c *gin.Context) {
 	}
 
 	if err != nil {
-		// upload failed, panic!
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "upload error"})
-		log.Panicln(err)
+		// upload failed
+		return "", errors.New("upload to seaweed filer failed")
 	}
 
 	// check mongo for file existence and remove if duplicate
@@ -161,45 +121,17 @@ func SWPOST(c *gin.Context) {
 
 	for err == nil {
 		// file already exists, remove it
-		err = swi.DELETEFile(filename, caseUUID)
+		err = DELETEFile(filename, caseUUID)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "failed to delete file"})
+			// print error and retry
+			log.Println("Error deleting file in seaweed:", err)
 			continue
 		}
-		// log file already exist
-		dbInterface.MakeCaseLog(c, caseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.FileUploadFailure, gin.H{"error": "file already exists", "fileUUID": conflictUUID})
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "file already exists"})
-		return
+
+		// file deleted, return conflict uuid
+		return conflictUUID, nil
 	}
 
-	_, err = dbInterface.MakeFile(
-		filename,
-		[]string{
-			hex.EncodeToString(filemd5Hash),
-			hex.EncodeToString(filesha1Hash),
-			hex.EncodeToString(filesha256Hash),
-			hex.EncodeToString(filesha512Hash),
-		},
-		[]string{},
-		caseUUID,
-		"/files/"+caseUUID+"/"+filename,
-		time.Now().Local().String(),
-		"supervisor",
-		"admin",
-	)
-
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "failed to create file"})
-		log.Panicln(err)
-	}
-
-	// log file upload
-	_, err = dbInterface.MakeCaseLog(c, caseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.FileUpload, gin.H{"fileUUID": filename})
-	if err != nil {
-		// failed to log file upload
-		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
-	}
-
-	// upload succeeded
-	c.String(http.StatusOK, filename)
+	// return the uuid
+	return filename, nil
 }
