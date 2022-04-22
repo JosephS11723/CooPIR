@@ -237,6 +237,20 @@ func SubmitWork(c *gin.Context) {
 
 	case "modifyFile":
 
+		fileUUID := c.Query("fileuuid")
+
+		if fileUUID == "" {
+
+			c.JSON(
+				http.StatusBadRequest,
+				gin.H{"error": "no fileuuid provided"},
+			)
+			return
+
+		}
+
+		err := dbInterface.ModifyJobTagsAndRelations(fi)
+
 	case "createFile":
 
 		filestream, _, err := c.Request.FormFile("file")

@@ -79,3 +79,7 @@ func ModifyJobStatus(jobUUID string, status dbtypes.JobStatus) error {
 
 	return nil
 }
+
+func ModifyJobTagsAndRelations(fileUUID, tags []string, relations []string) {
+
+}
