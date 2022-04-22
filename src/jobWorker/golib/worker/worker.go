@@ -38,6 +38,9 @@ type JobWorker struct {
 
 	// done is a bool that is set to true when the worker is set to exit
 	done bool `default:"false"`
+
+	// doneChan is a channel that allows blocked workers to unblock obtaining a job
+	doneChan chan bool
 }
 
 // JobResult is the struct that wraps the information sent to the api
@@ -61,7 +64,7 @@ type JobResult struct {
 	Done bool `json:"done"`
 }
 
-type JobFunc func(*dbtypes.Job)
+type JobFunc func(*dbtypes.Job, chan JobResult)
 
 // NewJobWorker creates a new JobWorker
 func NewJobWorker(maxWorkers int) *JobWorker {
@@ -145,7 +148,7 @@ func (j *JobWorker) Start() {
 			j.wg.Add(1)
 
 			// spawn a worker
-			//go j.worker()
+			go j.workerRoutine()
 		}
 
 		// spawn the get work loop
@@ -181,4 +184,30 @@ func (j *JobWorker) GetJob() (dbtypes.Job, error) {
 func (j *JobWorker) AddJobWithFunction(jobTypeName string, jobFunction JobFunc) {
 	// add job to job list
 	j.jobList[jobTypeName] = jobFunction
+}
+
+// workerRoutine is the main routine spawned by the worker struct that creates the "workers" who take in jobs from the queue and perform them
+func (j *JobWorker) workerRoutine() {
+	// infinite loop
+	for {
+		// select between getting a job or exiting
+		select {
+		case job := <-j.JobQueue:
+			// if the job is not in the list of jobs this worker can perform, log it and continue
+			if _, ok := j.jobList[job.JobType]; !ok {
+				log.Println("[ERROR workerRoutine]: Job type not supported:", job.JobType)
+				continue
+			}
+
+			// perform the job
+			j.jobList[job.JobType](&job, j.JobResultQueue)
+
+		case <-j.doneChan:
+			// decrement the waitgroup
+			j.wg.Done()
+
+			// exit
+			return
+		}
+	}
 }

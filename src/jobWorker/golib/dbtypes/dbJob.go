@@ -2,6 +2,7 @@ package dbtypes
 
 type Job struct {
 	JobUUID       string    `json:"jobuuid"`
+	CaseUUID	  string    `json:"caseuuid"`
 	Arguments     []string  `json:"arguments"`
 	Name          string    `json:"name"`
 	JobType       string    `json:"jobtype"`
