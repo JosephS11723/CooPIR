@@ -208,6 +208,18 @@ func SubmitWork(c *gin.Context) {
 	relations := c.QueryArray("relations")
 
 	status := dbInterface.FindJobStatusByUUID(jobUUID)
+
+	switch resultType {
+
+	case "modifyFile":
+
+	case "createFile":
+
+	default:
+
+	}
+
+	c.JSON(http.StatusOK, gin.H{"jobuuid": jobUUID})
 }
 
 /*
