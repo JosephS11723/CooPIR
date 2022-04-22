@@ -19,19 +19,16 @@ export class DashboardComponent implements OnInit {
       icon: 'exit_to_app',
       route: '/login'
     },    
-    {
-      label: 'Home',
-      icon: 'home',
-      route: '/home'
-    },
+    
   ];
 
   //cases the user has access to
   caseList = [
     {
       name: '',
+      uuid: '',
       supervisor: '',
-      last_modified: '',
+      date_created: '',
       route: ''
     }
   ];
@@ -61,15 +58,22 @@ export class DashboardComponent implements OnInit {
             .append('uuid', retrievedCases.cases[index]);
             this.http.get("http://localhost:8080/api/v1/case", {params: fileParams, observe: 'response'})
             .subscribe(response => {
-              console.log("Case metadata: ", response);
+              var caseData: any;
+              caseData = response.body;
+              //console.log("Case metadata: ", response);
+              //console.log("Case name: ", caseData.case.name);
+              //console.log("Case uuid: ", caseData.case.uuid);
+
+              this.caseList.push({
+                name: caseData.case.name,
+                uuid: caseData.case.uuid,
+                supervisor: 'Joseph',
+                date_created: caseData.case.dateCreated,
+                route: '/case'
+              });
             })
             //console.log(retrievedCases.cases[index]);
-            this.caseList.push({
-              name: retrievedCases.cases[index],
-              supervisor: 'Joseph',
-              last_modified: 'sometime',
-              route: '/case'
-            });
+            
           }
         }
       }, error => {
@@ -112,7 +116,7 @@ export class DashboardComponent implements OnInit {
         {
           label: "Make Case",
           icon: 'library_add',
-          route: '/dashboard'
+          route: '/makeCase'
         }
       )
     }

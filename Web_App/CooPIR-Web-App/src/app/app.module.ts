@@ -21,6 +21,7 @@ import { httpInterceptProviders } from './Http-interceptors';
 import { CaseComponent } from './case/case.component';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
 import * as FileSaver from 'file-saver';
+import { MakeCaseComponent } from './make-case/make-case.component';
 
 
 @NgModule({
@@ -29,7 +30,8 @@ import * as FileSaver from 'file-saver';
     HomeComponent,
     LoginComponent,
     DashboardComponent,
-    CaseComponent
+    CaseComponent,
+    MakeCaseComponent
   ],
   imports: [
     BrowserModule,

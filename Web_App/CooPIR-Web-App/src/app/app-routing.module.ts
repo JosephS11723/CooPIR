@@ -4,12 +4,14 @@ import { CaseComponent } from './case/case.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
+import { MakeCaseComponent } from './make-case/make-case.component';
 
 const routes: Routes = [
   { path: 'home', component:HomeComponent },
   { path: 'login', component:LoginComponent},
   { path: 'dashboard', component:DashboardComponent},
   { path: 'case', component:CaseComponent},
+  { path: 'makeCase', component:MakeCaseComponent},
   { path: '**', component:LoginComponent}
 ];
 
