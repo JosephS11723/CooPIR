@@ -32,10 +32,12 @@ func DbGetCaseInfo(c *gin.Context) {
 	caseUUID := c.Query("uuid")
 
 	if caseUUID == "" {
-		c.JSON(gin.H{
-			"error": "no uuid in query",
-		})
-		return
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				"error": "query did not contain job uuid",
+			},
+		)
 	}
 
 	// log case info request
