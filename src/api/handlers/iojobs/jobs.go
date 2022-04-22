@@ -69,7 +69,7 @@ func GetJobInfo(c *gin.Context) {
 }
 
 // CreateJob creates a new job from parameters given in the request
-/*func CreateJob(c *gin.Context) {
+func CreateJob(c *gin.Context) {
 
 	var new_job_request dbtypes.NewJob
 
@@ -206,6 +206,7 @@ func SubmitWork(c *gin.Context) {
 
 }
 
+/*
 /*
 // SubmitWork submits a job result to the database.
 // the job result is sent in pieces which must be added sequentially

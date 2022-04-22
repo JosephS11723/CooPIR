@@ -4,6 +4,8 @@ export class GlobalConstants {
 
     public static currentCase: string = '';  
 
+    public static canUserMakeCase: boolean = false;
+
     public static siteTitle: string = "This is example of ItSolutionStuff.com";
 
 }

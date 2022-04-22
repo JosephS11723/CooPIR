@@ -20,6 +20,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { httpInterceptProviders } from './Http-interceptors';
 import { CaseComponent } from './case/case.component';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
+import * as FileSaver from 'file-saver';
 
 
 @NgModule({
@@ -42,7 +43,7 @@ import { NgxDocViewerModule } from 'ngx-doc-viewer';
     MatButtonModule,
     MatDividerModule,
     MatListModule,
-    NgxDocViewerModule
+    NgxDocViewerModule,
   ],
   providers: [
     CookieService,

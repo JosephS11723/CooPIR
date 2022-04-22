@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { GlobalConstants } from '../common/global-constraints';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
+import { saveAs } from 'file-saver';
+import * as FileSaver from 'file-saver';
+//import { writeFile } from 'fs';
 
 @Component({
   selector: 'app-case',
@@ -39,7 +42,7 @@ export class CaseComponent implements OnInit {
     {
       name: '',
       created: '',
-      last_modified: '',
+      md5: '',
       route: ''
     }
   ];
@@ -63,20 +66,31 @@ export class CaseComponent implements OnInit {
         if(response.body != null)
         {
           retrievedFiles = response.body;
-          //push each file in the case into the files to be displayed
+          //for each file, get the file info and push it into the list to be displayed
           for(var index = 0; index < retrievedFiles.files.length; index++)
           {
-           // this.http.get("http://localhost:8080/api/v1/file/info", {params: fileParams, observe: 'response'})
-           // .subscribe( response => {
-           //   console.log("Here is the file info: ", response);
-           // });
-            //console.log(retrievedCases.cases[index]);
-            this.fileList.push({
-              name: retrievedFiles.files[index],
-              created: 'at some point',
-              last_modified: 'sometime',
-              route: '/case'
+            //retrieve info for each file
+            var fileParams = new HttpParams()
+            .append('caseUUID', this.cookieService.get("currentUUID"))
+            .append('fileUUID', retrievedFiles.files[index]);
+            let fileInfo: any;
+            //get the info for the file
+            this.http.get("http://localhost:8080/api/v1/file/info", {params: fileParams, observe: 'response'})
+            .subscribe( response => {
+                //console.log("Here is the file info: ", response.body);
+                fileInfo = response.body;
+                //console.log("This is the selected file's name: ", fileInfo.file.filename.split("/").pop());
+                //console.log("Here is the upload date: ", fileInfo.file.uploadDate);
+
+                //push file and its info to be displayed in the table
+                this.fileList.push({
+                  name: fileInfo.file.filename.split("/").pop(),
+                  created: fileInfo.file.uploadDate,
+                  md5: fileInfo.file.md5,
+                  route: '/case'
+                });
             });
+          
           }
         }
     });
@@ -85,22 +99,64 @@ export class CaseComponent implements OnInit {
 
   getFileInfo(uuid: any): void
   {
+    this.http.get("http://localhost:8080/api/v1/file/" + uuid  + "/" + this.cookieService.get("currentUUID"), {observe: 'response'})
+    .subscribe(response =>
+      {
+        
+        console.log("response from download call: ", response);
+        //console.log("New download test");
+        let testData:any;
+        testData = response.body;
+        //console.log("Blob body: ", testData);
+        let blob = new Blob([testData], {type: 'text/plain;charset=utf-8'});
+        //console.log("Blob body2: ", blob);
+        //FileSaver.saveAs(blob, 'downloadtest.txt');
+        //console.log("After download test");
+        //let link = document.createElement('a');
+        //console.log("Link: ", testData.url);
+        //link.download = testData.url;
+        //let blob = new Blob([testData], {type: 'text/plain'});
+        //link.href = URL.createObjectURL(blob);
+        //link.click();
+
+        //URL.revokeObjectURL(link.href);
+      });
+
+      var downloadFile = this.http.get("http://localhost:8080/api/v1/file/" + uuid  + "/" + this.cookieService.get("currentUUID"), {observe: 'response', responseType: 'blob'});
+      console.log("DownloadFile: ", downloadFile);
+      //var blurg = new BlobPart;
+      downloadFile.subscribe(subscriber =>
+        {
+          console.log("Subscriber: ", subscriber);
+          if(subscriber.body != null)
+          {
+            //console.log("Subscriber body: ", subscriber.body);
+            const blob = new Blob([subscriber.body], {type: 'text/plain'});
+            //console.log("Blob test: ", blob);
+            //FileSaver.saveAs(blob, 'newDownloadTest.txt');
+          }     
+        });
+      //var blobTest = new Blob(blurg, {type: 'text/plain'});
+      //console.log("Blob test: ", blobTest);
+      //FileSaver.saveAs(blobTest, 'newDownloadTest.txt');
+
+
+
+    var testFile2: any;
+    testFile2 = this.http.get("http://localhost:8080/api/v1/file/" + uuid  + "/" + this.cookieService.get("currentUUID"), {responseType: 'blob'});
+    //console.log("Here is the testFile2: ", testFile2);
+
     var testFile: any;
-    testFile = this.http.get("http://localhost:8080/api/v1/file/" + uuid  + "/" + GlobalConstants.currentCase, {observe: 'response'})
+    testFile = this.http.get("http://localhost:8080/api/v1/file/" + uuid  + "/" + this.cookieService.get("currentUUID"), {observe: 'response'})
     .subscribe( response => {
-      console.log("Response to file down load: ", response);
+      //console.log("Response to file download: ", response);
     });
 
-    console.log("Here is the testFile: ", testFile);
+   // console.log("Here is the testFile: ", testFile);
 
     //this.doc = "https://www.google.com/"
-    var fileParams = new HttpParams()
-    .append('caseUUID', GlobalConstants.currentCase)
-    .append('fileUUID', uuid);
-    this.http.get("http://localhost:8080/api/v1/file/info", {params: fileParams, observe: 'response'})
-    .subscribe( response => {
-        console.log("Here is the file info: ", response);
-      });
+    
+      
   }
 
   onFileSelected(event:any): void 
@@ -130,7 +186,7 @@ export class CaseComponent implements OnInit {
       console.log("File ready to send");
       
       this.fileName = this.file.name;
-      var caseuuid = GlobalConstants.currentCase;
+      var caseuuid = this.cookieService.get("currentUUID");
 
       const params = new HttpParams()
       .append('caseuuid', caseuuid)
@@ -154,7 +210,7 @@ export class CaseComponent implements OnInit {
         {
         name: this.fileName,
         created: '',
-        last_modified: '',
+        md5: '',
         route: ''
         });
     }

@@ -8,8 +8,8 @@ import (
 	"runtime"
 	"syscall"
 
-	"github.com/JosephS11723/CooPIR/src/jobWorker/instance/jobs"
 	"github.com/JosephS11723/CooPIR/src/jobWorker/golib/worker"
+	"github.com/JosephS11723/CooPIR/src/jobWorker/instance/jobs"
 )
 
 func ctrlCExit() {
