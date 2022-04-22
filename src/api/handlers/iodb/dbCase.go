@@ -29,11 +29,11 @@ func DbGetCaseInfo(c *gin.Context) {
 
 	var caseUUID = json_request["uuid"].(string)*/
 
-	caseUUID := c.Query("jobuuid")
+	caseUUID := c.Query("uuid")
 
 	if caseUUID == "" {
 		c.JSON(gin.H{
-			"error": "no jobuuid in query",
+			"error": "no uuid in query",
 		})
 		return
 	}
