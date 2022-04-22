@@ -29,13 +29,6 @@ func SWPOST(c *gin.Context) {
 		return
 	}
 
-	originalFilename, success := c.GetQuery("fileuuid")
-	// error if filedir not provided
-	if !success {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no filedir provided"})
-		return
-	}
-
 	// get file multipart stream
 	filestream, _, err := c.Request.FormFile("file")
 	if err != nil {
@@ -183,7 +176,6 @@ func SWPOST(c *gin.Context) {
 			hex.EncodeToString(filesha512Hash),
 		},
 		[]string{},
-		originalFilename,
 		caseUUID,
 		"/files/"+caseUUID+"/"+filename,
 		time.Now().Local().String(),

@@ -28,7 +28,6 @@ type File struct {
 	Tags        []string `json:"tags"`
 	Filename    string   `json:"filename"`
 	Case        string   `json:"case"`
-	File_dir    string   `json:"fileDir"`
 	Upload_date string   `json:"uploadDate"`
 	View_access string   `json:"viewAccess"`
 	Edit_access string   `json:"editAccess"`
