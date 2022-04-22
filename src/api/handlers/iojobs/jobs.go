@@ -88,8 +88,7 @@ func CreateJob(c *gin.Context) {
 	}
 
 	// add job to database
-
-	job, err := dbInterface.MakeJob(new_job_request)
+	uuid, err := dbInterface.MakeJob(new_job_request)
 
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{"error": "Failed to add job to database"})
@@ -166,6 +165,7 @@ func SubmitWork(c *gin.Context) {
 				"error": "no job uuid in the query",
 			},
 		)
+		return
 	}
 
 	resultType := c.Query("resulttype")
@@ -177,9 +177,10 @@ func SubmitWork(c *gin.Context) {
 				"error": "no resulttype in the query",
 			},
 		)
+		return
 	}
 
-	done := c.Query("resulttype")
+	done := c.Query("done")
 
 	if done == "" {
 		c.JSON(
@@ -188,6 +189,7 @@ func SubmitWork(c *gin.Context) {
 				"error": "no parameter 'done' in the query",
 			},
 		)
+		return
 	}
 
 	name := c.Query("name")
@@ -199,14 +201,15 @@ func SubmitWork(c *gin.Context) {
 				"error": "no name in the query",
 			},
 		)
+		return
 	}
 
 	tags := c.QueryArray("tags")
 	relations := c.QueryArray("relations")
 
+	status := dbInterface.FindJobStatusByUUID(jobUUID)
 }
 
-/*
 /*
 // SubmitWork submits a job result to the database.
 // the job result is sent in pieces which must be added sequentially
