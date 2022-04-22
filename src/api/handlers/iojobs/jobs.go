@@ -1,10 +1,12 @@
 package iojobs
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
+	"github.com/JosephS11723/CooPIR/src/api/lib/seaweedInterface"
 	"github.com/gin-gonic/gin"
 )
 
@@ -168,6 +170,18 @@ func SubmitWork(c *gin.Context) {
 		return
 	}
 
+	caseUUID := c.Query("caseuuid")
+
+	if jobUUID == "" {
+		c.JSON(
+			http.StatusBadRequest,
+			gin.H{
+				"error": "no case uuid in the query",
+			},
+		)
+		return
+	}
+
 	resultType := c.Query("resulttype")
 
 	if resultType == "" {
@@ -207,7 +221,17 @@ func SubmitWork(c *gin.Context) {
 	tags := c.QueryArray("tags")
 	relations := c.QueryArray("relations")
 
-	status := dbInterface.FindJobStatusByUUID(jobUUID)
+	status, err := dbInterface.FindJobStatusByUUID(jobUUID)
+
+	if err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{
+				"error": "could not fetch job status from database",
+			},
+		)
+		return
+	}
 
 	switch resultType {
 
@@ -215,7 +239,38 @@ func SubmitWork(c *gin.Context) {
 
 	case "createFile":
 
+		filestream, _, err := c.Request.FormFile("file")
+
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no file received"})
+			log.Panicln(err)
+		}
+
+		fileUUID, err := seaweedInterface.POSTFileJob(caseUUID, filestream)
+
+		if err != nil {
+
+			if err.Error() == "file already exists" {
+
+			}
+
+		}
+
 	default:
+		c.JSON(
+			http.StatusBadRequest,
+			gin.H{"error": "resulttype not valid"},
+		)
+		return
+	}
+
+	if done == "true" {
+
+		err = dbInterface.ModifyJobStatus(jobUUID, dbtypes.InProgress)
+
+		if err != nil {
+			log.Panicln("ERROR: could not modify job status from current to 'Finished'")
+		}
 
 	}
 
