@@ -160,7 +160,7 @@ namespace CoopirAgent
         static void WindowsZip()
         {
             string startFolder = @".\Logs";
-            string zipFile = @".\zip\evtLogs.zip";
+            string zipFile = string.Format(@".\zip\evtLogs_{0}.zip", Environment.MachineName);
             string zipFolder = @".\zip";
 
             if (!Directory.Exists(zipFolder))
@@ -184,7 +184,7 @@ namespace CoopirAgent
         static void LinuxZip()
         {
             string startFolder = @"/var/log";
-            string zipFile = @"./zip/Logs.zip";
+            string zipFile = string.Format(@"./zip/Logs_{0}.zip", Environment.MachineName);
             string zipFolder = @"./zip";
             //string extractFolder = @".\extracted";
 
@@ -218,7 +218,7 @@ namespace CoopirAgent
         static void MacZip()
         {
             string startFolder = @"/var/log";
-            string zipFile = @"./zip/Logs.zip";
+            string zipFile = string.Format(@"./zip/Logs_{0}.zip", Environment.MachineName);
             string zipFolder = @".\zip";
             //string extractFolder = @".\extracted";
 
