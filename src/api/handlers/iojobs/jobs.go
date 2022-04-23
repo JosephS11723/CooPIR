@@ -158,6 +158,9 @@ func GetWork(c *gin.Context) {
 //this is just for receiving work from workers
 func SubmitWork(c *gin.Context) {
 
+	var fileUUID string
+
+	//the next bunch of code is basically just looking for the query parameters
 	jobUUID := c.Query("jobuuid")
 
 	if jobUUID == "" {
@@ -218,26 +221,37 @@ func SubmitWork(c *gin.Context) {
 		return
 	}
 
+	//tags and relations can be empty arrays, so no check
 	tags := c.QueryArray("tags")
 	relations := c.QueryArray("relations")
 
+	//find the status of the job; if not valid status for modifying, return error
 	status, err := dbInterface.FindJobStatusByUUID(jobUUID)
 
 	if err != nil {
 		c.JSON(
-			http.StatusInternalServerError,
-			gin.H{
-				"error": "could not fetch job status from database",
-			},
+			http.StatusNotFound,
+			gin.H{"error": "could not find job by uuid"},
 		)
 		return
 	}
 
+	if status != dbtypes.InProgress {
+
+		c.JSON(
+			http.StatusConflict,
+			gin.H{"error": "target job is not In-Progess and cannot be modified by worker"},
+		)
+		return
+	}
+
+	//the only result types are 'modifyFile' and 'createFile'
 	switch resultType {
 
+	//since this is modifying a particular existing file, then get the fileuuid query param
 	case "modifyFile":
 
-		fileUUID := c.Query("fileuuid")
+		fileUUID = c.Query("fileuuid")
 
 		if fileUUID == "" {
 
@@ -249,8 +263,21 @@ func SubmitWork(c *gin.Context) {
 
 		}
 
-		err := dbInterface.ModifyJobTagsAndRelations(fi)
+		//call this function to try to modify the tags and relations for the file
+		err := dbInterface.ModifyJobTagsAndRelations(fileUUID, caseUUID, tags, relations)
 
+		if err != nil {
+
+			c.JSON(
+				http.StatusInternalServerError,
+				gin.H{"error": err.Error()},
+			)
+			return
+		}
+
+	//if creating a file, then try to create the file--if there is an error from Seaweed,
+	//then that file already exists (surprisingly or unsurprisingly), so then just modify
+	//the tags and relations
 	case "createFile":
 
 		filestream, _, err := c.Request.FormFile("file")
@@ -260,12 +287,29 @@ func SubmitWork(c *gin.Context) {
 			log.Panicln(err)
 		}
 
-		fileUUID, err := seaweedInterface.POSTFileJob(caseUUID, filestream)
+		fileUUID, err = seaweedInterface.POSTFileJob(caseUUID, filestream)
 
 		if err != nil {
 
 			if err.Error() == "file already exists" {
 
+				err = dbInterface.ModifyJobTagsAndRelations(fileUUID, caseUUID, tags, relations)
+
+				if err != nil {
+					c.JSON(
+						http.StatusInternalServerError,
+						gin.H{"error": err.Error()},
+					)
+					return
+				}
+
+			} else {
+
+				c.JSON(
+					http.StatusInternalServerError,
+					gin.H{"error": err.Error()},
+				)
+				return
 			}
 
 		}
@@ -288,120 +332,8 @@ func SubmitWork(c *gin.Context) {
 
 	}
 
-	c.JSON(http.StatusOK, gin.H{"jobuuid": jobUUID})
+	c.JSON(http.StatusOK, gin.H{"jobuuid": jobUUID, "fileuuid": fileUUID})
 }
-
-/*
-// SubmitWork submits a job result to the database.
-// the job result is sent in pieces which must be added sequentially
-func SubmitWork(c *gin.Context) {
-	// get job id
-	jobUUID := c.Param("uuid")
-
-	// get status
-	status := c.PostForm("jobStatus")
-
-	// empty field check
-	if status == "" {
-		c.JSON(400, gin.H{"error": "status is empty"})
-		return
-	} else {
-		// if job status is error, set job status to error
-		if status == "error" {
-			// get error message from formdata
-			errorMessage := c.PostForm("errorMessage")
-
-			// empty field check
-			if errorMessage == "" {
-				c.JSON(400, gin.H{"error": "errorMessage is empty"})
-				return
-			}
-
-			// add error status to job
-			err := iodb.ModifyJobStatus(jobUUID, "error")
-
-			if err != nil {
-				c.JSON(400, gin.H{"error": "Failed to mark job as error"})
-				return
-			}
-
-			// add error message to job
-			err = iodb.ModifyJobErrorMessage(jobUUID, errorMessage)
-		}
-	}
-
-	// get reader for job pieces from multipart
-	jobPieces := c.Request.MultipartForm.File["jobPieces"]
-
-	var startPiece string
-	var pieceCount int = 0
-
-	// add each piece of the job result to the database by iterating through the pieces given
-	for pieceIndex, piece := range jobPieces {
-		pieceCount = pieceIndex + 1
-		// generate jobPiece uuid
-		jobPieceUUID := dbInterface.MakeUuid()
-
-		switch pieceIndex {
-		case 0:
-			// first job piece
-			// add job piece to database
-			err := iodb.AddJobPiece(jobPieceUUID, jobUUID, piece)
-
-			// set startPiece to jobPieceUUID
-			startPiece = jobPieceUUID
-
-			if err != nil {
-				// error 500
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add job piece to database"})
-				return
-			}
-
-			// add job result to database with first piece as head
-		default:
-			// everything else
-		}
-
-		// add jobPiece to database
-		err := iodb.AddJobPiece(jobPieceUUID, jobUUID, piece)
-
-		if err != nil {
-			// error 500
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add job piece to database"})
-			return
-		}
-	}
-
-	// empty pieces check
-	if pieceCount == 0 {
-		// error 400
-		c.JSON(http.StatusBadRequest, gin.H{"error": "jobPieces is empty"})
-		return
-	}
-
-	// add job result to database
-	err := iodb.AddJobResult(jobUUID, startPiece, pieceCount)
-
-	if err != nil {
-		// error 500
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add job result to database"})
-		return
-	}
-
-	// mark job as complete
-	err = iodb.ModifyJobStatus(jobUUID, "done")
-
-	if err != nil {
-		// error 500
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add job result to database"})
-		return
-	}
-
-	// return success (200)
-	c.Status(http.StatusOK)
-}
-
 
 // GetResults sends the results of a job as a multipart to the client
 func GetResults(c *gin.Context) {}
-*/

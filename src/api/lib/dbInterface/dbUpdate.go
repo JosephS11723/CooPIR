@@ -1,6 +1,7 @@
 package dbInterface
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
@@ -80,6 +81,61 @@ func ModifyJobStatus(jobUUID string, status dbtypes.JobStatus) error {
 	return nil
 }
 
-func ModifyJobTagsAndRelations(fileUUID, tags []string, relations []string) {
+//find the file by UUID in a case, then append to that file's tags and relations
+func ModifyJobTagsAndRelations(fileUUID string, caseUUID string, tags []string, relations []string) error {
 
+	//go through the ceremony of finding the file, decoding it, and error-checking
+	result, err := FindDocByFilter("Cases", caseUUID, bson.M{"uuid": fileUUID})
+
+	if err != nil {
+		return fmt.Errorf("could not find file %s in case %s", fileUUID, caseUUID)
+	}
+
+	var file dbtypes.File
+
+	err = result.Decode(&file)
+
+	if err != nil {
+		return fmt.Errorf("could not decode file %s from mongo result", fileUUID)
+	}
+
+	//iterate through (since Go doesn't have a simple way of doing this >:( ) and check
+	//each tag to see if it already exists
+	for _, tag := range tags {
+
+		for _, exisiting_tag := range file.Tags {
+
+			if tag != exisiting_tag {
+
+				file.Tags = append(file.Tags, tag)
+
+			}
+
+		}
+
+	}
+
+	//same thing but for relations
+	for _, relation := range relations {
+
+		for _, exisiting_relation := range file.Tags {
+
+			if relation != exisiting_relation {
+
+				file.Relations = append(file.Relations, relation)
+
+			}
+
+		}
+
+	}
+
+	UpdateDoc(
+		"Cases",
+		caseUUID,
+		bson.M{"uuid": fileUUID},
+		bson.D{{"$set", bson.M{"tags": file.Tags, "relations": file.Relations}}},
+	)
+
+	return nil
 }
