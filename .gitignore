@@ -1,3 +1,6 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
+Agent\CoopirAgent\CoopirAgent\obj\
+Agent\CoopirAgent\CoopirAgent\Properties
+Agent\CoopirAgent\CoopirAgent\bin
