@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "kPMq1ZHqF6BO5HxfsiRNFmSD61I/At+NCM5ud2hnP3BDR6fv8JqYhh91i6FPRjdiw8VBBrZS3BdNTIrY5U/88Q==",
+  "success": true,
+  "projectFilePath": "E:\\Capstone\\CooPIR\\Agent\\CoopirAgent\\CoopirAgent\\CoopirAgent.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Alex\\.nuget\\packages\\microsoft.netcore.platforms\\5.0.0\\microsoft.netcore.platforms.5.0.0.nupkg.sha512",
+    "C:\\Users\\Alex\\.nuget\\packages\\microsoft.win32.registry\\5.0.0\\microsoft.win32.registry.5.0.0.nupkg.sha512",
+    "C:\\Users\\Alex\\.nuget\\packages\\system.diagnostics.eventlog\\6.0.0\\system.diagnostics.eventlog.6.0.0.nupkg.sha512",
+    "C:\\Users\\Alex\\.nuget\\packages\\system.security.accesscontrol\\5.0.0\\system.security.accesscontrol.5.0.0.nupkg.sha512",
+    "C:\\Users\\Alex\\.nuget\\packages\\system.security.principal.windows\\5.0.0\\system.security.principal.windows.5.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
