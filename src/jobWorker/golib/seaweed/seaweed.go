@@ -1,6 +1,9 @@
 package seaweed
 
 import (
+	"os/exec"
+	"strings"
+
 	"github.com/JosephS11723/CooPIR/src/jobWorker/config"
 )
 
@@ -10,11 +13,10 @@ type SWMount struct {
 	Remotepath string `json:"remotepath"`
 }
 
-// terminal command to unmount
-var unmountCommand string = "sudo umount -f "
-
 // terminal command to mount
 var mountCommand string = "weed mount -filer=" + config.FilerAddress + ":" + config.FilerPort + " -dir="
+
+var unmountCommand string = "unmount -f "
 
 // CreateSWMount creates a seaweed mount given a file path
 func CreateSWMount(localPath string, remotepath string) SWMount {
@@ -28,12 +30,22 @@ func CreateSWMount(localPath string, remotepath string) SWMount {
 func (s *SWMount) Mount() error {
 	// make mount string
 	mountString := mountCommand + s.LocalPath + " -filer.path=" + s.Remotepath
-	// TODO: mount
-	return nil
+
+	// mount
+	return runCMD("sudo", strings.Split(mountString, " ")...)
 }
 
 // Unmount unmounts the mount
 func (s *SWMount) Unmount() error {
-	// TODO: unmount
-	return nil
+	// make unmount string
+	unmountString := unmountCommand + s.LocalPath
+
+	// unmount
+	return runCMD("sudo", strings.Split(unmountString, " ")...)
+}
+
+// runCMD runs a command in the terminal
+func runCMD(cmd string, args ...string) error {
+	execCmd := exec.Command(cmd, args...)
+	return execCmd.Run()
 }
