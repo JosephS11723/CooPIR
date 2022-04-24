@@ -47,6 +47,46 @@ namespace CoopirAgent
             }
 
 
+            using (WebSocket ws = new WebSocket("ws://localhost:4201"))
+            {
+                ws.OnMessage += Ws_OnMessage;
+                ws.OnOpen += Ws_OnOpen;
+                ws.OnClose += Ws_OnClose;
+
+                ws.Connect();
+
+                while(ws.IsAlive)
+                {
+
+                }
+
+            }
+                
+        }
+
+        private static void Ws_OnClose(object sender, CloseEventArgs e)
+        {
+            WebSocket ws = (WebSocket)sender;
+
+            if (!e.WasClean)
+            {
+                Console.WriteLine("Connection closed unexpectedly: " + e.Reason);
+                Console.WriteLine("Attempting to reconnect...");
+                if (!ws.IsAlive)
+                {
+                    System.Threading.Thread.Sleep(5000);
+                    ws.Connect();
+                    //continue;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Connection closed: " + e.Reason);
+            }
+        }
+
+        private static void Ws_OnOpen(object sender, EventArgs e)
+        {
             Guid myuuid = Guid.NewGuid();
             string myuuidAsString = myuuid.ToString();
 
@@ -58,60 +98,51 @@ namespace CoopirAgent
                 arch = RuntimeInformation.ProcessArchitecture.ToString()
             };
 
-            using (WebSocket ws = new WebSocket("ws://localhost:4201"))
-            {
-                ws.OnMessage += Ws_OnMessage;
+            WebSocket ws = (WebSocket)sender;
 
-                ws.Connect();
-                string stringjson = JsonConvert.SerializeObject(machine);
-                Console.WriteLine(stringjson);
-                ws.Send(stringjson);
-
-                Console.WriteLine("Ping result: " + ws.Ping().ToString());
-
-                Console.ReadKey();
-
-                ws.Close();
-            }
-
-            //Zipper();
+            string stringjson = JsonConvert.SerializeObject(machine);
+            Console.WriteLine(stringjson);
+            ws.Send(stringjson);
 
         }
 
         private static void Ws_OnMessage(object sender, MessageEventArgs e)
         {
-            Console.WriteLine("Recieved from the server: " + e.Data.ToString());
+            Console.WriteLine("Recieved from the server: " + e.Data);
 
-            Zipper();
-            Console.WriteLine("Sending Logs to server...");
-            string zipfile;
-            if (OperatingSystem.IsWindows())
-                zipfile = string.Format(@".\zip\evtLogs_{0}.zip", Environment.MachineName);
-            else
-                zipfile = string.Format(@"./zip/Logs_{0}.zip", Environment.MachineName);
-
+            dynamic jsonMessage = JsonConvert.DeserializeObject(e.Data);
+            string task = jsonMessage.task;
+            string fileName = jsonMessage.fileName;
             WebSocket ws = (WebSocket)sender;
 
-            //Console.WriteLine("Ping result: " + ws.Ping().ToString());
-
-            //ws.SendAsync(File.ReadAllBytes(zipfile), new Action<bool>((completed) =>
-            //{
-            //    Console.WriteLine("Something happened?!?!??!?!");
-            //    if (completed)
-            //    {
-            //        Console.WriteLine("Message sent Successfully?");
-            //    }
-            //    else
-            //    {
-            //        Console.WriteLine("Message Failed?");
-            //    }
-            //}));
-            //Console.WriteLine("COMPLETE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            if (task.ToLower() == "getlogs")
+            {
+                Zipper();
+                Console.WriteLine("Sending Logs to server...");
+                string zipfile;
+                if (OperatingSystem.IsWindows())
+                    zipfile = string.Format(@".\zip\evtLogs_{0}.zip", Environment.MachineName);
+                else
+                    zipfile = string.Format(@"./zip/Logs_{0}.zip", Environment.MachineName);
 
 
-            byte[] fileBytes = File.ReadAllBytes(zipfile);
-            ws.Send(fileBytes);
-            Console.WriteLine("Files Sent Successfully!");
+                byte[] fileBytes = File.ReadAllBytes(zipfile);
+                if (ws.IsAlive)
+                {
+                    ws.Send(fileBytes);
+                    Console.WriteLine("Files Sent Successfully!");
+                }
+                else
+                {
+                    while (!ws.IsAlive)
+                    {
+                        Console.WriteLine("Connection not found. Waiting until reconnect...");
+                        System.Threading.Thread.Sleep(10000);
+                    }
+                    ws.Send(fileBytes);
+                    Console.WriteLine("Files Sent Successfully!");
+                }
+            }
         }
 
         static void Zipper()
