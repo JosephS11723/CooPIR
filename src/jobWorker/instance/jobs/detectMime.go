@@ -4,10 +4,11 @@ import (
 	"bufio"
 	"log"
 	"os"
+	"time"
 
+	"github.com/JosephS11723/CooPIR/src/jobWorker/config"
 	"github.com/JosephS11723/CooPIR/src/jobWorker/golib/dbtypes"
 	"github.com/JosephS11723/CooPIR/src/jobWorker/golib/resultTypes"
-	"github.com/JosephS11723/CooPIR/src/jobWorker/golib/seaweed"
 	"github.com/JosephS11723/CooPIR/src/jobWorker/golib/worker"
 	"github.com/gabriel-vasile/mimetype"
 )
@@ -15,10 +16,10 @@ import (
 // DetermineMimeType determines the mime type of a file
 func DetermineMimeType(job *dbtypes.Job, resultChan chan worker.JobResult) {
 	// create directory for the job
-	os.Mkdir(job.JobUUID, 0755)
+	//os.Mkdir(job.JobUUID, 0755)
 
 	// defer deleting the folder with everything in it (cleanup)
-	defer os.RemoveAll(job.JobUUID)
+	//defer os.RemoveAll(job.JobUUID)
 
 	// get relevant information from job
 	caseUUID := job.CaseUUID
@@ -26,25 +27,33 @@ func DetermineMimeType(job *dbtypes.Job, resultChan chan worker.JobResult) {
 
 	// get the file from seaweed by mounting the file
 	// create mount
-	mount := seaweed.CreateSWMount("./"+job.JobUUID+"/"+fileUUID, "/"+caseUUID+"/"+fileUUID)
+	//mount := seaweed.CreateSWMount("./"+job.JobUUID+"/"+fileUUID, "/"+caseUUID+"/"+fileUUID)
 
 	// mount
-	mount.Mount()
+	//err := mount.Mount()
+
+	// check for error
+	//if err != nil {
+	//	log.Println("Error mounting file: ", err)
+	//}
 
 	// defer closing the mount
-	defer mount.Unmount()
+	//defer mount.Unmount()
 
 	// JOB
 	// get the mime type of the file
 	// get reader for file
-	file, err := os.OpenFile("./"+job.JobUUID+"/"+fileUUID, os.O_RDONLY, 0755)
+	file, err := os.OpenFile(config.WorkDir+"/"+caseUUID+"/"+fileUUID, os.O_RDONLY, 0755)
 
 	for err != nil {
 		// log error
 		log.Println(err)
 
+		// sleep for 5 seconds
+		time.Sleep(time.Duration(5) * time.Second)
+
 		// get reader for file
-		file, err = os.OpenFile("./"+job.JobUUID+"/"+fileUUID, os.O_RDONLY, 0755)
+		file, err = os.OpenFile(config.WorkDir+"./"+caseUUID+"/"+fileUUID, os.O_RDONLY, 0755)
 	}
 
 	defer file.Close()

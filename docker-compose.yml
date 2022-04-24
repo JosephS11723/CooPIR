@@ -20,6 +20,10 @@ services:
     container_name: job-worker
     build: ./src/jobWorker
     mem_limit: 1G
+    cap_add:
+      - SYS_ADMIN
+    devices:
+      - "/dev/fuse"
     depends_on:
       - api-server
     networks:

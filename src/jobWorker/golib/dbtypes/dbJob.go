@@ -10,7 +10,6 @@ type Job struct {
 	Status        JobStatus `json:"status"`
 	StartTime     int       `json:"starttime"`
 	EndTime       int       `json:"endtime"`
-	JobResultUUID string    `json:"jobresultuuid"`
 }
 
 //this is the status

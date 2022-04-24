@@ -19,6 +19,7 @@ import (
 
 	"github.com/JosephS11723/CooPIR/src/jobWorker/config"
 	"github.com/JosephS11723/CooPIR/src/jobWorker/golib/dbtypes"
+	"github.com/JosephS11723/CooPIR/src/jobWorker/golib/seaweed"
 )
 
 // JobWorker is the struct that wraps the basic JobWorker methods and variables.
@@ -162,6 +163,9 @@ func (j *JobWorker) submitWorkLoop() {
 // Start starts the JobWorker
 func (j *JobWorker) Start() {
 	go func() {
+		// mount the filer
+		go seaweed.MountAllFiles()
+
 		// spawn workers
 		for i := 0; i < j.MaxWorkers; i++ {
 			// add a worker to the waitgroup
@@ -257,6 +261,9 @@ func (j *JobWorker) GetJob() (dbtypes.Job, error) {
 	// create jobtypes as params
 	params := jobTypesToParams(keys)
 
+	// unmarshal the response body
+	var job dbtypes.Job
+
 	// fetch loop
 	for {
 		// sleep for config.GetJobInterval seconds
@@ -286,10 +293,6 @@ func (j *JobWorker) GetJob() (dbtypes.Job, error) {
 			continue
 		}
 
-		// print response information
-		log.Println("Response:", resp.Status)
-		log.Println("Response:", resp.StatusCode)
-
 		// if the response is not ok, log it and continue
 		if resp.StatusCode != http.StatusOK {
 			log.Println("Error getting job:", resp.Status)
@@ -305,11 +308,11 @@ func (j *JobWorker) GetJob() (dbtypes.Job, error) {
 			continue
 		}
 
-		// unmarshal the response body into {uuid:string}
-		var jobUUID map[string]string
+		// print body
+		log.Println("Body:", string(body))
 
-		// unmarshal the response body into {uuid:string}
-		err = json.Unmarshal(body, &jobUUID)
+		// unmarshal the response body
+		err = json.Unmarshal(body, &job)
 
 		// if there is an error, log it and continue
 		if err != nil {
@@ -317,58 +320,8 @@ func (j *JobWorker) GetJob() (dbtypes.Job, error) {
 			continue
 		}
 
-		// create params
-		// turn jobuuid into a param
-		param := uuidToParams(jobUUID["uuid"])
-
-		// create a job variable for later
-		job := dbtypes.Job{}
-
-		for {
-			// sleep for 2 seconds
-			time.Sleep(time.Duration(2) * time.Second)
-
-			// create request
-			req, err = http.NewRequest("GET", "http://"+config.ApiName+":"+config.ApiPort+getJobStatusPath+"?"+param, nil)
-
-			// if there is an error, log it and continue
-			if err != nil {
-				log.Println("Error creating get job request:", err)
-				continue
-			}
-
-			// send request
-			resp, err = client.Do(req)
-
-			// if there is an error, log it and continue
-			if err != nil {
-				log.Println("Error getting job:", err)
-				continue
-			}
-
-			// read the response body
-			body, err := ioutil.ReadAll(resp.Body)
-
-			// print the body
-			log.Println(string(body))
-
-			// if there is an error, log it and continue
-			if err != nil {
-				log.Println("Error reading job response body:", err)
-				continue
-			}
-
-			// unmarshal resp body into job
-			err = json.Unmarshal(body, &job)
-
-			// if there is an error, log it and continue
-			if err != nil {
-				log.Println("Error decoding job:", err)
-				continue
-			}
-
-			break
-		}
+		// print job
+		log.Printf("Job: %+v\n", job)
 
 		// return the job
 		return job, nil
@@ -393,6 +346,12 @@ func (j *JobWorker) workerRoutine() {
 			// if the job is not in the list of jobs this worker can perform, log it and continue
 			if _, ok := j.jobList[job.JobType]; !ok {
 				log.Println("[ERROR workerRoutine]: Job type not supported:", job.JobType)
+
+				// reduce curjobs
+				j.curJobsLock.Lock()
+				j.curJobs--
+				j.curJobsLock.Unlock()
+
 				continue
 			} else {
 				// perform the job

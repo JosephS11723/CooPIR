@@ -85,16 +85,29 @@ func CreateJob(c *gin.Context) {
 	single, multi, err := coopirutil.ParseParams(query_params, c.Request.URL.Query())
 
 	if err != nil {
-
+		log.Println(err)
 		c.AbortWithStatusJSON(
 			http.StatusBadRequest,
 			gin.H{
-				"error":  err.Error(),
-				"Andrew": "of the Merrow sort",
+				"error": "invalid query parameters",
 			},
 		)
-
+		return
 	}
+
+	// if file exists in single, add it to multi
+	if single["files"] != "" {
+		multi["files"] = []string{single["files"]}
+	}
+
+	// if arguments is in single, add it to multi
+	if single["arguments"] != "" {
+		multi["arguments"] = []string{single["arguments"]}
+	}
+
+	// TODO: verify caseuuid is valid
+
+	// TODO: verify user has permission to create a job for this case
 
 	new_job_request := dbtypes.NewJob{
 		CaseUUID:  single["caseuuid"],
@@ -108,7 +121,7 @@ func CreateJob(c *gin.Context) {
 	uuid, err := dbInterface.MakeJob(new_job_request)
 
 	if err != nil {
-		c.AbortWithStatusJSON(400, gin.H{"error": "Failed to add job to database"})
+		c.AbortWithStatusJSON(500, gin.H{"error": "Failed to add job to database"})
 	}
 
 	// return job id
@@ -129,22 +142,28 @@ func GetWork(c *gin.Context) {
 	// get list of incomplete jobs from database for each job type
 	incompleteJobs, err := dbInterface.FindAvailableJobs(jobTypes)
 
+	// return error to worker if no jobs found
 	if err != nil || len(incompleteJobs) == 0 {
 		// send 400
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to get incomplete jobs"})
+		c.AbortWithStatusJSON(204, gin.H{"error": "Failed to get incomplete jobs"})
 		return
 	}
 
-	// if not jobs found, return not job to user
-	if len(incompleteJobs) == 0 {
-		// send 204
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"uuid": "none"})
+	// set job status to "in progress"
+	err = dbInterface.ModifyJobStatus(incompleteJobs[0].JobUUID, dbtypes.InProgress)
+
+	if err != nil {
+		log.Println(err)
+		c.AbortWithStatusJSON(500, gin.H{"error": "Failed to update job status"})
 		return
+	} else {
+		// send job to worker
+		c.JSON(200, incompleteJobs[0])
 	}
 
 	// iterate through job types and find a job that matches one of the given job types
 	//I literally hate this nested for loop nonsense, but this is how golang works
-	for jobListType, jobList := range incompleteJobs {
+	/*for jobListType, jobList := range incompleteJobs {
 
 		//check to see if there is a job type that the worker can do
 		for _, jobType := range jobTypes {
@@ -169,7 +188,7 @@ func GetWork(c *gin.Context) {
 
 			}
 		}
-	}
+	}*/
 }
 
 //this is just for receiving work from workers

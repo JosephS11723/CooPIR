@@ -489,18 +489,15 @@ func FindJobByFilter(jobFilter interface{}) (dbtypes.Job, error) {
 
 }
 
-//finds jobs that are available inside of the job queue
-func FindAvailableJobs(jobTypes []string) (map[string][]dbtypes.Job, error) {
-
+// finds jobs that are available inside of the job queue
+func FindAvailableJobs(jobTypes []string) ([]dbtypes.Job, error) {
 	var decodedJobResult dbtypes.Job
-	var jobResults map[string][]dbtypes.Job = make(map[string][]dbtypes.Job)
+	//var jobResults map[string][]dbtypes.Job = make(map[string][]dbtypes.Job)
+
+	var jobResults []dbtypes.Job = make([]dbtypes.Job, 0)
 
 	//for each type of job
 	for _, jobType := range jobTypes {
-
-		//create an empty slice (the 5 is abitrary)
-		jobResults[jobType] = make([]dbtypes.Job, 5)
-
 		//get the results
 		results, err := FindDocsByFilter("Jobs", "JobQueue", bson.M{"jobtype": jobType})
 
@@ -525,7 +522,7 @@ func FindAvailableJobs(jobTypes []string) (map[string][]dbtypes.Job, error) {
 				log.Panicln("INTERNAL SERVER ERROR: UNMARSHALLING JOB BSON FAILED")
 			}
 
-			jobResults[jobType] = append(jobResults[jobType], decodedJobResult)
+			jobResults = append(jobResults, decodedJobResult)
 
 		}
 	}

@@ -1,8 +1,10 @@
 package seaweed
 
 import (
+	"log"
 	"os/exec"
 	"strings"
+	"time"
 
 	"github.com/JosephS11723/CooPIR/src/jobWorker/config"
 )
@@ -14,9 +16,9 @@ type SWMount struct {
 }
 
 // terminal command to mount
-var mountCommand string = "weed mount -filer=" + config.FilerAddress + ":" + config.FilerPort + " -dir="
+var mountCommand string = "mount -filer=" + config.FilerAddress + ":" + config.FilerPort + " -dir=\""
 
-var unmountCommand string = "unmount -f "
+var unmountCommand string = "-f "
 
 // CreateSWMount creates a seaweed mount given a file path
 func CreateSWMount(localPath string, remotepath string) SWMount {
@@ -29,10 +31,12 @@ func CreateSWMount(localPath string, remotepath string) SWMount {
 // Mount initiates the mount
 func (s *SWMount) Mount() error {
 	// make mount string
-	mountString := mountCommand + s.LocalPath + " -filer.path=" + s.Remotepath
+	mountString := mountCommand + s.LocalPath + "\" -filer.path=\"" + s.Remotepath + "\""
+
+	log.Println("Mounting: ", mountString)
 
 	// mount
-	return runCMD("sudo", strings.Split(mountString, " ")...)
+	return runCMD("./weed", strings.Split(mountString, " ")...)
 }
 
 // Unmount unmounts the mount
@@ -41,11 +45,24 @@ func (s *SWMount) Unmount() error {
 	unmountString := unmountCommand + s.LocalPath
 
 	// unmount
-	return runCMD("sudo", strings.Split(unmountString, " ")...)
+	return runCMD("unmount", strings.Split(unmountString, " ")...)
 }
 
 // runCMD runs a command in the terminal
 func runCMD(cmd string, args ...string) error {
 	execCmd := exec.Command(cmd, args...)
 	return execCmd.Run()
+}
+
+// this creates a quick and dirty mount for all the files
+func MountAllFiles() {
+	for {
+		err := runCMD("./weed", "mount", "-filer=filer:8888", "-filer.path=/files")
+		if err != nil {
+			log.Println("Error mounting: ", err)
+		}
+
+		// it must have disconnected, reconnect after 5 seconds
+		time.Sleep(time.Duration(5) * time.Second)
+	}
 }

@@ -18,3 +18,6 @@ var GetJobInterval int = 5
 
 // SubmitResultInterval is the interval between submitting results
 var SubmitResultInterval int = 5
+
+// WorkDir is the directory where the files are stored
+var WorkDir string = "/usr/src/app"
