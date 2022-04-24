@@ -164,7 +164,7 @@ func GetWork(c *gin.Context) {
 				}
 
 				// return job to user and return
-				c.AbortWithStatusJSON(200, gin.H{"uuid": job_to_send.JobUUID})
+				c.JSON(200, gin.H{"uuid": job_to_send.JobUUID})
 				return
 
 			}
