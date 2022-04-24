@@ -335,5 +335,7 @@ func SubmitWork(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"jobuuid": jobUUID, "fileuuid": fileUUID})
 }
 
+/*
 // GetResults sends the results of a job as a multipart to the client
 func GetResults(c *gin.Context) {}
+*/

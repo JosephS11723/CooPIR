@@ -81,18 +81,16 @@ func InitMainRouter() *gin.Engine {
 	v2.GET("/status", iojobs.GetStatus)
 
 	// submit a job
-	v2.POST("new", iojobs.CreateJob)
+	v2.POST("/new", iojobs.CreateJob)
 
-	/*
-		// get work
-		v2.GET("/getwork", jobs.GetWork)
+	// get work
+	v2.GET("/getwork", iojobs.GetWork)
 
-		// get file for work
-		v2.GET("/:jobuuid/:fileuuid", jobs.GetWorkFile)
+	// get file for work
+	//v2.GET("/:jobuuid/:fileuuid", iojobs.GetWorkFile)
 
-		// submit work
-		v2.POST("/:jobuuid/result", jobs.SubmitWork)
-	*/
+	// submit work
+	v2.POST("/:jobuuid/result", iojobs.SubmitWork)
 
 	// group for unauthenticated actions
 	v3 := r.Group("/api/v1/auth")
