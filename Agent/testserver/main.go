@@ -68,7 +68,7 @@ func AgentHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Client Info: %+v", clientInfo)
 
 	// create a channel for this client in the map
-	ChanMap[clientInfo.UUID] = make(chan Work, 10)
+	ChanMap[clientInfo.UUID] = make(chan Work, 100)
 
 	// defer closing the channel
 	defer delete(ChanMap, clientInfo.UUID)
@@ -76,69 +76,128 @@ func AgentHandler(w http.ResponseWriter, r *http.Request) {
 	// THIS IS WHERE THE CONNECTION WOULD LOITER UNTIL WE HAVE WORK TO DO
 	// TEST CODE: add a work item to the channel
 	ChanMap[clientInfo.UUID] <- Work{Task: "GetLogs"}
+	ChanMap[clientInfo.UUID] <- Work{Task: "GetLogs"}
 
-	// infinite loop
+	// channel for closing
+	closeChan := make(chan bool, 1)
+
+	// automatically handle ping pong
+	go func() {
+		for {
+			// get file from client
+			// get reader
+			mt, reader, err := c.NextReader()
+
+			if err != nil {
+				log.Println("next reader:", err)
+				log.Println(clientInfo.UUID, "Client disconnected")
+				return
+			}
+
+			// switch on message type
+			switch mt {
+			case websocket.TextMessage:
+				log.Println(clientInfo.UUID, "TextMessage")
+				// read file and save (call function)
+				readAndSaveFile(clientInfo.UUID, reader)
+
+				log.Println("File written to disk")
+
+				// send response to client
+				err = c.WriteMessage(websocket.TextMessage, []byte("200"))
+
+				if err != nil {
+					log.Println(clientInfo.UUID, "send response write:", err)
+					return
+				}
+
+				log.Println(clientInfo.UUID, "Response sent")
+			case websocket.BinaryMessage:
+				log.Println(clientInfo.UUID, "BinaryMessage")
+				// read file and save (call function)
+				readAndSaveFile(clientInfo.UUID, reader)
+
+				log.Println("File written to disk")
+
+				// send response to client
+				err = c.WriteMessage(websocket.TextMessage, []byte("200"))
+
+				if err != nil {
+					log.Println(clientInfo.UUID, "send response write:", err)
+					return
+				}
+
+				log.Println(clientInfo.UUID, "Response sent")
+			case websocket.CloseMessage:
+				log.Println(clientInfo.UUID, "CloseMessage")
+				closeChan <- true
+				return
+			case websocket.PingMessage:
+				log.Println(clientInfo.UUID, "PingMessage")
+				err = c.WriteMessage(websocket.PongMessage, []byte("pong"))
+
+				if err != nil {
+					log.Println(clientInfo.UUID, "send pong write:", err)
+					return
+				}
+			case websocket.PongMessage:
+				log.Println(clientInfo.UUID, "PongMessage")
+			}
+
+		}
+	}()
+
+	// infinite get work and send it loop
 	for {
-		// wait for incoming work
-		work := <-ChanMap[clientInfo.UUID]
+		// wait for incoming work or get close from close channel (switch)
+		select {
+		case work := <-ChanMap[clientInfo.UUID]:
+			log.Printf("Work: %+v", work)
+			// marshal work
+			workJSON, err := json.Marshal(work)
 
-		// marshal work
-		workJSON, err := json.Marshal(work)
+			if err != nil {
+				log.Println("work marshal:", err)
+				return
+			}
 
-		if err != nil {
-			log.Println("work marshal:", err)
+			// send work to client
+			err = c.WriteMessage(websocket.TextMessage, workJSON)
+
+			if err != nil {
+				log.Println("send work write:", err)
+				return
+			}
+
+			log.Printf("sent: %s", workJSON)
+		case <-closeChan:
+			log.Printf("Client %s disconnected", clientInfo.UUID)
 			return
 		}
 
-		// send work to client
-		err = c.WriteMessage(websocket.TextMessage, workJSON)
-
-		if err != nil {
-			log.Println("send work write:", err)
-			return
-		}
-
-		log.Printf("sent: %s", workJSON)
-
-		// get file from client
-		// get reader
-		_, reader, err := c.NextReader()
-
-		if err != nil {
-			log.Println("next reader:", err)
-			return
-		}
-
-		// TODO: this is where we upload the reader to seaweed and get data. skip this step
-		// TEST CODE: write to a local file
-		file, err := os.Create("test.txt")
-
-		if err != nil {
-			log.Println("create file:", err)
-			return
-		}
-
-		defer file.Close()
-
-		_, err = io.Copy(file, reader)
-
-		if err != nil {
-			log.Println("copy:", err)
-			return
-		}
-
-		log.Println("File written to disk")
-
-		// send response to client
-		err = c.WriteMessage(websocket.TextMessage, []byte("200"))
-
-		if err != nil {
-			log.Println("send response write:", err)
-			return
-		}
-
-		log.Println("Response sent")
 	}
+}
+
+func readAndSaveFile(fileName string, reader io.Reader) {
+	// TODO: this is where we upload the reader to seaweed and get data. skip this step
+	// TEST CODE: write to a local file
+	file, err := os.Create(fileName)
+
+	if err != nil {
+		log.Println("create file:", err)
+		return
+	}
+
+	defer file.Close()
+
+	_, err = io.Copy(file, reader)
+
+	if err != nil {
+		log.Println("copy:", err)
+		return
+	}
+
+	log.Println("File written to disk")
 }
 
 func main() {

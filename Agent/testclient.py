@@ -5,6 +5,9 @@ from websockets import connect
 async def hello(uri):
     print("Connected")
     async with connect(uri) as websocket:
+        # set ping timeout to 5 seconds
+        # websocket.ping_interval = 1
+
         # create json object
         json_object = {
             "uuid": "myuuid",
@@ -28,6 +31,8 @@ async def hello(uri):
 
             # send "file data"
             await websocket.send("test file contents")
+
+            print("file sent")
 
             # get return value
             data = await websocket.recv()
