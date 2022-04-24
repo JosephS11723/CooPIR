@@ -90,7 +90,8 @@ export class DashboardComponent implements OnInit {
   goToCase(uuid: string): void 
   {
     console.log("Going to: ", uuid);
-    this.cookieService.set("currentUUID", GlobalConstants.currentCase);
+    //this.cookieService.set("currentUUID", GlobalConstants.currentCase);
+    this.cookieService.set("currentUUID", uuid);
     this.router.navigateByUrl('/case', { replaceUrl: true});
     GlobalConstants.currentCase = uuid;
 

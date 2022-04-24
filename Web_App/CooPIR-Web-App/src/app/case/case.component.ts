@@ -5,6 +5,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { saveAs } from 'file-saver';
 import * as FileSaver from 'file-saver';
 import { Router } from '@angular/router';
+import * as Vis from 'vis';
 //import { writeFile } from 'fs';
 
 @Component({
@@ -16,21 +17,13 @@ export class CaseComponent implements OnInit {
   file:any;
   fileName = '';
   doc = ""
+
+  //nodes:any;
   menuItems = [
     {
       label: 'Logout',
       icon: 'exit_to_app',
       route: '/login'
-    },    
-    {
-      label: 'Home',
-      icon: 'home',
-      route: '/home'
-    },
-    {
-      label: 'Upload',
-      icon: 'note_add',
-      route: '/home'
     },
     {
       label: 'Dashboard',
@@ -52,10 +45,11 @@ export class CaseComponent implements OnInit {
 
   getFiles(): void
   {
-    //console.log("Getting files");
+    var nodes = [{id: '', value: 0, label: ''}];
+    var edges = [{}];
+    
     const params = new HttpParams()
     .append('uuid', this.cookieService.get("currentUUID"));
-    //.append('uuid', GlobalConstants.currentCase);
 
     console.log("Getting files for: ", GlobalConstants.currentCase);
     //get all the files in the selected case
@@ -64,6 +58,7 @@ export class CaseComponent implements OnInit {
       console.log("Logging response");
       console.log(response.body);
       let retrievedFiles: any
+      //add each file to the list that is displayed in a table
         if(response.body != null)
         {
           retrievedFiles = response.body;
@@ -80,10 +75,35 @@ export class CaseComponent implements OnInit {
             .subscribe( response => {
                 console.log("Here is the file info: ", response.body);
                 fileInfo = response.body;
-                //console.log("This is the selected file's name: ", fileInfo.file.filename.split("/").pop());
-                //console.log("Here is the upload date: ", fileInfo.file.uploadDate);
 
-                //push file and its info to be displayed in the table
+                //push file into nodes to be displayed by the map
+                nodes.push({ id: fileInfo.file.filename.split("/").pop(), value: 1, label: fileInfo.file.filename.split("/").pop()});
+                console.log("Nodes: ", nodes);
+
+                //display the map
+                var container = document.getElementById("mynetwork");
+                var data = {
+                  nodes: nodes,
+                  edges: edges,
+                };
+                var options = {
+                  nodes: {
+                    shape: "dot",
+                    scaling: {
+                      customScalingFunction: function(min:any, max:any, total:any, value:any) {
+                        return value / total;
+                      },
+                      min: 0,
+                      max: 150,
+                    },
+                  },
+                };
+                if(container != null)
+                {
+                  var network = new Vis.Network(container, data, options);
+                }
+
+                //push file and its info to be displayed by the table
                 this.fileList.push({
                   name: fileInfo.file.filename.split("/").pop(),
                   created: fileInfo.file.uploadDate,
@@ -93,6 +113,7 @@ export class CaseComponent implements OnInit {
             });
           
           }
+         
         }
     });
 
@@ -194,12 +215,6 @@ export class CaseComponent implements OnInit {
     setTimeout(this.emptyFunc, 1000);
     this.getFiles();
     
-  }
-
-  goToTestMap(): void 
-  {
-    console.log("Going to test map");
-    this.router.navigateByUrl('/testMap', { replaceUrl: true});
   }
   
   submitFile(event:any)
