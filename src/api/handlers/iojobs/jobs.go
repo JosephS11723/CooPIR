@@ -159,7 +159,7 @@ func GetWork(c *gin.Context) {
 
 				//if err, then err
 				if err != nil {
-					c.AbortWithStatusJSON(400, gin.H{"error": "Failed to mark job as in progress"})
+					c.AbortWithStatusJSON(500, gin.H{"error": "Failed to mark job as in progress"})
 					return
 				}
 
