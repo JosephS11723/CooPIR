@@ -125,7 +125,7 @@ export class CaseComponent implements OnInit {
         //URL.revokeObjectURL(link.href);
       });
 
-      var downloadFile = this.http.get("http://localhost:8080/api/v1/file/" + uuid  + "/" + this.cookieService.get("currentUUID"), {observe: 'response', responseType: 'blob'});
+      var downloadFile = this.http.get("http://localhost:8080/api/v1/file/"   + this.cookieService.get("currentUUID") + "/"+ uuid, {observe: 'response', responseType: 'blob'});
       console.log("DownloadFile: ", downloadFile);
       //var blurg = new BlobPart;
       downloadFile.subscribe(subscriber =>
@@ -134,9 +134,10 @@ export class CaseComponent implements OnInit {
           if(subscriber.body != null)
           {
             //console.log("Subscriber body: ", subscriber.body);
+            //console.log("Subscriber header: ", subscriber.headers)
             const blob = new Blob([subscriber.body], {type: 'application/octetstream'});
             console.log("Blob test: ", blob);
-            //FileSaver.saveAs(blob, 'newDownloadTest.txt');
+            FileSaver.saveAs(blob, 'newDownloadTest.txt');
           }
           else
           {
