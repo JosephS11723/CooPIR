@@ -8,9 +8,9 @@ import (
 	"log"
 	"net/http"
 
+	httputil "github.com/JosephS11723/CooPIR/src/api/lib/coopirutil"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
-	"github.com/JosephS11723/CooPIR/src/api/lib/httputil"
 	"github.com/JosephS11723/CooPIR/src/api/lib/logtypes"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
