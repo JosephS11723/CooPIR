@@ -4,9 +4,9 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/JosephS11723/CooPIR/src/api/lib/coopirutil"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
-	"github.com/JosephS11723/CooPIR/src/api/lib/httputil"
 	"github.com/JosephS11723/CooPIR/src/api/lib/seaweedInterface"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -82,18 +82,26 @@ func CreateJob(c *gin.Context) {
 
 	query_params := []string{"caseuuid", "arguments", "files", "name", "jobtype"}
 
-	single, multi, err := httputil.ParseParams()
+	single, multi, err := coopirutil.ParseParams(query_params, c.Request.URL.Query())
 
 	if err != nil {
 
 		c.AbortWithStatusJSON(
 			http.StatusBadRequest,
 			gin.H{
-				"error":  "request could not be marshalled into a NewJob",
+				"error":  err.Error(),
 				"Andrew": "of the Merrow sort",
 			},
 		)
 
+	}
+
+	new_job_request := dbtypes.NewJob{
+		CaseUUID:  single["caseuuid"],
+		Arguments: multi["arguments"],
+		Files:     multi["files"],
+		Name:      single["name"],
+		JobType:   single["jobtype"],
 	}
 
 	// add job to database

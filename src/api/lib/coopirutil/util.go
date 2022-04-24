@@ -1,4 +1,4 @@
-package httputil
+package coopirutil
 
 import (
 	"fmt"
