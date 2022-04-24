@@ -6,8 +6,10 @@ import (
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
+	"github.com/JosephS11723/CooPIR/src/api/lib/httputil"
 	"github.com/JosephS11723/CooPIR/src/api/lib/seaweedInterface"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // handles incoming job requests
@@ -45,22 +47,21 @@ func GetStatus(c *gin.Context) {
 func GetJobInfo(c *gin.Context) {
 
 	var job dbtypes.Job
-	var json_request map[string]interface{}
 	var err error
 
-	err = c.BindJSON(&json_request)
+	jobUUID := c.Query("jobuuid")
 
-	if err != nil {
+	if jobUUID == "" {
 		c.AbortWithStatusJSON(
 			http.StatusBadRequest,
 			gin.H{
-				"error": "could not serialize request info",
+				"error": "no jobuuid in query",
 			},
 		)
 	}
 
 	// get job from db
-	job, err = dbInterface.FindJobByFilter(json_request)
+	job, err = dbInterface.FindJobByFilter(bson.M{"jobuuid": jobUUID})
 
 	if err != nil {
 		c.JSON(400, gin.H{"error": err})
@@ -73,9 +74,15 @@ func GetJobInfo(c *gin.Context) {
 // CreateJob creates a new job from parameters given in the request
 func CreateJob(c *gin.Context) {
 
-	var new_job_request dbtypes.NewJob
+	/*
+		var new_job_request dbtypes.NewJob
 
-	err := c.ShouldBind(&new_job_request)
+		err := c.ShouldBind(&new_job_request)
+	*/
+
+	query_params := []string{"caseuuid", "arguments", "files", "name", "jobtype"}
+
+	single, multi, err := httputil.ParseParams()
 
 	if err != nil {
 
