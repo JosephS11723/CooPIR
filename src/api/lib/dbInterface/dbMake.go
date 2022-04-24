@@ -407,7 +407,7 @@ func MakeWorker(new_worker dbtypes.NewWorker) (string, error) {
 		Name:       new_worker.Name,
 		JobType:    new_worker.JobType,
 		Status:     dbtypes.Ready,
-		JoinTime:   time.Now().UnixMilli(),
+		JoinTime:   int(time.Now().UnixMilli()),
 	}
 
 	_, err = DbSingleInsert("Jobs", "Workers", worker_to_insert)
