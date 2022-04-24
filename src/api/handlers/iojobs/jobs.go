@@ -136,9 +136,9 @@ func GetWork(c *gin.Context) {
 	}
 
 	// if not jobs found, return not job to user
-	if len(incompleteJobs) == 0 {
+	if len(incompleteJobs) <= 1 {
 		// send 204
-		c.AbortWithStatusJSON(http.StatusNoContent, gin.H{"uuid": "none"})
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"uuid": "none"})
 		return
 	}
 
