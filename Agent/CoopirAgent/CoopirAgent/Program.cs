@@ -14,6 +14,16 @@ using System.Xml.Linq;
 
 using System.Linq;
 
+//using Microsoft.AspNetCore.Builder;
+
+//using System.Net.WebSockets;
+
+//using System.Threading;
+
+//using Newtonsoft.Json;
+
+using WebSocketSharp;
+
 namespace CoopirAgent
 {
     class Program
@@ -26,13 +36,60 @@ namespace CoopirAgent
 
             //Console.WriteLine(s);
 
-            Zipper();
+
+            //var builder = WebApplication.CreateBuilder(args);
+            //var app = builder.Build();
+
+            //app.Run(async context =>
+            //{
+            //    await context.Response.WriteAsync("Hello world!");
+            //});
+
+            //app.Run();
+
+            //var webSocketOptions = new WebSocketOptions
+            //{
+            //    KeepAliveInterval = TimeSpan.FromMinutes(2)
+            //};
+
+            //app.UseWebSockets(webSocketOptions);
+
+
+            // Create an scoped instance of a websocket client
+            using (WebSocket ws = new WebSocket("ws://localhost:4201"))
+            {
+                ws.OnMessage += Ws_OnMessage;
+
+                ws.Connect();
+                ws.Send("Hello server!");
+
+                
+
+                Console.ReadKey();
+
+                ws.Close();
+            }
+
+            //Zipper();
 
         }
 
+        private static void Ws_OnMessage(object sender, MessageEventArgs e)
+        {
+            Console.WriteLine("Recieved from the server: " + e.Data.ToString());
+            Zipper();
+            byte[] zipfile;
+            if (OperatingSystem.IsWindows())
+                zipfile = File.ReadAllBytes(@".\zip\*.zip");
+            else
+                zipfile = File.ReadAllBytes("@./zip/*.zip");
+            WebSocket ws = (WebSocket)sender;
+            ws.SendAsync(zipfile);
+        }
 
         static void Zipper()
         {
+
             if (OperatingSystem.IsWindows() == true)
             {
                 String s = String.Format("{0} detected attempting log extraction...", RuntimeInformation.OSDescription.ToString());

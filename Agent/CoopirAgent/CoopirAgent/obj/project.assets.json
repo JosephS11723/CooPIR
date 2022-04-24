@@ -30,6 +30,15 @@
           }
         }
       },
+      "Newtonsoft.Json/13.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {}
+        }
+      },
       "System.Diagnostics.EventLog/6.0.0": {
         "type": "package",
         "dependencies": {
@@ -92,6 +101,15 @@
             "assetType": "runtime",
             "rid": "win"
           }
+        }
+      },
+      "websocketsharp.core/1.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/websocket-sharp-core.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/websocket-sharp-core.dll": {}
         }
       }
     }
@@ -157,6 +175,33 @@
         "runtimes/win/lib/netstandard2.0/Microsoft.Win32.Registry.xml",
         "useSharedDesignerContext.txt",
         "version.txt"
+      ]
+    },
+    "Newtonsoft.Json/13.0.1": {
+      "sha512": "ppPFpBcvxdsfUonNcvITKqLl3bqxWbDCZIzDWHzjpdAHRFfZe0Dw9HmA0+za13IdyrgJwpkDTDA9fHaxOrt20A==",
+      "type": "package",
+      "path": "newtonsoft.json/13.0.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.md",
+        "lib/net20/Newtonsoft.Json.dll",
+        "lib/net20/Newtonsoft.Json.xml",
+        "lib/net35/Newtonsoft.Json.dll",
+        "lib/net35/Newtonsoft.Json.xml",
+        "lib/net40/Newtonsoft.Json.dll",
+        "lib/net40/Newtonsoft.Json.xml",
+        "lib/net45/Newtonsoft.Json.dll",
+        "lib/net45/Newtonsoft.Json.xml",
+        "lib/netstandard1.0/Newtonsoft.Json.dll",
+        "lib/netstandard1.0/Newtonsoft.Json.xml",
+        "lib/netstandard1.3/Newtonsoft.Json.dll",
+        "lib/netstandard1.3/Newtonsoft.Json.xml",
+        "lib/netstandard2.0/Newtonsoft.Json.dll",
+        "lib/netstandard2.0/Newtonsoft.Json.xml",
+        "newtonsoft.json.13.0.1.nupkg.sha512",
+        "newtonsoft.json.nuspec",
+        "packageIcon.png"
       ]
     },
     "System.Diagnostics.EventLog/6.0.0": {
@@ -291,12 +336,26 @@
         "useSharedDesignerContext.txt",
         "version.txt"
       ]
+    },
+    "websocketsharp.core/1.0.0": {
+      "sha512": "Pdr9TtOtlaxKI6XtuHdRBrxFsBPCpqxNerAFbpdb2K7foBMYJmUOV+wqhklZilphtFjxT5zN1X6X3iyG/OovAQ==",
+      "type": "package",
+      "path": "websocketsharp.core/1.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard2.0/websocket-sharp-core.dll",
+        "websocketsharp.core.1.0.0.nupkg.sha512",
+        "websocketsharp.core.nuspec"
+      ]
     }
   },
   "projectFileDependencyGroups": {
     "net5.0": [
+      "Newtonsoft.Json >= 13.0.1",
       "System.Diagnostics.EventLog >= 6.0.0",
-      "System.Security.Principal.Windows >= 5.0.0"
+      "System.Security.Principal.Windows >= 5.0.0",
+      "websocketsharp.core >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -343,6 +402,10 @@
       "net5.0": {
         "targetAlias": "net5.0",
         "dependencies": {
+          "Newtonsoft.Json": {
+            "target": "Package",
+            "version": "[13.0.1, )"
+          },
           "System.Diagnostics.EventLog": {
             "target": "Package",
             "version": "[6.0.0, )"
@@ -350,6 +413,10 @@
           "System.Security.Principal.Windows": {
             "target": "Package",
             "version": "[5.0.0, )"
+          },
+          "websocketsharp.core": {
+            "target": "Package",
+            "version": "[1.0.0, )"
           }
         },
         "imports": [
