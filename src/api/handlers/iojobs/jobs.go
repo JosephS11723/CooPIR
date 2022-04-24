@@ -337,9 +337,5 @@ func SubmitWork(c *gin.Context) {
 
 /*
 // GetResults sends the results of a job as a multipart to the client
-<<<<<<< HEAD
 func GetResults(c *gin.Context) {}
 */
-=======
-func GetResults(c *gin.Context) {}*/
->>>>>>> backend-dev
