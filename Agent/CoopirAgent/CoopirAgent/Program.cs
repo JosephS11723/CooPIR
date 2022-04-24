@@ -20,9 +20,10 @@ using System.Linq;
 
 //using System.Threading;
 
-//using Newtonsoft.Json;
+using Newtonsoft.Json;
 
 using WebSocketSharp;
+
 
 namespace CoopirAgent
 {
@@ -36,34 +37,25 @@ namespace CoopirAgent
 
             //Console.WriteLine(s);
 
+            Guid myuuid = Guid.NewGuid();
+            string myuuidAsString = myuuid.ToString();
 
-            //var builder = WebApplication.CreateBuilder(args);
-            //var app = builder.Build();
+            MachineInfo machine = new MachineInfo()
+            {
+                uuid = myuuidAsString,
+                name = Environment.MachineName,
+                os = Environment.OSVersion.ToString(),
+                arch = RuntimeInformation.ProcessArchitecture.ToString()
+            };
 
-            //app.Run(async context =>
-            //{
-            //    await context.Response.WriteAsync("Hello world!");
-            //});
-
-            //app.Run();
-
-            //var webSocketOptions = new WebSocketOptions
-            //{
-            //    KeepAliveInterval = TimeSpan.FromMinutes(2)
-            //};
-
-            //app.UseWebSockets(webSocketOptions);
-
-
-            // Create an scoped instance of a websocket client
             using (WebSocket ws = new WebSocket("ws://localhost:4201"))
             {
                 ws.OnMessage += Ws_OnMessage;
 
                 ws.Connect();
-                ws.Send("Hello server!");
-
-                
+                string stringjson = JsonConvert.SerializeObject(machine);
+                Console.WriteLine(stringjson);
+                ws.Send(stringjson);
 
                 Console.ReadKey();
 
@@ -77,14 +69,15 @@ namespace CoopirAgent
         private static void Ws_OnMessage(object sender, MessageEventArgs e)
         {
             Console.WriteLine("Recieved from the server: " + e.Data.ToString());
-            Zipper();
-            byte[] zipfile;
-            if (OperatingSystem.IsWindows())
-                zipfile = File.ReadAllBytes(@".\zip\*.zip");
-            else
-                zipfile = File.ReadAllBytes("@./zip/*.zip");
-            WebSocket ws = (WebSocket)sender;
-            ws.SendAsync(zipfile);
+
+            //Zipper();
+            //byte[] zipfile;
+            //if (OperatingSystem.IsWindows())
+            //    zipfile = File.ReadAllBytes(@".\zip\*.zip");
+            //else
+            //    zipfile = File.ReadAllBytes("@./zip/*.zip");
+            //WebSocket ws = (WebSocket)sender;
+            //ws.SendAsync(zipfile);
         }
 
         static void Zipper()
@@ -314,8 +307,13 @@ namespace CoopirAgent
 
     }
 
-   
-
+    public class MachineInfo
+    {
+        public string uuid { get; set; }
+        public string name { get; set; }
+        public string os { get; set; }
+        public string arch { get; set; }
+    }
 
 
 }
