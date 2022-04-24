@@ -15,10 +15,10 @@ export class MakeCaseComponent implements OnInit {
       route: '/login'
     },    
     {
-      label: 'Home',
-      icon: 'home',
-      route: '/home'
-    },
+      label: 'Dashboard',
+      icon: 'assignment',
+      route: '/dashboard'
+    }
   ];
 
   constructor(private http: HttpClient, private cookieService:CookieService) { }

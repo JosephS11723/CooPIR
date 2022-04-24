@@ -4,6 +4,7 @@ import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 import { saveAs } from 'file-saver';
 import * as FileSaver from 'file-saver';
+import { Router } from '@angular/router';
 //import { writeFile } from 'fs';
 
 @Component({
@@ -46,7 +47,7 @@ export class CaseComponent implements OnInit {
       route: ''
     }
   ];
-  constructor(private http: HttpClient, private cookieService:CookieService) { }
+  constructor(private http: HttpClient, private cookieService:CookieService,  private router: Router) { }
 
 
   getFiles(): void
@@ -180,11 +181,25 @@ export class CaseComponent implements OnInit {
       }
     }
   }
+
+  emptyFunc(): void
+  {
+
+  }
+
   ngOnInit(): void 
   {
     console.log("Cookie test: ", this.cookieService.get("currentUUID"));
     console.log("Inside case: ", GlobalConstants.currentCase);
+    setTimeout(this.emptyFunc, 1000);
     this.getFiles();
+    
+  }
+
+  goToTestMap(): void 
+  {
+    console.log("Going to test map");
+    this.router.navigateByUrl('/testMap', { replaceUrl: true});
   }
   
   submitFile(event:any)

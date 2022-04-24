@@ -22,6 +22,7 @@ import { CaseComponent } from './case/case.component';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
 import * as FileSaver from 'file-saver';
 import { MakeCaseComponent } from './make-case/make-case.component';
+import { MapTestComponent } from './map-test/map-test.component';
 
 
 @NgModule({
@@ -31,7 +32,8 @@ import { MakeCaseComponent } from './make-case/make-case.component';
     LoginComponent,
     DashboardComponent,
     CaseComponent,
-    MakeCaseComponent
+    MakeCaseComponent,
+    MapTestComponent
   ],
   imports: [
     BrowserModule,
