@@ -48,14 +48,14 @@ tr:nth-child(even) {
     <tr>
         <th>Case Name</th>
         <th>Supervisor</th>
-        <th>Last Modified</th>
+        <th>Date Created</th>
     </tr>
     <!--Each case is placed in the table-->
     <!--The first item is ignored because it is just a placeholder-->
       <tr *ngFor="let item of caseList; let i=index" [routerLink]="item.route">
-         <td *ngIf="i != 0"><button (click)="goToCase(item.name)" class="btn btn-primary btn-lg mr-2" style="width:100%">{{item.name}}</button></td>
+         <td *ngIf="i != 0"><button (click)="goToCase(item.uuid)" class="btn btn-primary btn-lg mr-2" style="width:100%">{{item.name}}</button></td>
          <td *ngIf="i != 0">{{item.supervisor}}</td>
-         <td *ngIf="i != 0">{{item.last_modified}}</td>
+         <td *ngIf="i != 0">{{item.date_created}}</td>
       </tr>
  </table> 
  </body>

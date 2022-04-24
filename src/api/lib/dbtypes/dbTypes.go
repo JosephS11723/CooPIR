@@ -14,8 +14,8 @@ type Case struct {
 	Name          string   `json:"name"`
 	Description   string   `json:"description" default:""`
 	Date_created  string   `json:"dateCreated"`
-	View_access   string   `json:"viewAccess"`
-	Edit_access   string   `json:"editAccess"`
+	ViewAccess    string   `json:"viewAccess"`
+	EditAccess    string   `json:"editAccess"`
 	Collaborators []string `json:"collabs"`
 }
 
@@ -30,8 +30,8 @@ type File struct {
 	Filename    string   `json:"filename"`
 	Case        string   `json:"case"`
 	Upload_date string   `json:"uploadDate"`
-	View_access string   `json:"viewAccess"`
-	Edit_access string   `json:"editAccess"`
+	ViewAccess  string   `json:"viewAccess"`
+	EditAccess  string   `json:"editAccess"`
 }
 
 type Access struct {

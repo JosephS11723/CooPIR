@@ -77,7 +77,7 @@ export class CaseComponent implements OnInit {
             //get the info for the file
             this.http.get("http://localhost:8080/api/v1/file/info", {params: fileParams, observe: 'response'})
             .subscribe( response => {
-                //console.log("Here is the file info: ", response.body);
+                console.log("Here is the file info: ", response.body);
                 fileInfo = response.body;
                 //console.log("This is the selected file's name: ", fileInfo.file.filename.split("/").pop());
                 //console.log("Here is the upload date: ", fileInfo.file.uploadDate);
@@ -102,7 +102,10 @@ export class CaseComponent implements OnInit {
     this.http.get("http://localhost:8080/api/v1/file/" + uuid  + "/" + this.cookieService.get("currentUUID"), {observe: 'response'})
     .subscribe(response =>
       {
-        
+        if(response.body === null)
+        {
+          console.log("Response body is null");
+        }
         console.log("response from download call: ", response);
         //console.log("New download test");
         let testData:any;
@@ -131,9 +134,13 @@ export class CaseComponent implements OnInit {
           if(subscriber.body != null)
           {
             //console.log("Subscriber body: ", subscriber.body);
-            const blob = new Blob([subscriber.body], {type: 'text/plain'});
-            //console.log("Blob test: ", blob);
+            const blob = new Blob([subscriber.body], {type: 'application/octetstream'});
+            console.log("Blob test: ", blob);
             //FileSaver.saveAs(blob, 'newDownloadTest.txt');
+          }
+          else
+          {
+            console.log("Subscriber body is null");
           }     
         });
       //var blobTest = new Blob(blurg, {type: 'text/plain'});

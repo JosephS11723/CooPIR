@@ -229,8 +229,8 @@ func MakeCase(NewCase dbtypes.Case) (*mongo.InsertOneResult, string, error) {
 			UUID:          id,
 			Name:          name,
 			Date_created:  dateCreated,
-			View_access:   viewAccess,
-			Edit_access:   editAccess,
+			ViewAccess:   viewAccess,
+			EditAccess:   editAccess,
 			Collaborators: collaborators,
 		}
 	*/
@@ -272,8 +272,8 @@ func MakeFile(uuid string, hashes []string, tags []string, caseUUID string, file
 		Filename:    filename,
 		Case:        caseName,
 		Upload_date: uploadDate,
-		View_access: viewAccess,
-		Edit_access: editAccess,
+		ViewAccess:  viewAccess,
+		EditAccess:  editAccess,
 	}
 
 	result, err = DbSingleInsert(dbName, dbCollection, NewFile)

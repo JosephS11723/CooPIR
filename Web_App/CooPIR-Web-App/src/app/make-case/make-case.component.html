@@ -1,0 +1,61 @@
+<mat-toolbar fxLayout="row" color="primary">
+    <span fxFlex>CooPIR Cases</span>
+    <button mat-button *ngFor="let item of menuItems" fxHide.xs [routerLink]="item.route">
+        <mat-icon class="mr">{{item.icon}}</mat-icon>
+        {{item.label}}
+    </button>
+    <button mat-icon-button [matMenuTriggerFor]="dropMenu" fxHide fxShow.xs>
+        <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #dropMenu="matMenu">
+        <ng-container *ngFor="let item of menuItems">
+            <button mat-menu-item [routerLink]="item.route">
+                <mat-icon class="mr">{{item.icon}}</mat-icon>
+                {{item.label}}
+            </button>
+            <mat-divider></mat-divider>
+        </ng-container>
+    </mat-menu>
+    <router-outlet></router-outlet>
+</mat-toolbar>
+
+<h1>Make a New Case</h1>
+
+<div>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <label for="caseName">Case Name:</label>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <input type="text" id="caseName">
+
+    <br><br>
+    &nbsp;&nbsp;
+    <label for="viewAccess">View Access:</label>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <select name="viewAccess" id="viewAccess">
+        <option value="admin">Admin</option>
+        <option value="supervisor">Supervisor</option>
+        <option value="responder">Responder</option>
+        <option value="user">User</option>
+    </select>   
+    
+    <br><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <label for="editAccess">Edit Access:</label>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <select name="editAccess" id="editAccess">
+        <option value="admin">Admin</option>
+        <option value="supervisor">Supervisor</option>
+        <option value="responders">Responder</option>
+        <option value="users">User</option>
+    </select> 
+
+    <br><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <label for="description">Description:</label>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <textarea id="description" rows="10" cols="50"></textarea>
+
+    <br><br>
+    <button (click)="submitCase()" class="btn btn-primary btn-lg mr-2">Test</button>
+</div>

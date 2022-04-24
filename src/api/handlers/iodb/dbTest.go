@@ -53,8 +53,8 @@ package iodb
 
 // 		Name:          "testcase",
 // 		Date_created:  "1/1/1976",
-// 		View_access:   "responder",
-// 		Edit_access:   "supervisor",
+// 		ViewAccess:   "responder",
+// 		EditAccess:   "supervisor",
 // 		Collaborators: []string{"testuser, anotheruser, Brandon"},
 // 	}
 

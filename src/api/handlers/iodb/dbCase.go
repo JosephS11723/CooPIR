@@ -29,7 +29,7 @@ func DbGetCaseInfo(c *gin.Context) {
 
 	var caseUUID = json_request["uuid"].(string)*/
 
-	caseUUID := c.Query("jobuuid")
+	caseUUID := c.Query("uuid")
 
 	if caseUUID == "" {
 		c.AbortWithStatusJSON(
