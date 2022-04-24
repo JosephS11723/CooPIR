@@ -390,3 +390,34 @@ func MakeJob(new_job dbtypes.NewJob) (string, error) {
 	return uuid, nil
 
 }
+
+//creates a new job from a NewJob structure
+func MakeWorker(new_worker dbtypes.NewWorker) (string, error) {
+
+	// create uuid for job
+	uuid, err := MakeUuid()
+
+	if err != nil {
+		return "", err
+	}
+
+	//construct the job
+	worker_to_insert := dbtypes.Worker{
+		WorkerUUID: uuid,
+		Name:       new_worker.Name,
+		JobType:    new_worker.JobType,
+		Status:     dbtypes.Ready,
+		JoinTime:   time.Now().UnixMilli(),
+	}
+
+	_, err = DbSingleInsert("Jobs", "Workers", worker_to_insert)
+
+	if err != nil {
+
+		return "", err
+
+	}
+
+	return uuid, nil
+
+}

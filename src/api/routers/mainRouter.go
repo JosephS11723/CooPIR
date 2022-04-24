@@ -92,6 +92,8 @@ func InitMainRouter() *gin.Engine {
 	// submit work
 	v2.POST("/:jobuuid/result", iojobs.SubmitWork)
 
+	v2.POST("/worker/new", iojobs.CreateWorker)
+
 	// group for unauthenticated actions
 	v3 := r.Group("/api/v1/auth")
 

@@ -43,7 +43,6 @@ func (s WorkerStatus) String() string {
 
 //this is just an intermediate value for serializing requests into
 type NewWorker struct {
-	WorkerUUID string `json:"workeruuid"`
-	Name       string `json:"name"`
-	JobType    string `json:"jobtype"`
+	Name    string `json:"name"`
+	JobType string `json:"jobtype"`
 }
