@@ -6,9 +6,7 @@ WORKDIR /usr/src/app
 COPY . .
 
 # build go code
-ENV GO111MODULE=on
 RUN go mod vendor
-#RUN go mod init github.com/JosephS11723/CooPIR/src/jobWorker
 RUN go build -o jobWorker
 
 # get weed binary
@@ -16,6 +14,9 @@ RUN wget https://github.com/chrislusf/seaweedfs/releases/download/2.99/linux_amd
 RUN tar -xzf linux_amd64.tar.gz
 RUN mv weed /usr/bin/weed
 RUN rm linux_amd64.tar.gz
+
+# we need to user root to mount with sudo
+USER root
 
 # copy bash script to run
 
@@ -27,4 +28,4 @@ RUN rm linux_amd64.tar.gz
 
 #CMD ["/bin/bash", "-c", "./src/run.sh"]
 
-CMD ["./run.sh"]
+CMD ["./jobWorker"]

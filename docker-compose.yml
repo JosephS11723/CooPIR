@@ -18,9 +18,10 @@ services:
   # job worker
   job-worker:
     container_name: job-worker
-    build: ./Job_Worker/CooPIR-Job-Worker
-    ports:
-      - "8080:8080"
+    build: ./src/jobWorker
+    mem_limit: 1G
+    depends_on:
+      - api-server
     networks:
       hostnetwork:
         ipv4_address: 20.20.20.57
@@ -68,8 +69,8 @@ services:
         ipv4_address: 10.10.10.3
 
   # go api
-  api_server:
-    container_name: api_server
+  api-server:
+    container_name: api-server
     restart: always
     build: ./src/api
     ports:

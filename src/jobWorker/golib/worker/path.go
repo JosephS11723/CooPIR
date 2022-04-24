@@ -13,3 +13,6 @@ var submitResultPath string = basePath + "/{jobuuid}/result"
 
 // path for obtaining files related to a job
 var getJobPath string = basePath + "/{jobuuid}/{fileuuid}"
+
+// path for obtaining the status of a job
+var getJobStatusPath string = basePath + "/status"

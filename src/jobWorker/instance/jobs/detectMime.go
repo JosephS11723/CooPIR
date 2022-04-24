@@ -22,7 +22,7 @@ func DetermineMimeType(job *dbtypes.Job, resultChan chan worker.JobResult) {
 
 	// get relevant information from job
 	caseUUID := job.CaseUUID
-	fileUUID := job.Arguments[0]
+	fileUUID := job.Files[0]
 
 	// get the file from seaweed by mounting the file
 	// create mount

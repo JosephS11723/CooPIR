@@ -1,1 +1,1 @@
-/bin/bash -c "./weed mount; ./jobWorker"
+/bin/bash -c "./jobWorker"

@@ -36,7 +36,7 @@ func GetStatus(c *gin.Context) {
 	status, err = dbInterface.FindJobStatusByUUID(jobUUID)
 
 	if err != nil {
-		c.JSON(400, gin.H{"error": err})
+		c.AbortWithStatusJSON(400, gin.H{"error": err})
 		return
 	}
 
@@ -122,7 +122,7 @@ func GetWork(c *gin.Context) {
 
 	// empty field check
 	if len(jobTypes) == 0 {
-		c.JSON(400, gin.H{"error": "jobtype is empty"})
+		c.AbortWithStatusJSON(400, gin.H{"error": "jobtype is empty"})
 		return
 	}
 
@@ -130,13 +130,15 @@ func GetWork(c *gin.Context) {
 	incompleteJobs, err := dbInterface.FindAvailableJobs(jobTypes)
 
 	if err != nil {
-		c.JSON(400, gin.H{"error": "Failed to get incomplete jobs"})
+		// send 400
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to get incomplete jobs"})
 		return
 	}
 
 	// if not jobs found, return not job to user
 	if len(incompleteJobs) == 0 {
-		c.JSON(404, gin.H{"uuid": "none"})
+		// send 204
+		c.AbortWithStatusJSON(http.StatusNoContent, gin.H{"uuid": "none"})
 		return
 	}
 
@@ -157,12 +159,12 @@ func GetWork(c *gin.Context) {
 
 				//if err, then err
 				if err != nil {
-					c.JSON(400, gin.H{"error": "Failed to mark job as in progress"})
+					c.AbortWithStatusJSON(400, gin.H{"error": "Failed to mark job as in progress"})
 					return
 				}
 
 				// return job to user and return
-				c.JSON(200, gin.H{"uuid": job_to_send.JobUUID})
+				c.AbortWithStatusJSON(200, gin.H{"uuid": job_to_send.JobUUID})
 				return
 
 			}

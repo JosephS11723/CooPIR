@@ -7,9 +7,17 @@ package worker
 
 // temporary local import
 import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io/ioutil"
 	"log"
+	"net/http"
+	"strings"
 	"sync"
+	"time"
 
+	"github.com/JosephS11723/CooPIR/src/jobWorker/config"
 	"github.com/JosephS11723/CooPIR/src/jobWorker/golib/dbtypes"
 )
 
@@ -67,6 +75,12 @@ type JobResult struct {
 	FileUUID string `json:"fileuuid" default:"new"`
 }
 
+var (
+	// ErrWorkerDone is the error returned when the worker is done
+	ErrWorkerDone = errors.New("worker is done")
+)
+
+// JobFunc is the function type that is called when a job is performed
 type JobFunc func(*dbtypes.Job, chan JobResult)
 
 // NewJobWorker creates a new JobWorker
@@ -82,6 +96,9 @@ func NewJobWorker(maxWorkers int) *JobWorker {
 
 	// create the job list
 	j.jobList = make(map[string]JobFunc)
+
+	// create the done channel
+	j.doneChan = make(chan bool)
 
 	// make the waitgroup
 	j.wg = sync.WaitGroup{}
@@ -167,6 +184,11 @@ func (j *JobWorker) Stop() error {
 	// set the done bool to true for all the workers
 	j.done = true
 
+	// write to the done channel to unblock the workers
+	for i := 0; i < j.MaxWorkers; i++ {
+		j.doneChan <- true
+	}
+
 	// wait for the routines and the waitgroup to finish
 	j.wg.Wait()
 
@@ -175,12 +197,182 @@ func (j *JobWorker) Stop() error {
 
 // SubmitJob submits a job result to the api
 func (j *JobWorker) SubmitJob(result JobResult) error {
+	// create a new http client
+	client := &http.Client{}
+
+	// get params
+	params := jobResultToParams(&result)
+
+	// infinite loop
+	for {
+		// sleep for config.SubmitResultInterval seconds
+		time.Sleep(time.Duration(config.SubmitResultInterval) * time.Second)
+
+		// create the request
+		// TODO: add reader parsing if there is a file to upload (change nil to reader)
+		req, err := http.NewRequest("POST", "http://"+config.ApiName+":"+config.ApiPort+strings.ReplaceAll(submitResultPath, "{jobuuid}", result.JobUUID)+submitResultPath+"?"+params, nil)
+
+		// if there is an error, log it and continue
+		if err != nil {
+			log.Println("Error creating job result request:", err)
+			continue
+		}
+
+		// set the content type
+		req.Header.Set("Content-Type", "application/json")
+
+		// send the request
+		resp, err := client.Do(req)
+
+		// if there is an error, log it and continue
+		if err != nil {
+			log.Println("Error sending job result request:", err)
+			continue
+		}
+
+		// if the response is not 200, log it and continue
+		if resp.StatusCode != 200 {
+			log.Println("Error submitting job result status:", resp.Status)
+			continue
+		}
+
+		// break
+		break
+	}
+
 	return nil
 }
 
 // GetJob gets a job from the api
 func (j *JobWorker) GetJob() (dbtypes.Job, error) {
-	return dbtypes.Job{}, nil
+	// create a client
+	client := &http.Client{}
+
+	// get list of keys from jobList
+	keys := make([]string, 0, len(j.jobList))
+	for k := range j.jobList {
+		keys = append(keys, k)
+	}
+
+	// create jobtypes as params
+	params := jobTypesToParams(keys)
+
+	// fetch loop
+	for {
+		// sleep for config.GetJobInterval seconds
+		time.Sleep(time.Duration(config.GetJobInterval) * time.Second)
+
+		// if done, break loop and return error
+		if j.done {
+			return dbtypes.Job{}, ErrWorkerDone
+		}
+
+		// get job from api
+		// create get request for job
+		req, err := http.NewRequest("GET", "http://"+config.ApiName+":"+config.ApiPort+getWorkPath+"?"+params, nil)
+
+		// if there is an error, log it and continue
+		if err != nil {
+			log.Println("Error creating get job request:", err)
+			continue
+		}
+
+		// make the request
+		resp, err := client.Do(req)
+
+		// if there is an error, log it and continue
+		if err != nil {
+			log.Println("Error getting job:", err)
+			continue
+		}
+
+		// print response information
+		log.Println("Response:", resp.Status)
+		log.Println("Response:", resp.StatusCode)
+
+		// if the response is not ok, log it and continue
+		if resp.StatusCode != http.StatusOK {
+			log.Println("Error getting job:", resp.Status)
+			continue
+		}
+
+		// read the response body
+		body, err := ioutil.ReadAll(resp.Body)
+
+		// if there is an error, log it and continue
+		if err != nil {
+			log.Println("Error reading job response body:", err)
+			continue
+		}
+
+		// unmarshal the response body into {uuid:string}
+		var jobUUID map[string]string
+
+		// unmarshal the response body into {uuid:string}
+		err = json.Unmarshal(body, &jobUUID)
+
+		// if there is an error, log it and continue
+		if err != nil {
+			log.Println("Error unmarshalling job response body:", err)
+			continue
+		}
+
+		// create params
+		// turn jobuuid into a param
+		param := uuidToParams(jobUUID["uuid"])
+
+		// create a job variable for later
+		job := dbtypes.Job{}
+
+		for {
+			// sleep for 2 seconds
+			time.Sleep(time.Duration(2) * time.Second)
+
+			// create request
+			req, err = http.NewRequest("GET", "http://"+config.ApiName+":"+config.ApiPort+getJobStatusPath+"?"+param, nil)
+
+			// if there is an error, log it and continue
+			if err != nil {
+				log.Println("Error creating get job request:", err)
+				continue
+			}
+
+			// send request
+			resp, err = client.Do(req)
+
+			// if there is an error, log it and continue
+			if err != nil {
+				log.Println("Error getting job:", err)
+				continue
+			}
+
+			// read the response body
+			body, err := ioutil.ReadAll(resp.Body)
+
+			// print the body
+			log.Println(string(body))
+
+			// if there is an error, log it and continue
+			if err != nil {
+				log.Println("Error reading job response body:", err)
+				continue
+			}
+
+			// unmarshal resp body into job
+			err = json.Unmarshal(body, &job)
+
+			// if there is an error, log it and continue
+			if err != nil {
+				log.Println("Error decoding job:", err)
+				continue
+			}
+
+			break
+		}
+
+		// return the job
+		return job, nil
+	}
 }
 
 // AddJobWithFunction adds a function to the list of possible jobs this worker can perform
@@ -196,14 +388,16 @@ func (j *JobWorker) workerRoutine() {
 		// select between getting a job or exiting
 		select {
 		case job := <-j.JobQueue:
+			// print job struct for debug
+			fmt.Printf("Received Job: %+v\n", job)
 			// if the job is not in the list of jobs this worker can perform, log it and continue
 			if _, ok := j.jobList[job.JobType]; !ok {
 				log.Println("[ERROR workerRoutine]: Job type not supported:", job.JobType)
 				continue
+			} else {
+				// perform the job
+				j.jobList[job.JobType](&job, j.JobResultQueue)
 			}
-
-			// perform the job
-			j.jobList[job.JobType](&job, j.JobResultQueue)
 
 		case <-j.doneChan:
 			// decrement the waitgroup

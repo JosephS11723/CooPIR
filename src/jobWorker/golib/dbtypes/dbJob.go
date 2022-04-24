@@ -2,8 +2,9 @@ package dbtypes
 
 type Job struct {
 	JobUUID       string    `json:"jobuuid"`
-	CaseUUID	  string    `json:"caseuuid"`
+	CaseUUID      string    `json:"caseuuid"`
 	Arguments     []string  `json:"arguments"`
+	Files         []string  `json:"files"`
 	Name          string    `json:"name"`
 	JobType       string    `json:"jobtype"`
 	Status        JobStatus `json:"status"`
@@ -46,7 +47,9 @@ func (s JobStatus) String() string {
 }
 
 type NewJob struct {
+	CaseUUID  string   `json:"caseuuid"`
 	Arguments []string `json:"arguments"`
+	Files     []string `json:"files"`
 	Name      string   `json:"name"`
 	JobType   string   `json:"jobtype"`
 }
