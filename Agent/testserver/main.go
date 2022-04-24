@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -76,10 +77,21 @@ func AgentHandler(w http.ResponseWriter, r *http.Request) {
 	// THIS IS WHERE THE CONNECTION WOULD LOITER UNTIL WE HAVE WORK TO DO
 	// TEST CODE: add a work item to the channel
 	ChanMap[clientInfo.UUID] <- Work{Task: "GetLogs"}
-	ChanMap[clientInfo.UUID] <- Work{Task: "GetLogs"}
+
+	go func() {
+		// sleep 5 seconds
+		time.Sleep(5 * time.Second)
+		ChanMap[clientInfo.UUID] <- Work{Task: "GetLogs2"}
+
+		// sleep 10 seconds
+		time.Sleep(10 * time.Second)
+		ChanMap[clientInfo.UUID] <- Work{Task: "GetLogs3"}
+	}()
 
 	// channel for closing
 	closeChan := make(chan bool, 1)
+
+	var work Work
 
 	// automatically handle ping pong
 	go func() {
@@ -102,6 +114,11 @@ func AgentHandler(w http.ResponseWriter, r *http.Request) {
 				readAndSaveFile(clientInfo.UUID, reader)
 
 				log.Println("File written to disk")
+
+				// print the work struct (DEBUG)
+				log.Printf("Work: %+v", work)
+
+				// THIS IS WHERE THE WORK WOULD BE ADDED TO THE DATABASE
 
 				// send response to client
 				err = c.WriteMessage(websocket.TextMessage, []byte("200"))
@@ -151,7 +168,7 @@ func AgentHandler(w http.ResponseWriter, r *http.Request) {
 	for {
 		// wait for incoming work or get close from close channel (switch)
 		select {
-		case work := <-ChanMap[clientInfo.UUID]:
+		case work = <-ChanMap[clientInfo.UUID]:
 			log.Printf("Work: %+v", work)
 			// marshal work
 			workJSON, err := json.Marshal(work)
