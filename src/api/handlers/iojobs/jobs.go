@@ -68,7 +68,7 @@ func GetJobInfo(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, job)
+	c.JSON(200, gin.H{"job": job})
 }
 
 // CreateJob creates a new job from parameters given in the request
