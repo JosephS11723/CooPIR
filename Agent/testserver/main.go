@@ -32,7 +32,7 @@ type Work struct {
 	// other file data here. this is what is put in the database
 }
 
-func echo(w http.ResponseWriter, r *http.Request) {
+func AgentHandler(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Print("upgrade:", err)
@@ -146,6 +146,6 @@ func main() {
 	ChanMap = make(map[string]chan Work)
 
 	// create simple handler for websocket
-	http.HandleFunc("/agent", echo)
+	http.HandleFunc("/", AgentHandler)
 	log.Fatal(http.ListenAndServe(*addr, nil))
 }
