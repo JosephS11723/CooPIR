@@ -129,14 +129,14 @@ func GetWork(c *gin.Context) {
 	// get list of incomplete jobs from database for each job type
 	incompleteJobs, err := dbInterface.FindAvailableJobs(jobTypes)
 
-	if err != nil {
+	if err != nil || len(incompleteJobs) == 0 {
 		// send 400
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to get incomplete jobs"})
 		return
 	}
 
 	// if not jobs found, return not job to user
-	if len(incompleteJobs) <= 1 {
+	if len(incompleteJobs) == 0 {
 		// send 204
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"uuid": "none"})
 		return
