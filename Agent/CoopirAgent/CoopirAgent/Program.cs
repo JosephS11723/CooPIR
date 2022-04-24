@@ -37,6 +37,16 @@ namespace CoopirAgent
 
             //Console.WriteLine(s);
 
+            if (OperatingSystem.IsWindows())
+            {
+                if (!IsAdministrator())
+                {
+                    ExecuteAsAdmin();
+                    Environment.Exit(0);
+                }
+            }
+
+
             Guid myuuid = Guid.NewGuid();
             string myuuidAsString = myuuid.ToString();
 
@@ -57,6 +67,8 @@ namespace CoopirAgent
                 Console.WriteLine(stringjson);
                 ws.Send(stringjson);
 
+                Console.WriteLine("Ping result: " + ws.Ping().ToString());
+
                 Console.ReadKey();
 
                 ws.Close();
@@ -70,14 +82,36 @@ namespace CoopirAgent
         {
             Console.WriteLine("Recieved from the server: " + e.Data.ToString());
 
-            //Zipper();
-            //byte[] zipfile;
-            //if (OperatingSystem.IsWindows())
-            //    zipfile = File.ReadAllBytes(@".\zip\*.zip");
-            //else
-            //    zipfile = File.ReadAllBytes("@./zip/*.zip");
-            //WebSocket ws = (WebSocket)sender;
-            //ws.SendAsync(zipfile);
+            Zipper();
+            Console.WriteLine("Sending Logs to server...");
+            string zipfile;
+            if (OperatingSystem.IsWindows())
+                zipfile = string.Format(@".\zip\evtLogs_{0}.zip", Environment.MachineName);
+            else
+                zipfile = string.Format(@"./zip/Logs_{0}.zip", Environment.MachineName);
+
+            WebSocket ws = (WebSocket)sender;
+
+            //Console.WriteLine("Ping result: " + ws.Ping().ToString());
+
+            //ws.SendAsync(File.ReadAllBytes(zipfile), new Action<bool>((completed) =>
+            //{
+            //    Console.WriteLine("Something happened?!?!??!?!");
+            //    if (completed)
+            //    {
+            //        Console.WriteLine("Message sent Successfully?");
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine("Message Failed?");
+            //    }
+            //}));
+            //Console.WriteLine("COMPLETE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+
+            byte[] fileBytes = File.ReadAllBytes(zipfile);
+            ws.Send(fileBytes);
+            Console.WriteLine("Files Sent Successfully!");
         }
 
         static void Zipper()
@@ -89,12 +123,6 @@ namespace CoopirAgent
                 Console.WriteLine(s);
                 try
                 {
-                    if (!IsAdministrator())
-                    {
-                        ExecuteAsAdmin();
-                        Environment.Exit(0);
-                    }
-
                     EventLog[] eventLogs;
 
                     eventLogs = EventLog.GetEventLogs(Environment.MachineName);
@@ -132,16 +160,12 @@ namespace CoopirAgent
                     }
 
                     WindowsZip();
-                    Console.WriteLine("Log Extraction Successfully. Press any key to exit...");
-                    Console.ReadLine();
-                    Environment.Exit(0);
+                    Console.WriteLine("Log Extraction Successfully");
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
-                    Console.WriteLine("Log Extraction Failed. Press any key to exit...");
-                    Console.ReadLine();
-                    Environment.Exit(0);
+                    Console.WriteLine("Log Extraction Failed.");
                 }
             }
             else if (OperatingSystem.IsLinux() == true)
