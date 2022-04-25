@@ -94,4 +94,28 @@ func Unzip(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnChan 
 		// Close the file without defer to close before next iteration of loop
 		rc.Close()
 	}
+
+	// send empty update and close
+	/*jobResult := worker.JobResult{
+		ResultType: resultTypes.ModifyFile,
+		JobUUID:    job.JobUUID,
+		CaseUUID:   job.CaseUUID,
+		Tags:       []string{},
+		Name:       "",
+		Relations:  []string{},
+		Done:       true,
+		FileUUID:   fileUUID,
+	}
+
+	// create container
+	container := worker.ResultContainer{
+		JobResult:  jobResult,
+		FileReader: nil,
+	}
+
+	// send to result channel
+	resultChan <- container
+
+	// void output
+	<-returnChan*/
 }

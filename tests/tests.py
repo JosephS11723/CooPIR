@@ -674,6 +674,38 @@ def uploadZipTest():
     except Exception as e:
         error(e)
 
+def uploadZipTest2():
+    '''Attempts to upload a zip file'''
+    global fileUUID
+    try:
+        # normal file upload test with sample file
+            # print function name
+            print(inspect.getframeinfo(inspect.currentframe()).function, end=" ", flush=True)
+
+            # contents of test file
+            file = {"file":open("andrewLogs.zip",'rb')}
+
+            # add params
+            params = {
+                "fileuuid" : "andrewLogs.zip",
+                "caseuuid" : caseuuid,
+            }
+
+            # upload file
+            r = s.post(url = apiBasePath + "/file", files=file, timeout=20, params=params)
+
+            # check if good request
+            if r.status_code != 200:
+                error(str(r.status_code) + " " + r.content.decode())
+            else:
+                success()
+                global fileUUID
+                fileUUID = r.content.decode()
+
+    except Exception as e:
+        error(e)
+
+
 def createZipJobTest():
     '''Attempts to create a zip job'''
     try:
@@ -747,7 +779,9 @@ tests = [
     dbFindUserTest,
     dbGetUserCasesTest,
     createJobTest,
-    uploadZipTest,
+    #uploadZipTest,
+    #createZipJobTest,
+    uploadZipTest2,
     createZipJobTest,
     ]
 def runAllTests():
