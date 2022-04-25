@@ -1,7 +1,8 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-Agent/Linux-x64/**
-Agent/testserver/**
+*.dll
+Agent/CoopirAgent/CoopirAgent/obj/Debug/**
+Agent/CoopirAgent/CoopirAgent/obj/publish/**
+Agent/CoopirAgent/CoopirAgent/obj/Release/**
 Agent/CoopirAgent/CoopirAgent/bin/**
-Agent/CoopirAgent/CoopirAgent/obj/**
