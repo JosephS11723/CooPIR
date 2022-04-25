@@ -45,7 +45,7 @@ func SWDELETE(c *gin.Context) {
 	}
 
 	// run delete function from lib
-	err = swi.DELETEFile(c,filename, caseUUID)
+	err = swi.DELETEFile(filename, caseUUID)
 	if err != nil {
 		log.Panicln("INTERNAL SERVER ERROR: DELETE FAILED")
 	}

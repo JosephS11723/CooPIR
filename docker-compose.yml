@@ -14,6 +14,23 @@ services:
   #       ipv4_address: 20.20.20.5
   #     network1:
   #       ipv4_address: 10.10.10.5
+
+  # job worker
+  job-worker:
+    container_name: job-worker
+    build: ./src/jobWorker
+    mem_limit: 1G
+    cap_add:
+      - SYS_ADMIN
+    devices:
+      - "/dev/fuse"
+    depends_on:
+      - api-server
+    networks:
+      hostnetwork:
+        ipv4_address: 20.20.20.57
+      network1:
+        ipv4_address: 10.10.10.7
          
   # Allows quick access to the mongo database
   # REMOVE BEFORE DEPLOYMENT
@@ -56,8 +73,8 @@ services:
         ipv4_address: 10.10.10.3
 
   # go api
-  api_server:
-    container_name: api_server
+  api-server:
+    container_name: api-server
     restart: always
     build: ./src/api
     ports:

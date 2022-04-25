@@ -120,9 +120,9 @@ func retrieveCasesByViewRole(role string) ([]string, error) {
 
 	// TODO: Might not work
 	for _, doc := range result {
-		log.Println("View access:", doc["viewAccess"])
+		log.Println("View access:", doc["viewaccess"])
 		log.Println("Access level:", Access.ToInt(role))
-		if Access.ToInt(role) >= Access.ToInt(doc["viewAccess"].(string)) {
+		if Access.ToInt(role) >= Access.ToInt(doc["viewaccess"].(string)) {
 			caseList = append(caseList, doc["uuid"].(string))
 		}
 	}
@@ -489,34 +489,42 @@ func FindJobByFilter(jobFilter interface{}) (dbtypes.Job, error) {
 
 }
 
-//finds jobs that are available inside of the job queue
-func FindAvailableJobs(jobType string) ([]dbtypes.Job, error) {
-
+// finds jobs that are available inside of the job queue
+func FindAvailableJobs(jobTypes []string) ([]dbtypes.Job, error) {
 	var decodedJobResult dbtypes.Job
-	var jobResults []dbtypes.Job
+	//var jobResults map[string][]dbtypes.Job = make(map[string][]dbtypes.Job)
 
-	results, err := FindDocsByFilter("Jobs", "JobQueue", bson.M{"jobtype": jobType})
+	var jobResults []dbtypes.Job = make([]dbtypes.Job, 0)
 
-	if err != nil {
-		return nil, err
-	}
+	//for each type of job
+	for _, jobType := range jobTypes {
+		//get the results
+		results, err := FindDocsByFilter("Jobs", "JobQueue", bson.M{"jobtype": jobType, "status": dbtypes.Queued})
 
-	for _, jobDoc := range results {
-
-		bsonBytes, err := bson.Marshal(jobDoc)
-
+		//hee-hoo error handling
+		//go to the next type since apparently no jobs of that type exist
 		if err != nil {
-			log.Panicln("INTERNAL SERVER ERROR: UNMARSHALLING JOB BSON FAILED")
+			continue
 		}
 
-		err = bson.Unmarshal(bsonBytes, &decodedJobResult)
+		//marshal each document into a Job struct and then append it to the array
+		for _, jobDoc := range results {
 
-		if err != nil {
-			log.Panicln("INTERNAL SERVER ERROR: UNMARSHALLING JOB BSON FAILED")
+			bsonBytes, err := bson.Marshal(jobDoc)
+
+			if err != nil {
+				log.Panicln("INTERNAL SERVER ERROR: UNMARSHALLING JOB BSON FAILED")
+			}
+
+			err = bson.Unmarshal(bsonBytes, &decodedJobResult)
+
+			if err != nil {
+				log.Panicln("INTERNAL SERVER ERROR: UNMARSHALLING JOB BSON FAILED")
+			}
+
+			jobResults = append(jobResults, decodedJobResult)
+
 		}
-
-		jobResults = append(jobResults, decodedJobResult)
-
 	}
 
 	return jobResults, nil

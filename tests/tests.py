@@ -405,11 +405,11 @@ def dbNewCaseTest():
 
         # request ping page
         r = s.post(
-            url=apiBasePath + "/case/new", json={
-                    "uuid":None,
+            url=apiBasePath + "/case/new",
+            params={
+                    "uuid":"",
 	                "name":casename,
-                    "dateCreated":"today :D",
-                    "viewAccess":"supervisor",
+                    "viewaccess":"supervisor",
                     "editAccess":"supervisor",
                     "collaborators":["Brandon Ship", "Me lol"]
                 }
@@ -447,7 +447,7 @@ def dbUpdateCaseTest():
                     "uuid":caseuuid,
 	                "name":"testcase",
                     "dateCreated":"June 4th, 1776",
-                    "viewAccess":"responder",
+                    "viewaccess":"responder",
                     "editAccess":"responder",
                     "collaborators":["Brandon Ship", "Me lol", "Alex Johnson Petty"]
                     }
@@ -614,6 +614,7 @@ def dbGetUserCasesTest():
 def createJobTest():
     """Attempts to create a new job
     """
+    global caseuuid
     try:
         # print function name
         print(inspect.getframeinfo(inspect.currentframe()).function, end=" ")
@@ -621,16 +622,18 @@ def createJobTest():
         # request ping page
         r = s.post(
             url=apiBasePath + "/jobs/new",
-            json = {
-                "arguments":[],
-                "name":"test_job_1",
-                "jobtype":"log_analysis",
+            params = {
+                "caseuuid":caseuuid,
+                "arguments":["arg1", "arg2", "arg3"],
+                "files":[fileUUID],
+                "name":"test_job_{}-mime".format(fileUUID),
+                "jobtype":"Determine-MimeType",
             }
         )
 
         # check if good request
         if r.status_code != 200:
-            error(r.status_code)
+            error(str(r.status_code) + " " + str(r.content.decode()))
         else:
             success()
             print(r.content, end="")
@@ -668,7 +671,23 @@ def createSearchJobAndFindByUUIDTest():
     except Exception as e:
         error(e)
 
-tests = [loginTest, pingTest, dbNewCaseTest, uploadTest, uploadTest, uploadTest, downloadTest, downloadTestWithParameters, dbUpdateCaseTest, dbFindCaseTest, dbNewUserTest, dbUpdateUserTest, dbFindUserTest, dbGetUserCasesTest]
+tests = [
+    loginTest,
+    pingTest,
+    dbNewCaseTest,
+    uploadTest,
+    uploadTest,
+    uploadTest,
+    downloadTest,
+    downloadTestWithParameters,
+    dbUpdateCaseTest,
+    dbFindCaseTest,
+    dbNewUserTest,
+    dbUpdateUserTest,
+    dbFindUserTest,
+    dbGetUserCasesTest,
+    createJobTest,
+    ]
 def runAllTests():
     for test in tests:
         test()

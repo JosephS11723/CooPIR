@@ -7,7 +7,10 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"strconv"
+	"time"
 
+	httputil "github.com/JosephS11723/CooPIR/src/api/lib/coopirutil"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 	"github.com/JosephS11723/CooPIR/src/api/lib/logtypes"
@@ -69,13 +72,41 @@ func DbGetCaseInfo(c *gin.Context) {
 func DbCreateCase(c *gin.Context) {
 	// TODO: check if user is able to create cases
 
-	var json_request dbtypes.Case
+	/*
+		var json_request dbtypes.Case
 
-	err := c.BindJSON(&json_request)
+		err := c.BindJSON(&json_request)
+
+		if err != nil {
+			log.Panicln(err)
+		}
+	*/
+
+	query_params := []string{"name", "description", "viewaccess", "editAccess", "collabs"}
+
+	singles, multi, err := httputil.ParseParams(query_params, c.Request.URL.Query())
 
 	if err != nil {
-		log.Panicln(err)
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				"error": err.Error(),
+			},
+		)
+		return
 	}
+
+	newCase := dbtypes.Case{
+		Name:          singles["name"],
+		Description:   singles["description"],
+		Date_created:  strconv.Itoa(int(time.Now().UnixMilli())),
+		ViewAccess:    singles["viewaccess"],
+		EditAccess:    singles["editAccess"],
+		Collaborators: multi["collabs"],
+	}
+
+	// print newCase
+	log.Printf("%+v\n", newCase)
 
 	// log
 	_, err = dbInterface.MakeCaseLog(c, "", c.MustGet("identity").(string), dbtypes.Info, logtypes.CreateCaseAttempt, nil)
@@ -83,10 +114,11 @@ func DbCreateCase(c *gin.Context) {
 	if err != nil {
 		// failed to log
 		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+		return
 	}
 
 	// call make case (it does the sanity checks for us). // TODO: figure out where to put CreateCaseFailure log
-	_, caseUUID, err := dbInterface.MakeCase(json_request)
+	_, caseUUID, err := dbInterface.MakeCase(newCase)
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, errors.New("case already exists"))
@@ -99,6 +131,7 @@ func DbCreateCase(c *gin.Context) {
 	if err != nil {
 		// failed to log
 		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+		return
 	}
 
 	// send ok

@@ -4,3 +4,8 @@ npm install ngx-cookie-service
 npm install @ngxs/store --save
 npm install ngx-doc-viewer --save
 npm install file-saver ngx-filesaver --save
+npm install vis-network
+npm install vis-util
+npm install vis-data
+npm install vis --save
+npm install @types/vis --save-dev

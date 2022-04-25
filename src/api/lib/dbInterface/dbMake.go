@@ -2,12 +2,14 @@ package dbInterface
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"time"
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 	"github.com/JosephS11723/CooPIR/src/api/lib/security"
 	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -229,7 +231,7 @@ func MakeCase(NewCase dbtypes.Case) (*mongo.InsertOneResult, string, error) {
 			UUID:          id,
 			Name:          name,
 			Date_created:  dateCreated,
-			ViewAccess:   viewAccess,
+			ViewAccess:   viewaccess,
 			EditAccess:   editAccess,
 			Collaborators: collaborators,
 		}
@@ -252,7 +254,7 @@ func MakeCase(NewCase dbtypes.Case) (*mongo.InsertOneResult, string, error) {
 }
 
 // MakeFile creates a new File struct.
-func MakeFile(uuid string, hashes []string, tags []string, caseUUID string, filename string, uploadDate string, viewAccess string, editAccess string) (*mongo.InsertOneResult, error) {
+func MakeFile(uuid string, hashes []string, tags []string, caseUUID string, filename string, uploadDate string, viewaccess string, editAccess string) (*mongo.InsertOneResult, error) {
 	caseName, err := FindCaseNameByUUID(caseUUID)
 	if err != nil {
 		return nil, err
@@ -272,7 +274,7 @@ func MakeFile(uuid string, hashes []string, tags []string, caseUUID string, file
 		Filename:    filename,
 		Case:        caseName,
 		Upload_date: uploadDate,
-		ViewAccess:  viewAccess,
+		ViewAccess:  viewaccess,
 		EditAccess:  editAccess,
 	}
 
@@ -368,17 +370,100 @@ func MakeJob(new_job dbtypes.NewJob) (string, error) {
 
 	//construct the job
 	job_to_insert := dbtypes.Job{
-		JobUUID:       uuid,
-		Arguments:     new_job.Arguments,
-		Name:          new_job.Name,
-		JobType:       new_job.JobType,
-		Status:        dbtypes.Queued,
-		StartTime:     int(time.Now().UnixMilli()),
-		EndTime:       -1,
-		JobResultUUID: "",
+		JobUUID:   uuid,
+		CaseUUID:  new_job.CaseUUID,
+		Arguments: new_job.Arguments,
+		Files:     new_job.Files,
+		Name:      new_job.Name,
+		JobType:   new_job.JobType,
+		Status:    dbtypes.Queued,
+		StartTime: int(time.Now().UnixMilli()),
+		EndTime:   -1,
 	}
 
 	_, err = DbSingleInsert("Jobs", "JobQueue", job_to_insert)
+
+	if err != nil {
+
+		return "", err
+
+	}
+
+	return uuid, nil
+
+}
+
+//creates a new job from a NewJob structure
+func MoveFinishedJob(jobUUID string) (string, error) {
+
+	err := ModifyJobStatus(jobUUID, dbtypes.Finished)
+
+	if err != nil {
+		log.Panicln("ERROR: could not modify job status from current to 'Finished'")
+	}
+
+	doc, err := FindDocByFilter("Jobs", "JobQueue", bson.M{"jobuuid": jobUUID})
+
+	if err != nil {
+
+		return "", fmt.Errorf("could not find job %s in job queue (for some reason)", jobUUID)
+
+	}
+
+	var dbJob dbtypes.Job
+	err = doc.Decode(&dbJob)
+
+	_, err = DbSingleInsert("Jobs", "JobArchive", dbJob)
+
+	if err != nil {
+
+		return "", fmt.Errorf("could not archive %s with error: %s", jobUUID, err.Error())
+
+	}
+
+	client, ctx, cancel, err := dbConnect()
+
+	defer dbClose(client, ctx, cancel)
+
+	if err != nil {
+
+		return "", fmt.Errorf("could not connect to mongo: %s", err.Error())
+
+	}
+
+	coll := client.Database("Jobs").Collection("JobQueue")
+
+	_, err = coll.DeleteOne(ctx, bson.M{"jobuuid": jobUUID})
+
+	if err != nil {
+
+		return "", fmt.Errorf("could not remove job %s from job queue", err.Error())
+
+	}
+
+	return jobUUID, nil
+}
+
+//creates a new job from a NewJob structure
+func MakeWorker(new_worker dbtypes.NewWorker) (string, error) {
+
+	// create uuid for job
+	uuid, err := MakeUuid()
+
+	if err != nil {
+		return "", err
+	}
+
+	//construct the job
+	worker_to_insert := dbtypes.Worker{
+		WorkerUUID: uuid,
+		Name:       new_worker.Name,
+		JobType:    new_worker.JobType,
+		Status:     dbtypes.Ready,
+		JoinTime:   int(time.Now().UnixMilli()),
+	}
+
+	_, err = DbSingleInsert("Jobs", "Workers", worker_to_insert)
 
 	if err != nil {
 

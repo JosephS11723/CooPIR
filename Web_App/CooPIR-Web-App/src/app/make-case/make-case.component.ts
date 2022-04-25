@@ -15,10 +15,10 @@ export class MakeCaseComponent implements OnInit {
       route: '/login'
     },    
     {
-      label: 'Home',
-      icon: 'home',
-      route: '/home'
-    },
+      label: 'Dashboard',
+      icon: 'assignment',
+      route: '/dashboard'
+    }
   ];
 
   constructor(private http: HttpClient, private cookieService:CookieService) { }
@@ -26,24 +26,34 @@ export class MakeCaseComponent implements OnInit {
   submitCase(): void 
   {
     var caseName = (<HTMLInputElement>document.getElementById("caseName")).value;
-    var viewAccess = (<HTMLInputElement>document.getElementById("viewAccess")).value;
+    var viewaccess = (<HTMLInputElement>document.getElementById("viewaccess")).value;
     var editAccess = (<HTMLInputElement>document.getElementById("editAccess")).value;
     var description = (<HTMLInputElement>document.getElementById("description")).value;
-    console.log("Description: ", description);
+    //console.log("Description: ", description);
+  
+    const params = new HttpParams()
+    .append('uuid', '')
+    .append('name', caseName)
+    .append('description', description)
+    .append('dateCreated', '')
+    .append('viewaccess', viewaccess)
+    .append('editAccess', editAccess)
+    .append('collabs', "Joe")
+    .append('collabs', "Momma");
 
     var newCase = {
       uuid: '',
       name: caseName,
       description: description,
       dateCreated: '',
-      viewAccess: viewAccess,
+      viewaccess: viewaccess,
       editAccess: editAccess,
       collabs: []
     }
 
-    console.log("Our brand new case: ", newCase);
+    //console.log("Our brand new case: ", newCase);
 
-    this.http.post("http://localhost:8080/api/v1/case/new", newCase, {observe: 'response'})
+    this.http.post("http://localhost:8080/api/v1/case/new", '', {observe: 'response', params: params})
     .subscribe(response => {
       console.log("New Case Response: ", response);
     })

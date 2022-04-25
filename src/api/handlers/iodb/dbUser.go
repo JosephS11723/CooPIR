@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 
+	httputil "github.com/JosephS11723/CooPIR/src/api/lib/coopirutil"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 	"github.com/JosephS11723/CooPIR/src/api/lib/logtypes"
@@ -69,12 +70,25 @@ func DbGetUserInfo(c *gin.Context) {
 }
 
 func DbCreateUser(c *gin.Context) {
-	var json_request dbtypes.NewUser
 
-	err := c.BindJSON(&json_request)
+	query_params := []string{"name", "email", "role", "cases"}
+
+	singles, multi, err := httputil.ParseParams(query_params, c.Request.URL.Query())
 
 	if err != nil {
-		log.Panicln(err)
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				"error": err.Error(),
+			},
+		)
+	}
+
+	newUser := dbtypes.NewUser{
+		Name:  singles["name"],
+		Email: singles["email"],
+		Role:  singles["role"],
+		Cases: multi["cases"],
 	}
 
 	// log
@@ -85,7 +99,7 @@ func DbCreateUser(c *gin.Context) {
 		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
 	}
 
-	_, err = dbInterface.MakeUser(json_request)
+	_, err = dbInterface.MakeUser(newUser)
 
 	// log
 	_, err = dbInterface.MakeCaseLog(c, "", c.MustGet("identity").(string), dbtypes.Info, logtypes.CreateUser, nil)
@@ -100,7 +114,24 @@ func DbCreateUser(c *gin.Context) {
 	}
 }
 
+//currently not implemented by client, so don't worry about it
 func DbUpdateUser(c *gin.Context) {
+
+	/*
+		query_params := []string{"name", "email", "role", "cases"}
+
+		singles, multi, err := httputil.ParseParams(query_params, c.Request.URL.Query())
+
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusBadRequest,
+				gin.H{
+					"error": err.Error(),
+				},
+			)
+		}
+	*/
+
 	// TODO: add target user and new information to log entries
 	// TODO: add log attempt
 	var json_request dbtypes.UpdateDoc

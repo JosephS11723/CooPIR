@@ -53,7 +53,7 @@ for i in range(0,10000):
 
             "dateCreated": "Decembruary " + str(randint(1,31)) + ", 1969",
 
-            "viewAccess": "responder",
+            "viewaccess": "responder",
 
             "editAccess": "supervisor",
 
