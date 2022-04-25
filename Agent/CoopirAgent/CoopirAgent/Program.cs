@@ -94,12 +94,22 @@ namespace CoopirAgent
             //{
             Console.WriteLine("Connection closed unexpectedly: " + e.Reason);
             Console.WriteLine("Attempting to reconnect...");
+            // Uncomment for windows and linux arm64
             if (!ws.IsAlive)
             {
                 System.Threading.Thread.Sleep(5000);
                 ws.Connect();
                 //continue;
             }
+
+            // Uncomment for linux x64
+            //while (!ws.IsAlive)
+            //{
+            //    System.Threading.Thread.Sleep(5000);
+            //    ws.Connect();
+            //}
+
+
             //}
             //else
             //{

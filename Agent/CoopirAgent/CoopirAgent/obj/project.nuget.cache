@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "XTvQNQSAc3tc+c/T8Gg7ZjPxhZE3HG2aBveAs7HsRaw0cSDRpzLFWaTzOg4L86E+3BAoEyBsUVrY2ERo7GeffA==",
+  "dgSpecHash": "TCIm/9SMDpL8M6YEd56IpbhDl35pLzZl+BNDFdjFcInKCNAYQQ/VrJmRSmpmHAKeJS6mcdlYaoWio5v1wCj2hQ==",
   "success": true,
   "projectFilePath": "E:\\Capstone\\CooPIR\\Agent\\CoopirAgent\\CoopirAgent\\CoopirAgent.csproj",
   "expectedPackageFiles": [
@@ -16,10 +16,7 @@
     "C:\\Users\\Alex\\.nuget\\packages\\system.security.permissions\\6.0.0\\system.security.permissions.6.0.0.nupkg.sha512",
     "C:\\Users\\Alex\\.nuget\\packages\\system.security.principal.windows\\5.0.0\\system.security.principal.windows.5.0.0.nupkg.sha512",
     "C:\\Users\\Alex\\.nuget\\packages\\system.windows.extensions\\6.0.0\\system.windows.extensions.6.0.0.nupkg.sha512",
-    "C:\\Users\\Alex\\.nuget\\packages\\websocketsharp.core\\1.0.0\\websocketsharp.core.1.0.0.nupkg.sha512",
-    "C:\\Users\\Alex\\.nuget\\packages\\microsoft.netcore.app.runtime.linux-x64\\5.0.16\\microsoft.netcore.app.runtime.linux-x64.5.0.16.nupkg.sha512",
-    "C:\\Users\\Alex\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.linux-x64\\5.0.16\\microsoft.aspnetcore.app.runtime.linux-x64.5.0.16.nupkg.sha512",
-    "C:\\Users\\Alex\\.nuget\\packages\\microsoft.netcore.app.host.linux-x64\\5.0.16\\microsoft.netcore.app.host.linux-x64.5.0.16.nupkg.sha512"
+    "C:\\Users\\Alex\\.nuget\\packages\\websocketsharp.core\\1.0.0\\websocketsharp.core.1.0.0.nupkg.sha512"
   ],
   "logs": []
 }
