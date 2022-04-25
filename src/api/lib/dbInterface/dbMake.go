@@ -402,7 +402,7 @@ func MoveFinishedJob(jobUUID string) (string, error) {
 		log.Panicln("ERROR: could not modify job status from current to 'Finished'")
 	}
 
-	doc, err := //FindDocByFilter("Jobs", "JobQueue", bson.M{"jobuuid": jobUUID})
+	doc, err := FindDocByFilter("Jobs", "JobQueue", bson.M{"jobuuid": jobUUID})
 
 	if err != nil {
 
@@ -410,13 +410,38 @@ func MoveFinishedJob(jobUUID string) (string, error) {
 
 	}
 
-	/*
-		var dbFile dbtypes.File
-		err = result.Decode(&dbFile)
+	var dbJob dbtypes.Job
+	err = doc.Decode(&dbJob)
 
-		return dbFile.UUID, err
-	*/
+	_, err = DbSingleInsert("Jobs", "JobArchive", dbJob)
 
+	if err != nil {
+
+		return "", fmt.Errorf("could not archive %s with error: %s", jobUUID, err.Error())
+
+	}
+
+	client, ctx, cancel, err := dbConnect()
+
+	defer dbClose(client, ctx, cancel)
+
+	if err != nil {
+
+		return "", fmt.Errorf("could not connect to mongo: %s", err.Error())
+
+	}
+
+	coll := client.Database("Jobs").Collection("JobQueue")
+
+	_, err = coll.DeleteOne(ctx, bson.M{"jobuuid": jobUUID})
+
+	if err != nil {
+
+		return "", fmt.Errorf("could not remove job %s from job queue", err.Error())
+
+	}
+
+	return jobUUID, nil
 }
 
 //creates a new job from a NewJob structure

@@ -360,13 +360,16 @@ func SubmitWork(c *gin.Context) {
 
 	if done == "true" {
 
-		/*
-			err = dbInterface.ModifyJobStatus(jobUUID, dbtypes.Finished)
+		jobUUID, err = dbInterface.MoveFinishedJob(jobUUID)
 
-			if err != nil {
-				log.Panicln("ERROR: could not modify job status from current to 'Finished'")
-			}
-		*/
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					"error": err.Error(),
+				},
+			)
+		}
 
 	}
 
