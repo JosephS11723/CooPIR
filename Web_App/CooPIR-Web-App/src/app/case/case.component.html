@@ -69,7 +69,7 @@
         <!--Each case is placed in the table-->
         <!--The first item is ignored because it is just a placeholder-->
           <tr *ngFor="let item of fileList; let i=index" [routerLink]="item.route">
-             <td *ngIf="i != 0"><button id="item.name" (click)="getFileInfo(item.name)" class="btn btn-primary btn-lg mr-2" style="width:100%">{{item.name}}</button></td>
+             <td *ngIf="i != 0"><button id="item.name" (click)="getFileInfo(item.uuid, item.name)" class="btn btn-primary btn-lg mr-2" style="width:100%">{{item.name}}</button></td>
              <td *ngIf="i != 0">{{item.created}}</td>
              <td *ngIf="i != 0">{{item.md5}}</td>
           </tr>
