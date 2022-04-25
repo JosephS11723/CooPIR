@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/JosephS11723/CooPIR/src/api/lib/coopirutil"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -100,45 +101,66 @@ func ModifyJobTagsAndRelations(fileUUID string, caseUUID string, tags []string, 
 
 	//iterate through (since Go doesn't have a simple way of doing this >:( ) and check
 	//each tag to see if it already exists
+	/*
+		for _, tag := range tags {
+
+			if len(file.Tags) > 0 {
+
+				for _, exisiting_tag := range file.Tags {
+
+					if tag != exisiting_tag {
+
+						file.Tags = append(file.Tags, tag)
+
+					}
+
+				}
+			} else {
+				file.Tags = append(file.Tags, tag)
+
+			}
+
+		}
+	*/
+
 	for _, tag := range tags {
 
-		if len(file.Tags) > 0 {
-
-			for _, exisiting_tag := range file.Tags {
-
-				if tag != exisiting_tag {
-
-					file.Tags = append(file.Tags, tag)
-
-				}
-
-			}
-		} else {
-			file.Tags = append(file.Tags, tag)
-
-		}
+		file.Tags = append(file.Tags, tag)
 
 	}
 
-	//same thing but for relations
+	file.Tags = coopirutil.RemoveDuplicateStr(file.Tags)
+
+	file.Relations = coopirutil.RemoveDuplicateStr(file.Relations)
+
 	for _, relation := range relations {
 
-		if len(file.Relations) > 0 {
+		file.Relations = append(file.Relations, relation)
 
-			for _, exisiting_relation := range file.Relations {
+	}
 
-				if relation != exisiting_relation {
+	file.Relations = coopirutil.RemoveDuplicateStr(file.Relations)
 
-					file.Relations = append(file.Relations, relation)
+	/*
+		//same thing but for relations
+		for _, relation := range relations {
+
+			if len(file.Relations) > 0 {
+
+				for _, exisiting_relation := range file.Relations {
+
+					if relation != exisiting_relation {
+
+						file.Relations = append(file.Relations, relation)
+
+					}
 
 				}
+			} else {
+				file.Relations = append(file.Relations, relation)
 
 			}
-		} else {
-			file.Relations = append(file.Relations, relation)
-
-		}
-	}
+		}*/
 
 	UpdateDoc(
 		"Cases",

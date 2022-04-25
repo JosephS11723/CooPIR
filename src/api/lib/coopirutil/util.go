@@ -62,3 +62,16 @@ func TryParseParams(keys []string, vals url.Values) (map[string]string, map[stri
 
 	return single_vals, multi_vals
 }
+
+//removes duplicates that are in the string []; for tags and relations
+func RemoveDuplicateStr(strSlice []string) []string {
+	allKeys := make(map[string]bool)
+	list := []string{}
+	for _, item := range strSlice {
+		if _, value := allKeys[item]; !value {
+			allKeys[item] = true
+			list = append(list, item)
+		}
+	}
+	return list
+}

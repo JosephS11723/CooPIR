@@ -74,6 +74,7 @@ func GetJobInfo(c *gin.Context) {
 //just gets the job document
 func GetAvailableJobTypes(c *gin.Context) {
 
+	var job dbtypes.Job
 	var err error
 
 	// get job from db
