@@ -82,7 +82,7 @@ func DbCreateCase(c *gin.Context) {
 		}
 	*/
 
-	query_params := []string{"name", "description", "viewAccess", "editAccess", "collabs"}
+	query_params := []string{"name", "description", "viewaccess", "editAccess", "collabs"}
 
 	singles, multi, err := httputil.ParseParams(query_params, c.Request.URL.Query())
 
@@ -100,7 +100,7 @@ func DbCreateCase(c *gin.Context) {
 		Name:          singles["name"],
 		Description:   singles["description"],
 		Date_created:  strconv.Itoa(int(time.Now().UnixMilli())),
-		ViewAccess:    singles["viewAccess"],
+		ViewAccess:    singles["viewaccess"],
 		EditAccess:    singles["editAccess"],
 		Collaborators: multi["collabs"],
 	}

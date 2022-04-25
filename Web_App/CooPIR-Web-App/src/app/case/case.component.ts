@@ -35,6 +35,7 @@ export class CaseComponent implements OnInit {
   fileList = [
     {
       name: '',
+      uuid: '',
       created: '',
       md5: '',
       route: ''
@@ -46,7 +47,7 @@ export class CaseComponent implements OnInit {
   getFiles(): void
   {
     var nodes = [{id: '', value: 0, label: ''}];
-    var edges = [{}];
+    var edges = [{from: '', to: '', value: 0}];
     
     const params = new HttpParams()
     .append('uuid', this.cookieService.get("currentUUID"));
@@ -78,7 +79,14 @@ export class CaseComponent implements OnInit {
 
                 //push file into nodes to be displayed by the map
                 nodes.push({ id: fileInfo.file.filename.split("/").pop(), value: 1, label: fileInfo.file.filename.split("/").pop()});
+                var relations = (<HTMLInputElement>document.getElementById("relations")).value;
+                console.log("Relation choice: ", relations);
+                if(relations != '')
+                {
+                  edges.push({from: fileInfo.file.filename.split("/").pop(), to: relations, value: 1});
+                }
                 console.log("Nodes: ", nodes);
+                console.log("Edges: ", edges);
 
                 //display the map
                 var container = document.getElementById("mynetwork");
@@ -104,8 +112,10 @@ export class CaseComponent implements OnInit {
                 }
 
                 //push file and its info to be displayed by the table
+                //console.log("This is the selected file's name: ", fileInfo.file.filename.split("/").pop());
                 this.fileList.push({
                   name: fileInfo.file.filename.split("/").pop(),
+                  uuid: fileInfo.file.uuid,
                   created: fileInfo.file.uploadDate,
                   md5: fileInfo.file.md5,
                   route: '/case'
@@ -119,7 +129,7 @@ export class CaseComponent implements OnInit {
 
   }
 
-  getFileInfo(uuid: any): void
+  getFileInfo(uuid: any, name: any): void
   {
     this.http.get("http://localhost:8080/api/v1/file/" + uuid  + "/" + this.cookieService.get("currentUUID"), {observe: 'response'})
     .subscribe(response =>
@@ -159,7 +169,7 @@ export class CaseComponent implements OnInit {
             //console.log("Subscriber header: ", subscriber.headers)
             const blob = new Blob([subscriber.body], {type: 'application/octetstream'});
             console.log("Blob test: ", blob);
-            FileSaver.saveAs(blob, 'newDownloadTest.txt');
+            FileSaver.saveAs(blob, name);
           }
           else
           {
@@ -228,7 +238,7 @@ export class CaseComponent implements OnInit {
 
       const params = new HttpParams()
       .append('caseuuid', caseuuid)
-      .append('filename', this.fileName);
+      .append('fileuuid', '/'+this.fileName);
       
       const formData = new FormData();
       formData.append("file", this.file);
@@ -247,6 +257,7 @@ export class CaseComponent implements OnInit {
       this.fileList.push(
         {
         name: this.fileName,
+        uuid: '',
         created: '',
         md5: '',
         route: ''

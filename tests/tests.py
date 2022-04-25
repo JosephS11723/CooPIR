@@ -96,6 +96,7 @@ def uploadTest(fileData = None):
 
             # add params
             params = {
+                "fileuuid" : "/home/test/test.txt",
                 "caseuuid" : caseuuid,
             }
 
@@ -409,9 +410,10 @@ def dbNewCaseTest():
             params={
                     "uuid":"",
 	                "name":casename,
-                    "viewAccess":"supervisor",
+                    "description": "test description",
+                    "viewaccess":"supervisor",
                     "editAccess":"supervisor",
-                    "collaborators":["Brandon Ship", "Me lol"]
+                    "collabs":["Brandon Ship", "Me lol"]
                 }
             )
 
@@ -447,7 +449,7 @@ def dbUpdateCaseTest():
                     "uuid":caseuuid,
 	                "name":"testcase",
                     "dateCreated":"June 4th, 1776",
-                    "viewAccess":"responder",
+                    "viewaccess":"responder",
                     "editAccess":"responder",
                     "collaborators":["Brandon Ship", "Me lol", "Alex Johnson Petty"]
                     }
