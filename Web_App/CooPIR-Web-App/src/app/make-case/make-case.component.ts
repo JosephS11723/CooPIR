@@ -29,7 +29,17 @@ export class MakeCaseComponent implements OnInit {
     var viewAccess = (<HTMLInputElement>document.getElementById("viewAccess")).value;
     var editAccess = (<HTMLInputElement>document.getElementById("editAccess")).value;
     var description = (<HTMLInputElement>document.getElementById("description")).value;
-    console.log("Description: ", description);
+    //console.log("Description: ", description);
+  
+    const params = new HttpParams()
+    .append('uuid', '')
+    .append('name', caseName)
+    .append('description', description)
+    .append('dateCreated', '')
+    .append('viewAccess', viewAccess)
+    .append('editAccess', editAccess)
+    .append('collabs', "Joe")
+    .append('collabs', "Momma");
 
     var newCase = {
       uuid: '',
@@ -41,9 +51,9 @@ export class MakeCaseComponent implements OnInit {
       collabs: []
     }
 
-    console.log("Our brand new case: ", newCase);
+    //console.log("Our brand new case: ", newCase);
 
-    this.http.post("http://localhost:8080/api/v1/case/new", newCase, {observe: 'response'})
+    this.http.post("http://localhost:8080/api/v1/case/new", '', {observe: 'response', params: params})
     .subscribe(response => {
       console.log("New Case Response: ", response);
     })
