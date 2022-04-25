@@ -254,7 +254,7 @@ func MakeCase(NewCase dbtypes.Case) (*mongo.InsertOneResult, string, error) {
 }
 
 // MakeFile creates a new File struct.
-func MakeFile(uuid string, hashes []string, tags []string, caseUUID string, filename string, uploadDate string, viewaccess string, editAccess string) (*mongo.InsertOneResult, error) {
+func MakeFile(uuid string, hashes []string, tags []string, caseUUID string, filename string, uploadDate string, viewaccess string, editAccess string, relations []string) (*mongo.InsertOneResult, error) {
 	caseName, err := FindCaseNameByUUID(caseUUID)
 	if err != nil {
 		return nil, err
@@ -276,6 +276,7 @@ func MakeFile(uuid string, hashes []string, tags []string, caseUUID string, file
 		Upload_date: uploadDate,
 		ViewAccess:  viewaccess,
 		EditAccess:  editAccess,
+		Relations:	 relations,
 	}
 
 	result, err = DbSingleInsert(dbName, dbCollection, NewFile)
