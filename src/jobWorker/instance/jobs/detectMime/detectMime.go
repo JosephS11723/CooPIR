@@ -1,4 +1,4 @@
-package jobs
+package detectMime
 
 import (
 	"bufio"
@@ -14,7 +14,7 @@ import (
 )
 
 // DetermineMimeType determines the mime type of a file
-func DetermineMimeType(job *dbtypes.Job, resultChan chan worker.ResultContainer) {
+func DetermineMimeType(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnChan chan string) {
 	// create directory for the job
 	//os.Mkdir(job.JobUUID, 0755)
 
@@ -86,6 +86,9 @@ func DetermineMimeType(job *dbtypes.Job, resultChan chan worker.ResultContainer)
 		JobResult:	jobResult,
 		FileReader: nil,
 	}
+
+	// void return value
+	<-returnChan
 }
 
 func getMimeTypeFromReader(reader *bufio.Reader) (string, error) {

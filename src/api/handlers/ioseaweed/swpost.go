@@ -52,6 +52,11 @@ func SWPOST(c *gin.Context) {
 		return
 	}
 
+	// optional attributes
+	//tags and relations can be empty arrays, so no check
+	tags := c.QueryArray("tags")
+	relations := c.QueryArray("relations")
+
 	// log file upload
 	_, err = dbInterface.MakeCaseLog(c, caseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.FileUploadAttempt, nil)
 	if err != nil {
@@ -186,12 +191,13 @@ func SWPOST(c *gin.Context) {
 			hex.EncodeToString(filesha256Hash),
 			hex.EncodeToString(filesha512Hash),
 		},
-		[]string{},
+		tags,
 		caseUUID,
 		"/files/"+caseUUID+"/"+filename+originalFilename,
 		time.Now().Local().String(),
 		"supervisor",
 		"admin",
+		relations,
 	)
 
 	if err != nil {

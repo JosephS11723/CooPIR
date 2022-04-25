@@ -38,6 +38,7 @@ export class CaseComponent implements OnInit {
       uuid: '',
       created: '',
       md5: '',
+      relations: '',
       route: ''
     }
   ];
@@ -46,8 +47,11 @@ export class CaseComponent implements OnInit {
 
   getFiles(): void
   {
-    var nodes = [{id: '', value: 0, label: ''}];
-    var edges = [{from: '', to: '', value: 0}];
+    //var nodes = [{id: '', value: 0, label: 'fake'}];
+    var nodes = new Array<any>();
+    console.log("Empty node list: ", nodes);
+    //var edges = [{from: 'df', to: 'df', value: 0}];
+    var edges = [{}];
     
     const params = new HttpParams()
     .append('uuid', this.cookieService.get("currentUUID"));
@@ -56,8 +60,8 @@ export class CaseComponent implements OnInit {
     //get all the files in the selected case
     this.http.get("http://localhost:8080/api/v1/case/files", {params: params, observe: 'response'})
     .subscribe( response => {
-      console.log("Logging response");
-      console.log(response.body);
+      //console.log("Logging response");
+      //console.log(response.body);
       let retrievedFiles: any
       //add each file to the list that is displayed in a table
         if(response.body != null)
@@ -78,12 +82,15 @@ export class CaseComponent implements OnInit {
                 fileInfo = response.body;
 
                 //push file into nodes to be displayed by the map
-                nodes.push({ id: fileInfo.file.filename.split("/").pop(), value: 1, label: fileInfo.file.filename.split("/").pop()});
-                var relations = (<HTMLInputElement>document.getElementById("relations")).value;
-                console.log("Relation choice: ", relations);
+                //nodes.push({ id: fileInfo.file.filename.split("/").pop(), value: 1, label: fileInfo.file.filename.split("/").pop()});
+                nodes.push({ id: fileInfo.file.uuid, value: 1, label: fileInfo.file.filename.split("/").pop()});               
+                var relations = fileInfo.file.relations;
+                
                 if(relations != '')
                 {
-                  edges.push({from: fileInfo.file.filename.split("/").pop(), to: relations, value: 1});
+                  console.log("Pushing edge");
+                  console.log("File relation: ", relations[0]);
+                  edges.push({from: fileInfo.file.uuid, to: relations[0].split(":")[0], value: 1});
                 }
                 console.log("Nodes: ", nodes);
                 console.log("Edges: ", edges);
@@ -118,6 +125,7 @@ export class CaseComponent implements OnInit {
                   uuid: fileInfo.file.uuid,
                   created: fileInfo.file.uploadDate,
                   md5: fileInfo.file.md5,
+                  relations: '',
                   route: '/case'
                 });
             });
@@ -205,7 +213,7 @@ export class CaseComponent implements OnInit {
     this.file = event.target.files[0];
     if (this.file)
     {
-      console.log("Received file")
+      //console.log("Received file")
       if (submit_button.disabled === true)
       {
         submit_button.disabled = false;
@@ -231,37 +239,61 @@ export class CaseComponent implements OnInit {
   {
     if (this.file)
     {
-      console.log("File ready to send");
+      //console.log("File ready to send");
       
       this.fileName = this.file.name;
       var caseuuid = this.cookieService.get("currentUUID");
+      var relations = (<HTMLInputElement>document.getElementById("relations")).value;
+      console.log("Relation choice: ", relations);
+
 
       const params = new HttpParams()
       .append('caseuuid', caseuuid)
-      .append('fileuuid', '/'+this.fileName);
+      .append('fileuuid', '/'+this.fileName)
+      .append('relations', relations + ":contains")
+      
+      .append('tags', "testtag");
+
+      if(relations != '')
+      {
+        console.log("Adding relation", relations);
+        params.append('relations', relations + ":contains")
+        .append('relations', relations + ":used");
+
+      }
+      else
+      {
+        console.log("Relations is null");
+      }
+      
       
       const formData = new FormData();
       formData.append("file", this.file);
-
+      //post the new file
       this.http.post("http://localhost:8080/api/v1/file", formData, 
       {
         params: params,
         observe: 'response'})
         .subscribe(response => {
-            console.log("logging respose");
+            console.log("logging file post respose");
             console.log(response);
           }, error => {
-            console.log("logging error");
+            console.log("logging file post error");
             console.log(error);
           });
+
+      
       this.fileList.push(
         {
         name: this.fileName,
         uuid: '',
         created: '',
         md5: '',
+        relations: relations,
         route: ''
         });
+        //refresh the page so the new file shows up
+        //window.location.reload();
     }
   }
 

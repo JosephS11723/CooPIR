@@ -3,47 +3,32 @@ package worker
 import (
 	"net/url"
 	"strconv"
-	"strings"
 )
 
 // jobResultToParams converts a job result to a query encoded parameters string
 func jobResultToParams(result *JobResult) string {
-	// encode the struct as a map
-	params := map[string]string{
-		"jobuuid":    result.JobUUID,
-		"name":       result.Name,
-		"tags":       strings.Join(result.Tags, ","),
-		"relations":  strings.Join(result.Relations, ","),
-		"fileuuid":   result.FileUUID,
-		"done":       strconv.FormatBool(result.Done),
-		"resulttype": result.ResultType,
-		"caseuuid":   result.CaseUUID,
-	}
+	paramsStr := Params{Values: url.Values{}}
 
-	// convert the map to a query encoded string
-	paramsStr := url.Values{}
-	for k, v := range params {
-		paramsStr.Set(k, v)
-	}
+	paramsStr.Add("jobuuid", result.JobUUID)
+	paramsStr.Add("name", result.Name)
+	paramsStr.AddArray("tags", result.Tags)
+	paramsStr.AddArray("relations", result.Relations)
+	paramsStr.Add("fileuuid", result.FileUUID)
+	paramsStr.Add("done", strconv.FormatBool(result.Done))
+	paramsStr.Add("resulttype", result.ResultType)
+	paramsStr.Add("caseuuid", result.CaseUUID)
 
 	// set the params
-	return paramsStr.Encode()
+	return paramsStr.Values.Encode()
 }
 
 func jobTypesToParams(types []string) string {
-	// encode the struct as a map
-	params := map[string]string{
-		"jobTypes": strings.Join(types, ","),
-	}
+	paramsStr := Params{Values: url.Values{}}
 
-	// convert the map to a query encoded string
-	paramsStr := url.Values{}
-	for k, v := range params {
-		paramsStr.Set(k, v)
-	}
+	paramsStr.AddArray("jobTypes", types)
 
 	// set the params
-	return paramsStr.Encode()
+	return paramsStr.Values.Encode()
 }
 
 func uuidToParams(uuid string) string {
@@ -60,4 +45,32 @@ func uuidToParams(uuid string) string {
 
 	// set the params
 	return paramsStr.Encode()
+}
+
+func registrationToParams(jobtype string, name string) string {
+	paramsStr := Params{Values: url.Values{}}
+
+	paramsStr.Add("jobtype", jobtype)
+	paramsStr.Add("name", name)
+
+	// set the params
+	return paramsStr.Values.Encode()
+}
+
+type Params struct {
+	Values url.Values
+}
+
+func (u *Params) Set(key, value string) {
+	u.Values.Set(key, value)
+}
+
+func (u *Params) Add(key, value string) {
+	u.Values.Add(key, value)
+}
+
+func (u *Params) AddArray(key string, values []string) {
+	for _, value := range values {
+		u.Add(key, value)
+	}
 }

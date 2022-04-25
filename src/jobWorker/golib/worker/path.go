@@ -16,3 +16,6 @@ var getJobPath string = basePath + "/{jobuuid}/{fileuuid}"
 
 // path for obtaining the status of a job
 var getJobStatusPath string = basePath + "/status"
+
+// path for registering the worker
+var registerPath string = basePath + "/worker/new"

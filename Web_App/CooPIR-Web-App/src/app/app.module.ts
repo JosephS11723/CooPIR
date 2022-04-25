@@ -23,6 +23,7 @@ import { NgxDocViewerModule } from 'ngx-doc-viewer';
 import * as FileSaver from 'file-saver';
 import { MakeCaseComponent } from './make-case/make-case.component';
 import { MapTestComponent } from './map-test/map-test.component';
+import { JobPageComponent } from './job-page/job-page.component';
 
 
 @NgModule({
@@ -33,7 +34,8 @@ import { MapTestComponent } from './map-test/map-test.component';
     DashboardComponent,
     CaseComponent,
     MakeCaseComponent,
-    MapTestComponent
+    MapTestComponent,
+    JobPageComponent
   ],
   imports: [
     BrowserModule,
