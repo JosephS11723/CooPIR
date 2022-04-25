@@ -95,6 +95,9 @@ func InitMainRouter() *gin.Engine {
 
 	v2.POST("/worker/new", iojobs.CreateWorker)
 
+	// get job types based on available work
+	v2.GET("/types", iojobs.GetAvailableJobTypes)
+
 	// group for unauthenticated actions
 	v3 := r.Group("/api/v1/auth")
 
