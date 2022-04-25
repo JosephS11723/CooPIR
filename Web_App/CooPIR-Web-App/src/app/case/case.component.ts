@@ -35,6 +35,7 @@ export class CaseComponent implements OnInit {
   fileList = [
     {
       name: '',
+      uuid: '',
       created: '',
       md5: '',
       route: ''
@@ -46,7 +47,7 @@ export class CaseComponent implements OnInit {
   getFiles(): void
   {
     var nodes = [{id: '', value: 0, label: ''}];
-    var edges = [{}];
+    var edges = [{from: '', to: '', value: 0}];
     
     const params = new HttpParams()
     .append('uuid', this.cookieService.get("currentUUID"));
@@ -78,7 +79,14 @@ export class CaseComponent implements OnInit {
 
                 //push file into nodes to be displayed by the map
                 nodes.push({ id: fileInfo.file.filename.split("/").pop(), value: 1, label: fileInfo.file.filename.split("/").pop()});
+                var relations = (<HTMLInputElement>document.getElementById("relations")).value;
+                console.log("Relation choice: ", relations);
+                if(relations != '')
+                {
+                  edges.push({from: fileInfo.file.filename.split("/").pop(), to: relations, value: 1});
+                }
                 console.log("Nodes: ", nodes);
+                console.log("Edges: ", edges);
 
                 //display the map
                 var container = document.getElementById("mynetwork");
@@ -107,6 +115,7 @@ export class CaseComponent implements OnInit {
                 //console.log("This is the selected file's name: ", fileInfo.file.filename.split("/").pop());
                 this.fileList.push({
                   name: fileInfo.file.filename.split("/").pop(),
+                  uuid: fileInfo.file.uuid,
                   created: fileInfo.file.uploadDate,
                   md5: fileInfo.file.md5,
                   route: '/case'
@@ -248,6 +257,7 @@ export class CaseComponent implements OnInit {
       this.fileList.push(
         {
         name: this.fileName,
+        uuid: '',
         created: '',
         md5: '',
         route: ''

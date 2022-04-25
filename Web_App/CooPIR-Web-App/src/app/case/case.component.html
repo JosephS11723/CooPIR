@@ -77,12 +77,15 @@
      </body>
 
 
-
+<!--File uploader-->
 <br><br>
 <input type="file" id="uploader" class="file-input"
 (change)="onFileSelected($event)" #fileUpload>
 <button type="submit" id="submit_file" class="btn btn-primary btn-lg mr-2" (click)="submitFile($event)" disabled>Submit File</button>
-
+&nbsp;&nbsp;&nbsp;&nbsp;
+<select name="relations" id="relations">
+  <option *ngFor="let item of fileList; let i=index" value="item.name">{{item.name}}</option> 
+</select> 
 
 <!--Doc viewer stuff-->
 <ngx-doc-viewer
