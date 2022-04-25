@@ -405,10 +405,10 @@ def dbNewCaseTest():
 
         # request ping page
         r = s.post(
-            url=apiBasePath + "/case/new", json={
-                    "uuid":None,
+            url=apiBasePath + "/case/new",
+            params={
+                    "uuid":"",
 	                "name":casename,
-                    "dateCreated":"today :D",
                     "viewAccess":"supervisor",
                     "editAccess":"supervisor",
                     "collaborators":["Brandon Ship", "Me lol"]
