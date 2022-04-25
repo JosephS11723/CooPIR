@@ -3,6 +3,7 @@ package iojobs
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/coopirutil"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
@@ -74,7 +75,7 @@ func GetJobInfo(c *gin.Context) {
 //just gets the job document
 func GetAvailableJobTypes(c *gin.Context) {
 
-	var job dbtypes.Job
+	//var job dbtypes.Job
 	var err error
 
 	// get job from db
@@ -336,6 +337,7 @@ func SubmitWork(c *gin.Context) {
 	//then that file already exists (surprisingly or unsurprisingly), so then just modify
 	//the tags and relations
 	case "createFile":
+		var hashes []string
 
 		filestream, _, err := c.Request.FormFile("file")
 
@@ -344,11 +346,13 @@ func SubmitWork(c *gin.Context) {
 			log.Panicln(err)
 		}
 
-		fileUUID, err = seaweedInterface.POSTFileJob(caseUUID, filestream)
+		fileUUID, hashes, err = seaweedInterface.POSTFileJob(caseUUID, filestream)
 
 		if err != nil {
 
 			if err.Error() == "file already exists" {
+
+				// TODO: there should be a file deletion request here
 
 				err = dbInterface.ModifyJobTagsAndRelations(fileUUID, caseUUID, tags, relations)
 
@@ -361,14 +365,35 @@ func SubmitWork(c *gin.Context) {
 				}
 
 			} else {
-
 				c.JSON(
 					http.StatusInternalServerError,
 					gin.H{"error": err.Error()},
 				)
 				return
 			}
+		} else {
+			// file does not exist, create entry
+			_, err = dbInterface.MakeFile(
+				fileUUID,
+				[]string{
+					hashes[0],
+					hashes[1],
+					hashes[2],
+					hashes[3],
+				},
+				tags,
+				caseUUID,
+				name,
+				time.Now().Local().String(),
+				"supervisor",
+				"admin",
+				relations,
+			)
 
+			if err != nil {
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "failed to create file"})
+				log.Panicln(err)
+			}
 		}
 
 	default:

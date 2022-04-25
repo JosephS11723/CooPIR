@@ -13,6 +13,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"strings"
 	"sync"
@@ -231,18 +232,47 @@ func (j *JobWorker) SubmitJob(result JobResult, r io.Reader) error {
 		// sleep for config.SubmitResultInterval seconds
 		time.Sleep(time.Duration(config.SubmitResultInterval) * time.Second)
 
-		// create the request
-		// TODO: add reader parsing if there is a file to upload (change nil to reader)
-		req, err := http.NewRequest("POST", "http://"+config.ApiName+":"+config.ApiPort+strings.ReplaceAll(submitResultPath, "{jobuuid}", result.JobUUID)+"?"+params, r)
+		var req *http.Request
+		var err error
+		var resp *http.Response
 
-		// if there is an error, log it and continue
-		if err != nil {
-			log.Println("Error creating job result request:", err)
-			continue
+		if r != nil {
+			rr, w := io.Pipe()
+			mpw := multipart.NewWriter(w)
+			go func() {
+				var part io.Writer
+				defer w.Close()
+
+				if part, err = mpw.CreateFormFile("file", "examplefilename"); err != nil {
+					log.Println(err)
+					return
+				}
+				part = io.MultiWriter(part)
+				if _, err = io.Copy(part, r); err != nil {
+					log.Println(err)
+					return
+				}
+				if err = mpw.Close(); err != nil {
+					log.Println(err)
+					return
+				}
+			}()
+			// create the request
+			// TODO: add reader parsing if there is a file to upload (change nil to reader)
+			resp, err = http.Post("http://"+config.ApiName+":"+config.ApiPort+strings.ReplaceAll(submitResultPath, "{jobuuid}", result.JobUUID)+"?"+params, mpw.FormDataContentType(), rr)
+		} else {
+			// create the request
+			// TODO: add reader parsing if there is a file to upload (change nil to reader)
+			req, err = http.NewRequest("POST", "http://"+config.ApiName+":"+config.ApiPort+strings.ReplaceAll(submitResultPath, "{jobuuid}", result.JobUUID)+"?"+params, nil)
+			// if there is an error, log it and continue
+			if err != nil {
+				log.Println("Error creating job result request:", err)
+				continue
+			}
+
+			// send the request
+			resp, err = client.Do(req)
 		}
-
-		// send the request
-		resp, err := client.Do(req)
 
 		// if there is an error, log it and continue
 		if err != nil {

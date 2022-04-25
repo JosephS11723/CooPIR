@@ -16,14 +16,14 @@ import (
 // POSTFileJob allows the job result processing function to attempt to upload a job to the seaweed filer.
 // This function automatically handles file conflicts and returns the UUID of the conflicting file in that event.
 // If there is a conflict, it will be returned as an error. Handle it!
-func POSTFileJob(caseUUID string, r io.Reader) (string, error) {
+func POSTFileJob(caseUUID string, r io.Reader) (string, []string, error) {
 	// set filename to randomly generated name. change after hash operation
 	// Use MakeUuid from dbInterface to ensure unique filename
 	filename, err := dbInterface.MakeUuid()
 
 	// error if failed to generate uuid
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
 
 	// create pipes
@@ -113,7 +113,7 @@ func POSTFileJob(caseUUID string, r io.Reader) (string, error) {
 
 	if err != nil {
 		// upload failed
-		return "", errors.New("upload to seaweed filer failed")
+		return "", nil, errors.New("upload to seaweed filer failed")
 	}
 
 	// check mongo for file existence and remove if duplicate
@@ -129,9 +129,15 @@ func POSTFileJob(caseUUID string, r io.Reader) (string, error) {
 		}
 
 		// file deleted, return conflict uuid
-		return conflictUUID, errors.New("file already exists")
+		return conflictUUID, nil, errors.New("file already exists")
 	}
 
 	// return the uuid
-	return filename, nil
+	return filename,
+		[]string{hex.EncodeToString(filemd5Hash),
+			hex.EncodeToString(filesha1Hash),
+			hex.EncodeToString(filesha256Hash),
+			hex.EncodeToString(filesha512Hash),
+		},
+		nil
 }

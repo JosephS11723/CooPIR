@@ -27,6 +27,8 @@ func Unzip(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnChan 
 	for _, f := range r.File {
 		filename := f.Name
 
+		log.Println("Unzipping file: ", filename)
+
 		if f.FileInfo().IsDir() {
 			//TODO: handle directories
 			//filename = filepath.Join(sourceFilename, filename)
@@ -38,7 +40,7 @@ func Unzip(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnChan 
 		// attempt to "open" the file
 		rc, err := f.Open()
 		if err != nil {
-			log.Println("Could not unzip file: ", err)
+			log.Println("Could not open file: ", err)
 		}
 
 		// create result struct
@@ -49,7 +51,7 @@ func Unzip(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnChan 
 			Tags:       []string{"uncompressed"},
 			Name:       filename,
 			Done:       false,
-			FileUUID:   "",
+			FileUUID:   filename,
 		}
 
 		// create container

@@ -643,6 +643,64 @@ def createJobTest():
     except Exception as e:
         error(e)
 
+def uploadZipTest():
+    '''Attempts to upload a zip file'''
+    global fileUUID
+    try:
+        # normal file upload test with sample file
+            # print function name
+            print(inspect.getframeinfo(inspect.currentframe()).function, end=" ", flush=True)
+
+            # contents of test file
+            file = {"file":open("test.zip",'rb')}
+
+            # add params
+            params = {
+                "fileuuid" : "test.zip",
+                "caseuuid" : caseuuid,
+            }
+
+            # upload file
+            r = s.post(url = apiBasePath + "/file", files=file, timeout=20, params=params)
+
+            # check if good request
+            if r.status_code != 200:
+                error(str(r.status_code) + " " + r.content.decode())
+            else:
+                success()
+                global fileUUID
+                fileUUID = r.content.decode()
+
+    except Exception as e:
+        error(e)
+
+def createZipJobTest():
+    '''Attempts to create a zip job'''
+    try:
+        # print function name
+        print(inspect.getframeinfo(inspect.currentframe()).function, end=" ", flush=True)
+
+        # request ping page
+        r = s.post(
+            url=apiBasePath + "/jobs/new",
+            params = {
+                "caseuuid":caseuuid,
+                "arguments":["arg1", "arg2", "arg3"],
+                "files":[fileUUID],
+                "name":"test_job_{}-zip".format(fileUUID),
+                "jobtype":"Unzip",
+            }
+        )
+
+        # check if good request
+        if r.status_code != 200:
+            error(str(r.status_code) + " " + r.content.decode())
+        else:
+            success()
+            print(r.content, end="")
+            
+    except Exception as e:
+        error(e)
 
 def createSearchJobAndFindByUUIDTest():
     """Attempts to create a new job
@@ -689,6 +747,8 @@ tests = [
     dbFindUserTest,
     dbGetUserCasesTest,
     createJobTest,
+    uploadZipTest,
+    createZipJobTest,
     ]
 def runAllTests():
     for test in tests:
