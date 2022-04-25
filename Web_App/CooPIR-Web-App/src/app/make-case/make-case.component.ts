@@ -26,7 +26,7 @@ export class MakeCaseComponent implements OnInit {
   submitCase(): void 
   {
     var caseName = (<HTMLInputElement>document.getElementById("caseName")).value;
-    var viewAccess = (<HTMLInputElement>document.getElementById("viewAccess")).value;
+    var viewaccess = (<HTMLInputElement>document.getElementById("viewaccess")).value;
     var editAccess = (<HTMLInputElement>document.getElementById("editAccess")).value;
     var description = (<HTMLInputElement>document.getElementById("description")).value;
     //console.log("Description: ", description);
@@ -36,7 +36,7 @@ export class MakeCaseComponent implements OnInit {
     .append('name', caseName)
     .append('description', description)
     .append('dateCreated', '')
-    .append('viewAccess', viewAccess)
+    .append('viewaccess', viewaccess)
     .append('editAccess', editAccess)
     .append('collabs', "Joe")
     .append('collabs', "Momma");
@@ -46,7 +46,7 @@ export class MakeCaseComponent implements OnInit {
       name: caseName,
       description: description,
       dateCreated: '',
-      viewAccess: viewAccess,
+      viewaccess: viewaccess,
       editAccess: editAccess,
       collabs: []
     }

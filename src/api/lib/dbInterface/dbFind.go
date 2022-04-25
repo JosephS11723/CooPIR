@@ -120,9 +120,9 @@ func retrieveCasesByViewRole(role string) ([]string, error) {
 
 	// TODO: Might not work
 	for _, doc := range result {
-		log.Println("View access:", doc["viewAccess"])
+		log.Println("View access:", doc["viewaccess"])
 		log.Println("Access level:", Access.ToInt(role))
-		if Access.ToInt(role) >= Access.ToInt(doc["viewAccess"].(string)) {
+		if Access.ToInt(role) >= Access.ToInt(doc["viewaccess"].(string)) {
 			caseList = append(caseList, doc["uuid"].(string))
 		}
 	}
