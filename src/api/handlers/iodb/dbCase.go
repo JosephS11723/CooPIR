@@ -7,6 +7,8 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"strconv"
+	"time"
 
 	httputil "github.com/JosephS11723/CooPIR/src/api/lib/coopirutil"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
@@ -80,7 +82,7 @@ func DbCreateCase(c *gin.Context) {
 		}
 	*/
 
-	query_params := []string{"name", "description", "dateCreated", "viewAccess", "editAccess", "collabs"}
+	query_params := []string{"name", "description", "viewAccess", "editAccess", "collabs"}
 
 	singles, multi, err := httputil.ParseParams(query_params, c.Request.URL.Query())
 
@@ -91,16 +93,20 @@ func DbCreateCase(c *gin.Context) {
 				"error": err.Error(),
 			},
 		)
+		return
 	}
 
 	newCase := dbtypes.Case{
 		Name:          singles["name"],
 		Description:   singles["description"],
-		Date_created:  singles["dateCreated"],
+		Date_created:  strconv.Itoa(int(time.Now().UnixMilli())),
 		ViewAccess:    singles["viewAccess"],
 		EditAccess:    singles["editAccess"],
 		Collaborators: multi["collabs"],
 	}
+
+	// print newCase
+	log.Printf("%+v\n", newCase)
 
 	// log
 	_, err = dbInterface.MakeCaseLog(c, "", c.MustGet("identity").(string), dbtypes.Info, logtypes.CreateCaseAttempt, nil)
@@ -108,6 +114,7 @@ func DbCreateCase(c *gin.Context) {
 	if err != nil {
 		// failed to log
 		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+		return
 	}
 
 	// call make case (it does the sanity checks for us). // TODO: figure out where to put CreateCaseFailure log
@@ -124,6 +131,7 @@ func DbCreateCase(c *gin.Context) {
 	if err != nil {
 		// failed to log
 		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+		return
 	}
 
 	// send ok

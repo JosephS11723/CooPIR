@@ -1,4 +1,4 @@
-package httputil
+package coopirutil
 
 import (
 	"fmt"
@@ -8,8 +8,8 @@ import (
 //parses the vals from c.Requests.URL.Query(); returns a map of keys to vals and/or a map of keys to slices of vals
 func ParseParams(keys []string, vals url.Values) (map[string]string, map[string][]string, error) {
 
-	var single_vals map[string]string
-	var multi_vals map[string][]string
+	var single_vals map[string]string = make(map[string]string)
+	var multi_vals map[string][]string = make(map[string][]string)
 
 	for _, key := range keys {
 
@@ -38,8 +38,8 @@ func ParseParams(keys []string, vals url.Values) (map[string]string, map[string]
 //same as ParseParams, except it doesn't error if the val isn't there
 func TryParseParams(keys []string, vals url.Values) (map[string]string, map[string][]string) {
 
-	var single_vals map[string]string
-	var multi_vals map[string][]string
+	var single_vals map[string]string = make(map[string]string)
+	var multi_vals map[string][]string = make(map[string][]string)
 
 	for _, key := range keys {
 
