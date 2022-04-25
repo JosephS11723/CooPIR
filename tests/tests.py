@@ -410,9 +410,10 @@ def dbNewCaseTest():
             params={
                     "uuid":"",
 	                "name":casename,
+                    "description": "test description",
                     "viewaccess":"supervisor",
                     "editAccess":"supervisor",
-                    "collaborators":["Brandon Ship", "Me lol"]
+                    "collabs":["Brandon Ship", "Me lol"]
                 }
             )
 
