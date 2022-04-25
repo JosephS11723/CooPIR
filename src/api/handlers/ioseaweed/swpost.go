@@ -105,7 +105,7 @@ func SWPOST(c *gin.Context) {
 	go libcrypto.Sha1FromReaderAsync(sha1Reader, &doWait, errChan, hashsha1Chan)
 	go libcrypto.Sha256FromReaderAsync(sha256Reader, &doWait, errChan, hashsha256Chan)
 	go libcrypto.Sha512FromReaderAsync(sha512Reader, &doWait, errChan, hashsha512Chan)
-	go swi.POSTFile(c.Copy(), filename, caseUUID, POSTReader, &doWait, errChan)
+	go swi.POSTFile(filename, caseUUID, POSTReader, &doWait, errChan)
 
 	go func() {
 		// after completing the copy, we need to close
@@ -143,23 +143,28 @@ func SWPOST(c *gin.Context) {
 
 	// check errors
 	for i := 0; i < config.UpTaskCount; i++ {
-		err = <-errChan
+		hashErr := <-errChan
 		if err != nil {
 			// upload failed, panic!
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "upload error"})
-			log.Panicln(err)
+			err = hashErr
 		}
+	}
+
+	if err != nil {
+		// upload failed, panic!
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "upload error"})
+		log.Panicln(err)
 	}
 
 	// check mongo for file existence and remove if duplicate
 	conflictUUID, err := dbInterface.FindFileByHash(hex.EncodeToString(filesha512Hash), caseUUID)
 
-	if err == nil {
+	for err == nil {
 		// file already exists, remove it
-		err = swi.DELETEFile(c, filename, caseUUID)
+		err = swi.DELETEFile(filename, caseUUID)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "failed to delete file"})
-			log.Panicln(err)
+			continue
 		}
 		// log file already exist
 		dbInterface.MakeCaseLog(c, caseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.FileUploadFailure, gin.H{"error": "file already exists", "fileUUID": conflictUUID})
