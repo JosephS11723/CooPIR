@@ -39,4 +39,4 @@ async def hello(uri):
 
             print("response:", data)
 
-asyncio.run(hello("ws://localhost:4201"))
+asyncio.run(hello("ws://localhost:8080/api/v1/agent/ws"))

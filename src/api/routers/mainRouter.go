@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"github.com/JosephS11723/CooPIR/src/api/handlers/agenthandler"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/authentication"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/debug"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/iodb"
@@ -99,6 +100,9 @@ func InitMainRouter() *gin.Engine {
 
 	// login
 	v3.POST("/login", authentication.Login)
+
+	v4 := r.Group("/api/v1/agent")
+	v4.GET("/ws", agenthandler.AgentHandler)
 
 	// return handler router to main()
 	return r
