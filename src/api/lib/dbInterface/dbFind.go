@@ -11,6 +11,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // Find the user's Role with an UUID
@@ -528,4 +529,50 @@ func FindAvailableJobs(jobTypes []string) ([]dbtypes.Job, error) {
 	}
 
 	return jobResults, nil
+}
+
+//returns the types of jobs that are available to work on
+func FindJobTypes(dbname string, collection string) ([]bson.M, error) {
+	// connect to db
+	client, ctx, cancel, err := dbConnect()
+
+	// defer closing db connection
+	defer dbClose(client, ctx, cancel)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// get collection
+	coll := client.Database(dbname).Collection(collection)
+
+	findOptions := options.Find().SetProjection(bson.M{"jobtype": 1})
+
+	// run find function and get cursor
+	cur, err := coll.Find(ctx, bson.D{{}}, findOptions)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// create slice to hold documents
+	var docList []bson.M
+
+	// iterate through the documents
+	for cur.Next(context.Background()) {
+		// decode cur into a interface
+		var doc bson.M
+		err := cur.Decode(&doc)
+
+		if err != nil {
+			return nil, err
+		}
+		// log.Println("[DEBUG] internal result: ", doc)
+
+		// append doc to docList
+		docList = append(docList, doc)
+	}
+
+	// return list of documents
+	return docList, nil
 }

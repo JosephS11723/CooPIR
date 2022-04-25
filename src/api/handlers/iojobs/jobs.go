@@ -71,6 +71,22 @@ func GetJobInfo(c *gin.Context) {
 	c.JSON(200, gin.H{"job": job})
 }
 
+//just gets the job document
+func GetAvailableJobTypes(c *gin.Context) {
+
+	var err error
+
+	// get job from db
+	job_types, err := dbInterface.FindJobTypes("Jobs", "Workers")
+
+	if err != nil {
+		c.JSON(400, gin.H{"error": err})
+		return
+	}
+
+	c.JSON(200, gin.H{"jobtypes": job_types})
+}
+
 // CreateJob creates a new job from parameters given in the request
 func CreateJob(c *gin.Context) {
 
