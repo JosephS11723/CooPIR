@@ -29,13 +29,19 @@ func SWPOST(c *gin.Context) {
 		return
 	}
 
+	originalFilename, success := c.GetQuery("fileuuid")
+	// error if filename not provided
+	if !success {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no filedir provided"})
+		return
+	}
+
 	// get file multipart stream
 	filestream, _, err := c.Request.FormFile("file")
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "no file received"})
 		log.Panicln(err)
 	}
-
 	// ensure case name is valid
 	_, err = dbInterface.FindCaseNameByUUID(caseUUID)
 
@@ -182,7 +188,7 @@ func SWPOST(c *gin.Context) {
 		},
 		[]string{},
 		caseUUID,
-		"/files/"+caseUUID+"/"+filename,
+		"/files/"+caseUUID+"/"+filename+originalFilename,
 		time.Now().Local().String(),
 		"supervisor",
 		"admin",

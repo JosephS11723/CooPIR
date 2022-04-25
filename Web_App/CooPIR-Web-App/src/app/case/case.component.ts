@@ -104,6 +104,7 @@ export class CaseComponent implements OnInit {
                 }
 
                 //push file and its info to be displayed by the table
+                //console.log("This is the selected file's name: ", fileInfo.file.filename.split("/").pop());
                 this.fileList.push({
                   name: fileInfo.file.filename.split("/").pop(),
                   created: fileInfo.file.uploadDate,
@@ -228,7 +229,7 @@ export class CaseComponent implements OnInit {
 
       const params = new HttpParams()
       .append('caseuuid', caseuuid)
-      .append('filename', this.fileName);
+      .append('fileuuid', '/'+this.fileName);
       
       const formData = new FormData();
       formData.append("file", this.file);

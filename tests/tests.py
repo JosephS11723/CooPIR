@@ -96,6 +96,7 @@ def uploadTest(fileData = None):
 
             # add params
             params = {
+                "fileuuid" : "/home/test/test.txt",
                 "caseuuid" : caseuuid,
             }
 
