@@ -25,6 +25,11 @@ func DbSingleInsert(dbname string, collection string, data interface{}) (*mongo.
 	}
 
 	switch t := data.(type) {
+	case dbtypes.Worker:
+		data := data.(dbtypes.Worker)
+		coll := client.Database(dbname).Collection(collection)
+		result, err := coll.InsertOne(ctx, data)
+		return result, err
 
 	// Access struct case
 	case dbtypes.Access:
@@ -38,11 +43,7 @@ func DbSingleInsert(dbname string, collection string, data interface{}) (*mongo.
 
 			result, err := coll.InsertOne(ctx, data)
 
-			if err != nil {
-				return result, err
-			}
-
-			return result, nil
+			return result, err
 		}
 
 	// Case struct case
@@ -276,7 +277,7 @@ func MakeFile(uuid string, hashes []string, tags []string, caseUUID string, file
 		Upload_date: uploadDate,
 		ViewAccess:  viewaccess,
 		EditAccess:  editAccess,
-		Relations:	 relations,
+		Relations:   relations,
 	}
 
 	result, err = DbSingleInsert(dbName, dbCollection, NewFile)

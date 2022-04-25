@@ -31,6 +31,9 @@ type JobWorker struct {
 	// JobResultQueue is the queue of job results to be submitted to the api.
 	JobResultQueue chan ResultContainer
 
+	// ReturnChan is the channel to return fileuuid results to
+	ReturnChan chan string
+
 	// MaxWorkers is the maximum number of workers routines to be spawned
 	MaxWorkers int `json:"maxworkers default:2"`
 
@@ -86,7 +89,7 @@ var (
 )
 
 // JobFunc is the function type that is called when a job is performed
-type JobFunc func(*dbtypes.Job, chan ResultContainer)
+type JobFunc func(*dbtypes.Job, chan ResultContainer, chan string)
 
 // ResultContainer contains the JobResult and the io.reader for any files to be uploaded
 type ResultContainer struct {
@@ -104,6 +107,9 @@ func NewJobWorker(maxWorkers int) *JobWorker {
 
 	// create the job result queue
 	j.JobResultQueue = make(chan ResultContainer, 100)
+
+	// create the return channel
+	j.ReturnChan = make(chan string, 10)
 
 	// create the job list
 	j.jobList = make(map[string]JobFunc)
@@ -173,6 +179,9 @@ func (j *JobWorker) submitWorkLoop() {
 // Start starts the JobWorker
 func (j *JobWorker) Start() {
 	go func() {
+		// register with the api
+		go j.register()
+
 		// mount the filer
 		go seaweed.MountAllFiles()
 
@@ -246,6 +255,26 @@ func (j *JobWorker) SubmitJob(result JobResult, r io.Reader) error {
 			log.Println("Error submitting job result status:", resp.Status)
 			continue
 		}
+
+		// get response and sent to return chan
+		body, err := ioutil.ReadAll(resp.Body)
+
+		if err != nil {
+			log.Println("Error reading job result response:", err)
+			continue
+		}
+
+		// unmarshal into map
+		var m map[string]interface{}
+		err = json.Unmarshal(body, &m)
+
+		if err != nil {
+			log.Println("Error unmarshalling job result response:", err)
+			continue
+		}
+
+		// send the response to the return chan
+		j.ReturnChan <- m["fileuuid"].(string)
 
 		// break
 		break
@@ -333,6 +362,9 @@ func (j *JobWorker) GetJob() (dbtypes.Job, error) {
 func (j *JobWorker) AddJobWithFunction(jobTypeName string, jobFunction JobFunc) {
 	// add job to job list
 	j.jobList[jobTypeName] = jobFunction
+
+	// log
+	log.Println("Loaded job", jobTypeName)
 }
 
 // workerRoutine is the main routine spawned by the worker struct that creates the "workers" who take in jobs from the queue and perform them
@@ -356,7 +388,7 @@ func (j *JobWorker) workerRoutine() {
 				continue
 			} else {
 				// perform the job
-				j.jobList[job.JobType](&job, j.JobResultQueue)
+				j.jobList[job.JobType](&job, j.JobResultQueue, j.ReturnChan)
 			}
 
 		case <-j.doneChan:
@@ -365,6 +397,50 @@ func (j *JobWorker) workerRoutine() {
 
 			// exit
 			return
+		}
+	}
+}
+
+func (j *JobWorker) register() {
+	// get list of keys from jobList
+	keys := make([]string, 0, len(j.jobList))
+	for k := range j.jobList {
+		keys = append(keys, k)
+	}
+
+	// for job in jobtypes
+	for _, jobType := range keys {
+		// create jobtypes as params
+		params := registrationToParams(jobType, "worker1")
+
+		// create a client
+		client := &http.Client{}
+
+		for {
+			// create request
+			req, err := http.NewRequest("POST", "http://"+config.ApiName+":"+config.ApiPort+registerPath+"?"+params, nil)
+
+			// if there is an error, log it and return
+			if err != nil {
+				log.Println("Error creating register request:", err)
+				return
+			}
+
+			// make the request
+			resp, err := client.Do(req)
+
+			// if there is an error, log it and return
+			if err != nil {
+				log.Println("Error registering worker:", err)
+				return
+			}
+
+			// if the response is not ok, log it and return
+			if resp.StatusCode != http.StatusOK {
+				log.Println("Error registering worker:", resp.Status)
+				return
+			}
+			break
 		}
 	}
 }

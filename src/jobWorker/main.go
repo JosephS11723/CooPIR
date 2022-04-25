@@ -10,7 +10,8 @@ import (
 	"syscall"
 
 	"github.com/JosephS11723/CooPIR/src/jobWorker/golib/worker"
-	"github.com/JosephS11723/CooPIR/src/jobWorker/instance/jobs"
+	"github.com/JosephS11723/CooPIR/src/jobWorker/instance/jobs/detectMime"
+	"github.com/JosephS11723/CooPIR/src/jobWorker/instance/jobs/unzip"
 )
 
 func ctrlCExit() {
@@ -25,7 +26,8 @@ func main() {
 	worker := worker.NewJobWorker(runtime.NumCPU())
 
 	// add a job that can be done
-	worker.AddJobWithFunction("Determine-MimeType", jobs.DetermineMimeType)
+	worker.AddJobWithFunction("Determine-MimeType", detectMime.DetermineMimeType)
+	worker.AddJobWithFunction("Unzip", unzip.Unzip)
 
 	// start the worker
 	worker.Start()

@@ -11,7 +11,6 @@ import (
 
 //used for creating a new job worker
 func CreateWorker(c *gin.Context) {
-
 	query_params := []string{"name", "jobtype"}
 
 	single, _, err := coopirutil.ParseParams(query_params, c.Request.URL.Query())
