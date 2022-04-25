@@ -103,13 +103,19 @@ func ModifyJobTagsAndRelations(fileUUID string, caseUUID string, tags []string, 
 	//each tag to see if it already exists
 	for _, tag := range tags {
 
-		for _, exisiting_tag := range file.Tags {
+		if len(file.Tags) > 0 {
 
-			if tag != exisiting_tag {
+			for _, exisiting_tag := range file.Tags {
 
-				file.Tags = append(file.Tags, tag)
+				if tag != exisiting_tag {
+
+					file.Tags = append(file.Tags, tag)
+
+				}
 
 			}
+		} else {
+			file.Tags = append(file.Tags, tag)
 
 		}
 
@@ -118,16 +124,21 @@ func ModifyJobTagsAndRelations(fileUUID string, caseUUID string, tags []string, 
 	//same thing but for relations
 	for _, relation := range relations {
 
-		for _, exisiting_relation := range file.Tags {
+		if len(file.Relations) > 0 {
 
-			if relation != exisiting_relation {
+			for _, exisiting_relation := range file.Relations {
 
-				file.Relations = append(file.Relations, relation)
+				if relation != exisiting_relation {
+
+					file.Relations = append(file.Relations, relation)
+
+				}
 
 			}
+		} else {
+			file.Relations = append(file.Relations, relation)
 
 		}
-
 	}
 
 	UpdateDoc(

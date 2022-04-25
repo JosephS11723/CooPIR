@@ -2,12 +2,14 @@ package dbInterface
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"time"
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
 	"github.com/JosephS11723/CooPIR/src/api/lib/security"
 	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -368,15 +370,15 @@ func MakeJob(new_job dbtypes.NewJob) (string, error) {
 
 	//construct the job
 	job_to_insert := dbtypes.Job{
-		JobUUID:       uuid,
-		CaseUUID: 	   new_job.CaseUUID,
-		Arguments:     new_job.Arguments,
-		Files:         new_job.Files,
-		Name:          new_job.Name,
-		JobType:       new_job.JobType,
-		Status:        dbtypes.Queued,
-		StartTime:     int(time.Now().UnixMilli()),
-		EndTime:       -1,
+		JobUUID:   uuid,
+		CaseUUID:  new_job.CaseUUID,
+		Arguments: new_job.Arguments,
+		Files:     new_job.Files,
+		Name:      new_job.Name,
+		JobType:   new_job.JobType,
+		Status:    dbtypes.Queued,
+		StartTime: int(time.Now().UnixMilli()),
+		EndTime:   -1,
 	}
 
 	_, err = DbSingleInsert("Jobs", "JobQueue", job_to_insert)
@@ -388,6 +390,32 @@ func MakeJob(new_job dbtypes.NewJob) (string, error) {
 	}
 
 	return uuid, nil
+
+}
+
+//creates a new job from a NewJob structure
+func MoveFinishedJob(jobUUID string) (string, error) {
+
+	err := ModifyJobStatus(jobUUID, dbtypes.Finished)
+
+	if err != nil {
+		log.Panicln("ERROR: could not modify job status from current to 'Finished'")
+	}
+
+	doc, err := //FindDocByFilter("Jobs", "JobQueue", bson.M{"jobuuid": jobUUID})
+
+	if err != nil {
+
+		return "", fmt.Errorf("could not find job %s in job queue (for some reason)", jobUUID)
+
+	}
+
+	/*
+		var dbFile dbtypes.File
+		err = result.Decode(&dbFile)
+
+		return dbFile.UUID, err
+	*/
 
 }
 
