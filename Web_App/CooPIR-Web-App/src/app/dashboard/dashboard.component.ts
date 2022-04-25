@@ -20,11 +20,7 @@ export class DashboardComponent implements OnInit {
       icon: 'exit_to_app',
       route: '/login'
     },    
-    {
-      label: 'Jobs',
-      icon: 'assignment',
-      route: '/jobs'
-    }
+   
     
   ];
 

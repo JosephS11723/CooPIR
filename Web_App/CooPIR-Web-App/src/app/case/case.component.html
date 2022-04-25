@@ -83,6 +83,8 @@
 (change)="onFileSelected($event)" #fileUpload>
 <button type="submit" id="submit_file" class="btn btn-primary btn-lg mr-2" (click)="submitFile($event)" disabled>Submit File</button>
 &nbsp;&nbsp;&nbsp;&nbsp;
+<label for="relations">What does it relate to: </label>
+&nbsp;&nbsp;&nbsp;&nbsp;
 <select name="relations" id="relations">
   <option *ngFor="let item of fileList; let i=index" [value]="item.uuid">{{item.name}}</option> 
 </select> 

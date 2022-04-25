@@ -21,43 +21,32 @@
 </mat-toolbar>
 
 
-<h1>Current Jobs</h1>
+<h1>Create a Job</h1>
 
 <div>
     &nbsp;&nbsp;&nbsp;&nbsp;
-    <label for="caseName">Case Name:</label>
+    <label for="jobName">Job Name:</label>
     &nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="text" id="caseName">
+    <input type="text" id="jobName">
 
     <br><br>
-    &nbsp;&nbsp;
-    <label for="viewaccess">View Access:</label>
     &nbsp;&nbsp;&nbsp;&nbsp;
-    <select name="viewaccess" id="viewaccess">
-        <option value="admin">Admin</option>
-        <option value="supervisor">Supervisor</option>
-        <option value="responder">Responder</option>
-        <option value="user">User</option>
-    </select>   
+    <label for="jobtype">Job Type:</label>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <select name="jobtype" id="jobtype">
+        <option *ngFor="let item of joblist; let i=index" [value]="item.jobtype">{{item.jobtype}}</option> 
+    </select>  
     
     <br><br>
     &nbsp;&nbsp;&nbsp;&nbsp;
-    <label for="editAccess">Edit Access:</label>
+    <label for="fileforjob">File :</label>
     &nbsp;&nbsp;&nbsp;&nbsp;
-    <select name="editAccess" id="editAccess">
-        <option value="admin">Admin</option>
-        <option value="supervisor">Supervisor</option>
-        <option value="responders">Responder</option>
-        <option value="users">User</option>
+    <select name="fileforjob" id="fileforjob">
+        <option *ngFor="let item of caseFiles; let i=index" [value]="item">{{item}}</option> 
     </select> 
 
-    <br><br>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <label for="description">Description:</label>
-    <br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <textarea id="description" rows="10" cols="50"></textarea>
+    
 
     <br><br>
-    <button class="btn btn-primary btn-lg mr-2">Create Case</button>
+    <button (click)="launchJob()" class="btn btn-primary btn-lg mr-2">Launch Job</button>
 </div>

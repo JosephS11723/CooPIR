@@ -27,8 +27,13 @@ export class CaseComponent implements OnInit {
     },
     {
       label: 'Dashboard',
-      icon: 'assignment',
+      icon: 'list',
       route: '/dashboard'
+    },
+    {
+      label: 'Jobs',
+      icon: 'assignment',
+      route: '/jobs'
     }
   ];
 
@@ -90,6 +95,10 @@ export class CaseComponent implements OnInit {
                 {
                   console.log("Pushing edge");
                   console.log("File relation: ", relations[0]);
+                  for(var index = 1; index < relations.length; index++)
+                  {
+                    edges.push({from: fileInfo.file.uuid, to: relations[index].split(":")[0], value: 1})
+                  }
                   edges.push({from: fileInfo.file.uuid, to: relations[0].split(":")[0], value: 1});
                 }
                 console.log("Nodes: ", nodes);
@@ -293,7 +302,7 @@ export class CaseComponent implements OnInit {
         route: ''
         });
         //refresh the page so the new file shows up
-        //window.location.reload();
+        window.location.reload();
     }
   }
 
