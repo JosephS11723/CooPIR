@@ -77,7 +77,7 @@ namespace CoopirAgent
 
                 ws.Connect();
 
-                while(ws.IsAlive)
+                while(true)
                 {
 
                 }
@@ -90,21 +90,21 @@ namespace CoopirAgent
         {
             WebSocket ws = (WebSocket)sender;
 
-            if (!e.WasClean)
+            //if (!e.WasClean)
+            //{
+            Console.WriteLine("Connection closed unexpectedly: " + e.Reason);
+            Console.WriteLine("Attempting to reconnect...");
+            if (!ws.IsAlive)
             {
-                Console.WriteLine("Connection closed unexpectedly: " + e.Reason);
-                Console.WriteLine("Attempting to reconnect...");
-                if (!ws.IsAlive)
-                {
-                    System.Threading.Thread.Sleep(5000);
-                    ws.Connect();
-                    //continue;
-                }
+                System.Threading.Thread.Sleep(5000);
+                ws.Connect();
+                //continue;
             }
-            else
-            {
-                Console.WriteLine("Connection closed: " + e.Reason);
-            }
+            //}
+            //else
+            //{
+            //    Console.WriteLine("Connection closed: " + e.Reason);
+            //}
         }
 
         private static void Ws_OnOpen(object sender, EventArgs e)
