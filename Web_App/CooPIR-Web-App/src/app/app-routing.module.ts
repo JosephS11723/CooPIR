@@ -6,7 +6,7 @@ import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 import { MakeCaseComponent } from './make-case/make-case.component';
 import { MapTestComponent } from './map-test/map-test.component';
-
+import { JobPageComponent } from './job-page/job-page.component';
 const routes: Routes = [
   { path: 'home', component:HomeComponent },
   { path: 'login', component:LoginComponent},
@@ -14,6 +14,7 @@ const routes: Routes = [
   { path: 'case', component:CaseComponent},
   { path: 'makeCase', component:MakeCaseComponent},
   { path: 'testMap', component:MapTestComponent},
+  { path: 'jobs', component:JobPageComponent},
   { path: '**', component:LoginComponent}
 ];
 

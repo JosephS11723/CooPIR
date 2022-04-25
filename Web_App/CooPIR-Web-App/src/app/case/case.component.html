@@ -84,7 +84,7 @@
 <button type="submit" id="submit_file" class="btn btn-primary btn-lg mr-2" (click)="submitFile($event)" disabled>Submit File</button>
 &nbsp;&nbsp;&nbsp;&nbsp;
 <select name="relations" id="relations">
-  <option *ngFor="let item of fileList; let i=index" value="item.name">{{item.name}}</option> 
+  <option *ngFor="let item of fileList; let i=index" [value]="item.uuid">{{item.name}}</option> 
 </select> 
 
 <!--Doc viewer stuff-->

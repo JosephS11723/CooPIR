@@ -20,6 +20,11 @@ export class DashboardComponent implements OnInit {
       icon: 'exit_to_app',
       route: '/login'
     },    
+    {
+      label: 'Jobs',
+      icon: 'assignment',
+      route: '/jobs'
+    }
     
   ];
 
@@ -28,6 +33,7 @@ export class DashboardComponent implements OnInit {
     {
       name: '',
       uuid: '',
+      description: '',
       supervisor: '',
       date_created: ''
     }
@@ -60,13 +66,14 @@ export class DashboardComponent implements OnInit {
             .subscribe(response => {
               var caseData: any;
               caseData = response.body;
-              //console.log("Case metadata: ", response);
+              console.log("Case metadata: ", response);
               //console.log("Case name: ", caseData.case.name);
               //console.log("Case uuid: ", caseData.case.uuid);
 
               this.caseList.push({
                 name: caseData.case.name,
                 uuid: caseData.case.uuid,
+                description: caseData.case.description,
                 supervisor: 'Joseph',
                 date_created: caseData.case.dateCreated
               });
