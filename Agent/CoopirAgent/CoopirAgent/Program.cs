@@ -1,5 +1,7 @@
 ﻿using System;
 
+using System.Configuration;
+
 using System.Runtime.InteropServices;
 
 using System.IO.Compression;
@@ -13,12 +15,6 @@ using System.Security.Principal;
 using System.Xml.Linq;
 
 using System.Linq;
-
-//using Microsoft.AspNetCore.Builder;
-
-//using System.Net.WebSockets;
-
-//using System.Threading;
 
 using Newtonsoft.Json;
 
@@ -37,6 +33,32 @@ namespace CoopirAgent
 
             //Console.WriteLine(s);
 
+            string wsServer;
+            if (args.Length < 1)
+                wsServer = ConfigurationManager.AppSettings["wsServer"];
+            else if (args.Length == 1)
+            {
+                wsServer = args[0];
+                if(wsServer.Substring(0, 5) != @"ws://")
+                {
+                    Console.WriteLine("Not a web socket address: prefix with 'ws://'");
+                    Environment.Exit(0);
+                }
+
+                System.Configuration.Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
+                config.AppSettings.Settings["wsServer"].Value = wsServer;
+                config.Save(ConfigurationSaveMode.Modified);
+
+            }
+            else
+            {
+                Console.WriteLine("Incorrect use: CoopirAgent [ws://(server address)]");
+                wsServer = "nil";
+                Environment.Exit(0);
+            }
+
+            Console.WriteLine(wsServer);
             if (OperatingSystem.IsWindows())
             {
                 if (!IsAdministrator())
@@ -47,7 +69,7 @@ namespace CoopirAgent
             }
 
 
-            using (WebSocket ws = new WebSocket("ws://localhost:4201"))
+            using (WebSocket ws = new WebSocket(wsServer))
             {
                 ws.OnMessage += Ws_OnMessage;
                 ws.OnOpen += Ws_OnOpen;
