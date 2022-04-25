@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"flag"
 	"io"
 	"log"
 	"net/http"
@@ -11,8 +10,6 @@ import (
 
 	"github.com/gorilla/websocket"
 )
-
-var addr = flag.String("addr", "localhost:4201", "http service address")
 
 var upgrader = websocket.Upgrader{} // use default options
 
@@ -221,7 +218,9 @@ func main() {
 	// create memory for map
 	ChanMap = make(map[string]chan Work)
 
+	log.Println("Program inifialized")
+
 	// create simple handler for websocket
 	http.HandleFunc("/", AgentHandler)
-	log.Fatal(http.ListenAndServe(*addr, nil))
+	log.Fatal(http.ListenAndServe("0.0.0.0:4201", nil))
 }
