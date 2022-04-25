@@ -235,16 +235,18 @@ func MakeCase(NewCase dbtypes.Case) (*mongo.InsertOneResult, string, error) {
 		}
 	*/
 
-	client, ctx, cancel, err := dbConnect()
+	/*
+		client, ctx, cancel, err := dbConnect()
 
-	// defer closing db connection
-	defer dbClose(client, ctx, cancel)
+		// defer closing db connection
+		defer dbClose(client, ctx, cancel)
 
-	if err != nil {
-		log.Panicln(err)
-	}
+		if err != nil {
+			log.Panicln(err)
+		}
 
-	client.Database("Cases").CreateCollection(ctx, id)
+		client.Database("Cases").CreateCollection(ctx, id)
+	*/
 
 	result, err = DbSingleInsert(dbName, dbCollection, NewCase)
 
