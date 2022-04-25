@@ -91,6 +91,7 @@ func DbCreateCase(c *gin.Context) {
 				"error": err.Error(),
 			},
 		)
+		return
 	}
 
 	newCase := dbtypes.Case{
@@ -102,12 +103,16 @@ func DbCreateCase(c *gin.Context) {
 		Collaborators: multi["collabs"],
 	}
 
+	// print newCase
+	log.Printf("%+v\n", newCase)
+
 	// log
 	_, err = dbInterface.MakeCaseLog(c, "", c.MustGet("identity").(string), dbtypes.Info, logtypes.CreateCaseAttempt, nil)
 
 	if err != nil {
 		// failed to log
 		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+		return
 	}
 
 	// call make case (it does the sanity checks for us). // TODO: figure out where to put CreateCaseFailure log
@@ -124,6 +129,7 @@ func DbCreateCase(c *gin.Context) {
 	if err != nil {
 		// failed to log
 		log.Panicln("INTERNAL SERVER ERROR: LOG FILE CREATION FAILED")
+		return
 	}
 
 	// send ok
