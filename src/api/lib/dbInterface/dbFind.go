@@ -499,7 +499,7 @@ func FindAvailableJobs(jobTypes []string) ([]dbtypes.Job, error) {
 	//for each type of job
 	for _, jobType := range jobTypes {
 		//get the results
-		results, err := FindDocsByFilter("Jobs", "JobQueue", bson.M{"jobtype": jobType})
+		results, err := FindDocsByFilter("Jobs", "JobQueue", bson.M{"jobtype": jobType, "status": dbtypes.Queued})
 
 		//hee-hoo error handling
 		//go to the next type since apparently no jobs of that type exist

@@ -193,7 +193,6 @@ func GetWork(c *gin.Context) {
 
 //this is just for receiving work from workers
 func SubmitWork(c *gin.Context) {
-
 	var fileUUID string
 
 	//the next bunch of code is basically just looking for the query parameters
@@ -206,6 +205,7 @@ func SubmitWork(c *gin.Context) {
 				"error": "no job uuid in the query",
 			},
 		)
+		log.Println("no job uuid in the query")
 		return
 	}
 
@@ -218,6 +218,7 @@ func SubmitWork(c *gin.Context) {
 				"error": "no case uuid in the query",
 			},
 		)
+		log.Println("no case uuid in the query")
 		return
 	}
 
@@ -230,6 +231,7 @@ func SubmitWork(c *gin.Context) {
 				"error": "no resulttype in the query",
 			},
 		)
+		log.Println("no resulttype in the query")
 		return
 	}
 
@@ -242,6 +244,7 @@ func SubmitWork(c *gin.Context) {
 				"error": "no parameter 'done' in the query",
 			},
 		)
+		log.Println("no parameter 'done' in the query")
 		return
 	}
 
@@ -254,6 +257,7 @@ func SubmitWork(c *gin.Context) {
 				"error": "no name in the query",
 			},
 		)
+		log.Println("no name in the query")
 		return
 	}
 
@@ -276,7 +280,7 @@ func SubmitWork(c *gin.Context) {
 
 		c.JSON(
 			http.StatusConflict,
-			gin.H{"error": "target job is not In-Progess and cannot be modified by worker"},
+			gin.H{"error": "target job is not " + dbtypes.InProgress.String() + " and cannot be modified by worker"},
 		)
 		return
 	}
@@ -303,7 +307,7 @@ func SubmitWork(c *gin.Context) {
 		err := dbInterface.ModifyJobTagsAndRelations(fileUUID, caseUUID, tags, relations)
 
 		if err != nil {
-
+			log.Println("Could not modify tags and relations for file", err)
 			c.JSON(
 				http.StatusInternalServerError,
 				gin.H{"error": err.Error()},

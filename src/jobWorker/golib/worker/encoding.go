@@ -17,6 +17,7 @@ func jobResultToParams(result *JobResult) string {
 		"fileuuid":   result.FileUUID,
 		"done":       strconv.FormatBool(result.Done),
 		"resulttype": result.ResultType,
+		"caseuuid":   result.CaseUUID,
 	}
 
 	// convert the map to a query encoded string
