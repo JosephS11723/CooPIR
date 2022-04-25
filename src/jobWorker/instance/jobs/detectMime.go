@@ -14,7 +14,7 @@ import (
 )
 
 // DetermineMimeType determines the mime type of a file
-func DetermineMimeType(job *dbtypes.Job, resultChan chan worker.JobResult) {
+func DetermineMimeType(job *dbtypes.Job, resultChan chan worker.ResultContainer) {
 	// create directory for the job
 	//os.Mkdir(job.JobUUID, 0755)
 
@@ -75,12 +75,17 @@ func DetermineMimeType(job *dbtypes.Job, resultChan chan worker.JobResult) {
 		ResultType: resultTypes.ModifyFile,
 		Tags:       []string{"mimetype:" + mimeType},
 		Relations:  []string{},
-		Name:       "",
+		Name:       job.Name,
 		Done:       true,
+		FileUUID:   fileUUID,
+		CaseUUID:   caseUUID,
 	}
 
-	// send job result to job result queue
-	resultChan <- jobResult
+	// add to job container and send job result to job result queue
+	resultChan <- worker.ResultContainer{
+		JobResult:	jobResult,
+		FileReader: nil,
+	}
 }
 
 func getMimeTypeFromReader(reader *bufio.Reader) (string, error) {

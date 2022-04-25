@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -28,7 +29,7 @@ type JobWorker struct {
 	JobQueue chan dbtypes.Job
 
 	// JobResultQueue is the queue of job results to be submitted to the api.
-	JobResultQueue chan JobResult
+	JobResultQueue chan ResultContainer
 
 	// MaxWorkers is the maximum number of workers routines to be spawned
 	MaxWorkers int `json:"maxworkers default:2"`
@@ -74,6 +75,9 @@ type JobResult struct {
 
 	// FileUUID references the file that the result is associated with
 	FileUUID string `json:"fileuuid" default:"new"`
+
+	// caseUUID references the case that the result is associated with
+	CaseUUID string `json:"caseuuid"`
 }
 
 var (
@@ -82,7 +86,13 @@ var (
 )
 
 // JobFunc is the function type that is called when a job is performed
-type JobFunc func(*dbtypes.Job, chan JobResult)
+type JobFunc func(*dbtypes.Job, chan ResultContainer)
+
+// ResultContainer contains the JobResult and the io.reader for any files to be uploaded
+type ResultContainer struct {
+	JobResult  JobResult
+	FileReader io.Reader
+}
 
 // NewJobWorker creates a new JobWorker
 func NewJobWorker(maxWorkers int) *JobWorker {
@@ -93,7 +103,7 @@ func NewJobWorker(maxWorkers int) *JobWorker {
 	j.JobQueue = make(chan dbtypes.Job)
 
 	// create the job result queue
-	j.JobResultQueue = make(chan JobResult, 100)
+	j.JobResultQueue = make(chan ResultContainer, 100)
 
 	// create the job list
 	j.jobList = make(map[string]JobFunc)
@@ -140,16 +150,16 @@ func (j *JobWorker) getWorkLoop() {
 func (j *JobWorker) submitWorkLoop() {
 	for {
 		// wait for a job result
-		jobResult := <-j.JobResultQueue
+		jobContainer := <-j.JobResultQueue
 
 		// submit the job result
-		err := j.SubmitJob(jobResult)
+		err := j.SubmitJob(jobContainer.JobResult, jobContainer.FileReader)
 
 		// if there is an error, log it and continue
 		if err != nil {
 			log.Println("Error submitting job result:", err)
 			// add job back into the finished queue
-			j.JobResultQueue <- jobResult
+			j.JobResultQueue <- jobContainer
 			continue
 		}
 
@@ -200,7 +210,7 @@ func (j *JobWorker) Stop() error {
 }
 
 // SubmitJob submits a job result to the api
-func (j *JobWorker) SubmitJob(result JobResult) error {
+func (j *JobWorker) SubmitJob(result JobResult, r io.Reader) error {
 	// create a new http client
 	client := &http.Client{}
 
@@ -214,16 +224,13 @@ func (j *JobWorker) SubmitJob(result JobResult) error {
 
 		// create the request
 		// TODO: add reader parsing if there is a file to upload (change nil to reader)
-		req, err := http.NewRequest("POST", "http://"+config.ApiName+":"+config.ApiPort+strings.ReplaceAll(submitResultPath, "{jobuuid}", result.JobUUID)+submitResultPath+"?"+params, nil)
+		req, err := http.NewRequest("POST", "http://"+config.ApiName+":"+config.ApiPort+strings.ReplaceAll(submitResultPath, "{jobuuid}", result.JobUUID)+"?"+params, r)
 
 		// if there is an error, log it and continue
 		if err != nil {
 			log.Println("Error creating job result request:", err)
 			continue
 		}
-
-		// set the content type
-		req.Header.Set("Content-Type", "application/json")
 
 		// send the request
 		resp, err := client.Do(req)
@@ -308,9 +315,6 @@ func (j *JobWorker) GetJob() (dbtypes.Job, error) {
 			continue
 		}
 
-		// print body
-		log.Println("Body:", string(body))
-
 		// unmarshal the response body
 		err = json.Unmarshal(body, &job)
 
@@ -319,9 +323,6 @@ func (j *JobWorker) GetJob() (dbtypes.Job, error) {
 			log.Println("Error unmarshalling job response body:", err)
 			continue
 		}
-
-		// print job
-		log.Printf("Job: %+v\n", job)
 
 		// return the job
 		return job, nil

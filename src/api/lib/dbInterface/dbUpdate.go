@@ -76,14 +76,13 @@ func UpdateUser(dbName string, dbCollection string, caseUpdate dbtypes.UpdateDoc
 //this just modifies the job document in the Jobs server
 func ModifyJobStatus(jobUUID string, status dbtypes.JobStatus) error {
 
-	_ = UpdateDoc("Jobs", "JobQueue", bson.M{"jobuuid": jobUUID}, bson.D{{"$set", bson.M{"jobstatus": status}}})
+	_ = UpdateDoc("Jobs", "JobQueue", bson.M{"jobuuid": jobUUID}, bson.D{{"$set", bson.M{"status": status}}})
 
 	return nil
 }
 
 //find the file by UUID in a case, then append to that file's tags and relations
 func ModifyJobTagsAndRelations(fileUUID string, caseUUID string, tags []string, relations []string) error {
-
 	//go through the ceremony of finding the file, decoding it, and error-checking
 	result, err := FindDocByFilter("Cases", caseUUID, bson.M{"uuid": fileUUID})
 
