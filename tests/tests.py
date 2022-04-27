@@ -763,6 +763,45 @@ def createSearchJobAndFindByUUIDTest():
     except Exception as e:
         error(e)
 
+def SendAgentWork():
+    '''Send agent work'''
+    try:
+        # print function name
+        print(inspect.getframeinfo(inspect.currentframe()).function, end=" ", flush=True)
+
+        # Get info agent from server
+        r = s.get(
+            url=apiBasePath + "/all"
+        )
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+        
+        # Get agent info
+        agentInfo = r.json()
+        AgentUUID = agentInfo.keys()
+        print(AgentUUID)
+
+        # request ping page
+        r = s.post(
+            url=apiBasePath + "/task",
+            params = {
+                "uuid":AgentUUID,
+                "task":"getlogs"
+            }
+        )
+
+        # check if good request
+        if r.status_code != 200:
+            error(str(r.status_code) + " " + r.content.decode())
+        else:
+            success()
+            print(r.content, end="")
+            
+    except Exception as e:
+        error(e)
+
 tests = [
     loginTest,
     pingTest,
@@ -783,6 +822,7 @@ tests = [
     #createZipJobTest,
     uploadZipTest2,
     createZipJobTest,
+    SendAgentWork,
     ]
 def runAllTests():
     for test in tests:

@@ -2,13 +2,17 @@ package agenthandler
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
-	"os"
 	"sync"
+	"time"
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/coopirutil"
+	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
+	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
+	"github.com/JosephS11723/CooPIR/src/api/lib/seaweedInterface"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )
@@ -31,7 +35,8 @@ type ClientInfo struct {
 
 // work we are given from drew to send to the client. client responds with file and we put it in seaweed. we then add an entry in the database
 type Work struct {
-	Task string `json:"task"`
+	Task      string `json:"task"`
+	CaseUUUID string `json:"caseuuid"`
 	// other file data here. this is what is put in the database
 }
 
@@ -114,14 +119,14 @@ func AgentHandler(con *gin.Context) {
 			case websocket.TextMessage:
 				log.Println(clientInfo.UUID, "TextMessage")
 				// read file and save (call function)
-				readAndSaveFile(clientInfo.UUID, reader)
+				readAndSaveFile(reader, work.CaseUUUID, clientInfo.Name)
 
 				log.Println("File written to disk")
 
 				// print the work struct (DEBUG)
 				log.Printf("Work: %+v", work)
 
-				// THIS IS WHERE THE WORK WOULD BE ADDED TO THE DATABASE
+				// TODO: THIS IS WHERE THE WORK WOULD BE ADDED TO THE DATABASE
 
 				// send response to client
 				err = c.WriteMessage(websocket.TextMessage, []byte("200"))
@@ -135,7 +140,7 @@ func AgentHandler(con *gin.Context) {
 			case websocket.BinaryMessage:
 				log.Println(clientInfo.UUID, "BinaryMessage")
 				// read file and save (call function)
-				readAndSaveFile(clientInfo.UUID, reader)
+				readAndSaveFile(reader, work.CaseUUUID, clientInfo.Name)
 
 				log.Println("File written to disk")
 
@@ -198,38 +203,37 @@ func AgentHandler(con *gin.Context) {
 	}
 }
 
-func readAndSaveFile(fileName string, reader io.Reader) {
-	// TODO: this is where we upload the reader to seaweed and get data. skip this step
-	// TEST CODE: write to a local file
-	file, err := os.Create(fileName)
+func readAndSaveFile(reader io.Reader, caseUUID string, machineName string) {
+	// send the buffer to seaweedinterface.go to add to the database
+	uuid, hashes, err := seaweedInterface.POSTFileJob(caseUUID, reader)
 
 	if err != nil {
-		log.Println("create file:", err)
+		// file conflict, do not add entry to database
+		log.Println("File conflict, not added to database")
 		return
 	}
 
-	defer file.Close()
+	// Use machine name and format to create file name
+	fileName := fmt.Sprintf("%s.zip", machineName)
 
-	_, err = io.Copy(file, reader)
+	// add to database
+	result, err := dbInterface.MakeFile(uuid, hashes, []string{"compressed"}, caseUUID, fileName, time.Now().Local().String(), dbtypes.Responder.String(), dbtypes.Admin.String(), []string{""})
 
 	if err != nil {
-		log.Println("copy:", err)
-		return
+		log.Println("Error adding file to database:", result)
 	}
-
-	log.Println("File written to disk")
 }
 
 func SubmitWork(c *gin.Context) {
 	// read the the work from the params
 	// get task from params
-	params, _, err := coopirutil.ParseParams([]string{"task", "uuid"}, c.Request.URL.Query())
+	params, _, err := coopirutil.ParseParams([]string{"task", "uuid", "caseuuid"}, c.Request.URL.Query())
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 
-	ChanMap[params["uuid"]] <- Work{Task: params["task"]}
+	ChanMap[params["uuid"]] <- Work{Task: params["task"], CaseUUUID: params["caseuuid"]}
 }
 
 func GetAgents(c *gin.Context) {
