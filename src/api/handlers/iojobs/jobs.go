@@ -351,8 +351,8 @@ func SubmitWork(c *gin.Context) {
 		if err != nil {
 
 			if err.Error() == "file already exists" {
-
-				// TODO: there should be a file deletion request here
+				// delete file
+				seaweedInterface.DELETEFile(fileUUID, caseUUID)
 
 				err = dbInterface.ModifyJobTagsAndRelations(fileUUID, caseUUID, tags, relations)
 
@@ -385,8 +385,8 @@ func SubmitWork(c *gin.Context) {
 				caseUUID,
 				name,
 				time.Now().Local().String(),
-				"supervisor",
-				"admin",
+				dbtypes.Responder.String(),
+				dbtypes.Responder.String(),
 				relations,
 			)
 

@@ -20,7 +20,11 @@ export class DashboardComponent implements OnInit {
       icon: 'exit_to_app',
       route: '/login'
     },    
-   
+    {
+      label: 'Agents',
+      icon: 'account_box',
+      route: '/agents'
+    }
     
   ];
 
@@ -46,8 +50,8 @@ export class DashboardComponent implements OnInit {
     //get the case list from the db
     this.http.get("http://localhost:8080/api/v1/cases", { observe: 'response'})
       .subscribe(response => {
-        console.log("Logging response");
-        console.log(response.body);
+        //console.log("Logging response");
+        //console.log(response.body);
         //store the response as an any type so we can access the data inside
         let retrievedCases: any
         if(response.body != null)
@@ -62,16 +66,19 @@ export class DashboardComponent implements OnInit {
             .subscribe(response => {
               var caseData: any;
               caseData = response.body;
-              console.log("Case metadata: ", response);
+              //console.log("Case metadata: ", response);
               //console.log("Case name: ", caseData.case.name);
               //console.log("Case uuid: ", caseData.case.uuid);
 
+              var convertedDate = new Date(Number(caseData.case.dateCreated)).toLocaleDateString("en-US");
+              var convertedTime = new Date(Number(caseData.case.dateCreated)).toLocaleTimeString("en-US");
+              //console.log("Time: ", convertedTime);
               this.caseList.push({
                 name: caseData.case.name,
                 uuid: caseData.case.uuid,
                 description: caseData.case.description,
                 supervisor: 'Joseph',
-                date_created: caseData.case.dateCreated
+                date_created: "" + convertedTime + " - " + convertedDate 
               });
             })
             //console.log(retrievedCases.cases[index]);

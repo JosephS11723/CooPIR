@@ -6,6 +6,7 @@ import { saveAs } from 'file-saver';
 import * as FileSaver from 'file-saver';
 import { Router } from '@angular/router';
 import * as Vis from 'vis';
+import Swal from 'sweetalert2';
 //import { writeFile } from 'fs';
 
 @Component({
@@ -83,7 +84,7 @@ export class CaseComponent implements OnInit {
             //get the info for the file
             this.http.get("http://localhost:8080/api/v1/file/info", {params: fileParams, observe: 'response'})
             .subscribe( response => {
-                console.log("Here is the file info: ", response.body);
+                //console.log("Here is the file info: ", response.body);
                 fileInfo = response.body;
 
                 //push file into nodes to be displayed by the map
@@ -93,16 +94,16 @@ export class CaseComponent implements OnInit {
                 
                 if(relations != '')
                 {
-                  console.log("Pushing edge");
-                  console.log("File relation: ", relations[0]);
+                  //console.log("Pushing edge");
+                  //console.log("File relation: ", relations[0]);
                   for(var index = 1; index < relations.length; index++)
                   {
                     edges.push({from: fileInfo.file.uuid, to: relations[index].split(":")[0], value: 1})
                   }
                   edges.push({from: fileInfo.file.uuid, to: relations[0].split(":")[0], value: 1});
                 }
-                console.log("Nodes: ", nodes);
-                console.log("Edges: ", edges);
+                //console.log("Nodes: ", nodes);
+                //console.log("Edges: ", edges);
 
                 //display the map
                 var container = document.getElementById("mynetwork");
@@ -278,7 +279,14 @@ export class CaseComponent implements OnInit {
       
       const formData = new FormData();
       formData.append("file", this.file);
-      //post the new file
+      Swal.fire({
+        icon: 'info',
+        title: 'Uploading File',
+        didOpen: () => {
+          Swal.showLoading()
+        }
+      });
+      //post the new file and wait to refresh until response comes back
       this.http.post("http://localhost:8080/api/v1/file", formData, 
       {
         params: params,
@@ -286,9 +294,11 @@ export class CaseComponent implements OnInit {
         .subscribe(response => {
             console.log("logging file post respose");
             console.log(response);
+            window.location.reload();
           }, error => {
             console.log("logging file post error");
             console.log(error);
+            window.location.reload();
           });
 
       
@@ -302,8 +312,42 @@ export class CaseComponent implements OnInit {
         route: ''
         });
         //refresh the page so the new file shows up
-        window.location.reload();
+        //window.location.reload();
     }
+  }
+
+  checkForUploadSuccess(filename: any): void
+  {
+    const params = new HttpParams()
+    .append('uuid', this.cookieService.get("currentUUID"));
+    var retrievedFiles:any;
+    this.http.get("http://localhost:8080/api/v1/case/files", {params: params, observe: 'response'})
+    .subscribe(response => {
+      console.log("Here are the files: ", response);
+      if(response.body != null)
+      {
+        retrievedFiles = response.body;
+      }
+      console.log("Case files: ", retrievedFiles.files);
+      for(var index = 0; index < retrievedFiles.files.length; index++)
+      {
+        var fileParams = new HttpParams()
+        .append('caseUUID', this.cookieService.get("currentUUID"))
+        .append('fileUUID', retrievedFiles.files[index]);
+        let fileInfo: any;
+        //get the name for the file 
+        this.http.get("http://localhost:8080/api/v1/file/info", {params: fileParams, observe: 'response'})
+        .subscribe(response => {
+          //console.log("Here is the job file info: ", response.body);
+          fileInfo = response.body;
+          var fileNameCheck = fileInfo.file.filename.split("/").pop();
+          
+        });
+        
+      }
+    
+
+    });
   }
 
   emptyClick(): void

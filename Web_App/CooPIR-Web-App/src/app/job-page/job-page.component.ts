@@ -52,7 +52,25 @@ export class JobPageComponent implements OnInit {
         retrievedFiles = response.body;
       }
       console.log("Case files: ", retrievedFiles.files);
-      this.caseFiles.push(retrievedFiles.files[0]);
+      for(var index = 0; index < retrievedFiles.files.length; index++)
+      {
+        var fileParams = new HttpParams()
+        .append('caseUUID', this.cookieService.get("currentUUID"))
+        .append('fileUUID', retrievedFiles.files[index]);
+        let fileInfo: any;
+        //get the name for the file so that the user doesn't have to look at uuids
+        this.http.get("http://localhost:8080/api/v1/file/info", {params: fileParams, observe: 'response'})
+        .subscribe(response => {
+          //console.log("Here is the job file info: ", response.body);
+          fileInfo = response.body;
+          this.caseFiles.push({
+            filename: fileInfo.file.filename.split("/").pop(),
+            fileuuid: fileInfo.file.uuid
+          });
+        });
+        //this.caseFiles.push(retrievedFiles.files[index]);
+      }
+      //this.caseFiles.push(retrievedFiles.files[0]);
 
     });
   }
@@ -66,6 +84,18 @@ export class JobPageComponent implements OnInit {
     console.log("Job type: ", jobtype);
     console.log("file for job", fileforjob);
     console.log("Job name: ", jobName);
+
+    var params = new HttpParams()
+    .append('caseuuid', this.cookieService.get("currentUUID"))
+    .append('arguments', '')
+    .append('files', fileforjob)
+    .append('name', jobName)
+    .append('jobtype', jobtype);
+
+    this.http.post("http://localhost:8080/api/v1/jobs/new", '', {params: params, observe: 'response'})
+    .subscribe(response =>{
+      console.log("Response from job start post: ", response);
+    })
   }
   ngOnInit(): void
   {

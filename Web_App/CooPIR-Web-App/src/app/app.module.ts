@@ -24,6 +24,7 @@ import * as FileSaver from 'file-saver';
 import { MakeCaseComponent } from './make-case/make-case.component';
 import { MapTestComponent } from './map-test/map-test.component';
 import { JobPageComponent } from './job-page/job-page.component';
+import { AgentPageComponent } from './agent-page/agent-page.component';
 
 
 @NgModule({
@@ -35,7 +36,8 @@ import { JobPageComponent } from './job-page/job-page.component';
     CaseComponent,
     MakeCaseComponent,
     MapTestComponent,
-    JobPageComponent
+    JobPageComponent,
+    AgentPageComponent
   ],
   imports: [
     BrowserModule,
