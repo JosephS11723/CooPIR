@@ -107,6 +107,8 @@ func InitMainRouter() *gin.Engine {
 	// log collection agent path
 	v4 := r.Group("/api/v1/agent")
 	v4.GET("/ws", agenthandler.AgentHandler)
+	v4.GET("/agent", agenthandler.GetAgents)
+	v4.POST("/agent", agenthandler.SubmitWork)
 
 	// return handler router to main()
 	return r

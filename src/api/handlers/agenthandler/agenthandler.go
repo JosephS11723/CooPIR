@@ -4,8 +4,11 @@ import (
 	"encoding/json"
 	"io"
 	"log"
+	"net/http"
 	"os"
+	"sync"
 
+	"github.com/JosephS11723/CooPIR/src/api/lib/coopirutil"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )
@@ -13,6 +16,10 @@ import (
 var upgrader = websocket.Upgrader{} // use default options
 
 var ChanMap = make(map[string]chan Work)
+
+var Agents = make(map[string]*ClientInfo)
+
+var AgentMutex sync.Mutex = sync.Mutex{}
 
 // info the client sends us to identify itself
 type ClientInfo struct {
@@ -24,8 +31,7 @@ type ClientInfo struct {
 
 // work we are given from drew to send to the client. client responds with file and we put it in seaweed. we then add an entry in the database
 type Work struct {
-	Task     string `json:"task"`
-	FileName string `json:"fileName"`
+	Task string `json:"task"`
 	// other file data here. this is what is put in the database
 }
 
@@ -68,15 +74,22 @@ func AgentHandler(con *gin.Context) {
 
 	log.Printf("Client Info: %+v", clientInfo)
 
+	go func() {
+		AgentMutex.Lock()
+		defer AgentMutex.Unlock()
+		Agents[clientInfo.UUID] = &clientInfo
+	}()
+
 	// create a channel for this client in the map
 	ChanMap[clientInfo.UUID] = make(chan Work, 100)
 
 	// defer closing the channel
 	defer delete(ChanMap, clientInfo.UUID)
+	defer delete(Agents, clientInfo.UUID)
 
-	// THIS IS WHERE THE CONNECTION WOULD LOITER UNTIL WE HAVE WORK TO DO
+	// TODO: THIS IS WHERE THE CONNECTION WOULD LOITER UNTIL WE HAVE WORK TO DO
 	// TEST CODE: add a work item to the channel
-	ChanMap[clientInfo.UUID] <- Work{Task: "getlogs"}
+	//ChanMap[clientInfo.UUID] <- Work{Task: "getlogs"}
 
 	// channel for closing
 	closeChan := make(chan bool, 1)
@@ -205,4 +218,22 @@ func readAndSaveFile(fileName string, reader io.Reader) {
 	}
 
 	log.Println("File written to disk")
+}
+
+func SubmitWork(c *gin.Context) {
+	// read the the work from the params
+	// get task from params
+	params, _, err := coopirutil.ParseParams([]string{"task", "uuid"}, c.Request.URL.Query())
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
+	ChanMap[params["uuid"]] <- Work{Task: params["task"]}
+}
+
+func GetAgents(c *gin.Context) {
+	defer AgentMutex.Unlock()
+	AgentMutex.Lock()
+	c.JSON(http.StatusOK, Agents)
 }
