@@ -14,10 +14,10 @@ var ApiName string = "api-server"
 var ApiPort string = "8080"
 
 // GetJobInterval is the interval between getting jobs
-var GetJobInterval int = 5
+var GetJobInterval int = 10
 
 // SubmitResultInterval is the interval between submitting results
-var SubmitResultInterval int = 2
+var SubmitResultInterval int = 1
 
 // WorkDir is the directory where the files are stored
 var WorkDir string = "/usr/src/app"
