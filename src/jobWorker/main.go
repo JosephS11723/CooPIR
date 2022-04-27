@@ -11,6 +11,7 @@ import (
 
 	"github.com/JosephS11723/CooPIR/src/jobWorker/golib/worker"
 	"github.com/JosephS11723/CooPIR/src/jobWorker/instance/jobs/detectMime"
+	"github.com/JosephS11723/CooPIR/src/jobWorker/instance/jobs/regexurls"
 	"github.com/JosephS11723/CooPIR/src/jobWorker/instance/jobs/unzip"
 )
 
@@ -27,6 +28,7 @@ func main() {
 
 	// add a job that can be done
 	worker.AddJobWithFunction("Determine-MimeType", detectMime.DetermineMimeType)
+	worker.AddJobWithFunction("ParseURLs", regexurls.ParseUrls)
 	worker.AddJobWithFunction("Unzip", unzip.Unzip)
 
 	// start the worker

@@ -224,6 +224,11 @@ func (j *JobWorker) SubmitJob(result JobResult, r io.Reader) error {
 	// create a new http client
 	client := &http.Client{}
 
+	// if name field on jobresult is blank, set it to the jobuuid
+	if result.Name == "" {
+		result.Name = result.JobUUID
+	}
+
 	// get params
 	params := jobResultToParams(&result)
 
