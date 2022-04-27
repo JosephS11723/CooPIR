@@ -1,6 +1,6 @@
 <!--toolbar stuff-->
 <mat-toolbar fxLayout="row" color="primary">
-    <span fxFlex>CooPIR Jobs</span>
+    <span fxFlex>CooPIR Agents</span>
     <button mat-button *ngFor="let item of menuItems" fxHide.xs [routerLink]="item.route">
         <mat-icon class="mr">{{item.icon}}</mat-icon>
         {{item.label}}
@@ -20,8 +20,7 @@
     <router-outlet></router-outlet>
 </mat-toolbar>
 
-
-<h1>Create a Job</h1>
+<h1>Current Agents: </h1>
 
 <div>
     &nbsp;&nbsp;&nbsp;&nbsp;
@@ -34,7 +33,7 @@
     <label for="jobtype">Job Type:</label>
     &nbsp;&nbsp;&nbsp;&nbsp;
     <select name="jobtype" id="jobtype">
-        <option *ngFor="let item of joblist; let i=index" [value]="item.jobtype">{{item.jobtype}}</option> 
+       <!-- <option *ngFor="let item of joblist; let i=index" [value]="item.jobtype">{{item.jobtype}}</option> -->
     </select>  
     
     <br><br>
@@ -42,11 +41,11 @@
     <label for="fileforjob">File :</label>
     &nbsp;&nbsp;&nbsp;&nbsp;
     <select name="fileforjob" id="fileforjob">
-        <option *ngFor="let item of caseFiles; let i=index" [value]="item.fileuuid">{{item.filename}}</option> 
+        <!--<option *ngFor="let item of caseFiles; let i=index" [value]="item.fileuuid">{{item.filename}}</option> -->
     </select> 
 
     
 
     <br><br>
-    <button (click)="launchJob()" class="btn btn-primary btn-lg mr-2">Launch Job</button>
+    <button (click)="launchAgent()" class="btn btn-primary btn-lg mr-2">Launch Job</button>
 </div>
