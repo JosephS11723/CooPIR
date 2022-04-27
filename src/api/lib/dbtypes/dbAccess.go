@@ -42,3 +42,19 @@ func (s AccessLevel) ToInt(lvl string) AccessLevel {
 	}
 	return return_val
 }
+
+func (s AccessLevel) String() string {
+	var return_val string
+
+	switch s {
+	case Users:
+		return_val = "users"
+	case Responder:
+		return_val = "responder"
+	case Supervisor:
+		return_val = "supervisor"
+	case Admin:
+		return_val = "admin"
+	}
+	return return_val
+}

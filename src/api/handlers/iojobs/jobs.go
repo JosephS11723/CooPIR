@@ -385,8 +385,8 @@ func SubmitWork(c *gin.Context) {
 				caseUUID,
 				name,
 				time.Now().Local().String(),
-				"supervisor",
-				"admin",
+				dbtypes.Responder.String(),
+				dbtypes.Responder.String(),
 				relations,
 			)
 
