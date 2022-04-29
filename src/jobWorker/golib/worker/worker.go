@@ -107,10 +107,10 @@ func NewJobWorker(maxWorkers int) *JobWorker {
 	j.JobQueue = make(chan dbtypes.Job)
 
 	// create the job result queue
-	j.JobResultQueue = make(chan ResultContainer, 100)
+	j.JobResultQueue = make(chan ResultContainer, 1)
 
 	// create the return channel
-	j.ReturnChan = make(chan string, 10)
+	j.ReturnChan = make(chan string, 1)
 
 	// create the job list
 	j.jobList = make(map[string]JobFunc)
