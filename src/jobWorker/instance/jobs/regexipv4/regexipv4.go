@@ -59,7 +59,7 @@ func RegexIPv4(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnC
 		// create reader for bytes
 		reader := bytes.NewReader(urlBytes)
 
-		log.Println("Uploading url: ", filename)
+		log.Println("Uploading ipv4: ", filename)
 
 		// create result struct
 		jobResult := worker.JobResult{

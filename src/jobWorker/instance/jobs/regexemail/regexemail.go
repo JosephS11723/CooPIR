@@ -59,7 +59,7 @@ func RegexEmail(job *dbtypes.Job, resultChan chan worker.ResultContainer, return
 		// create reader for bytes
 		reader := bytes.NewReader(urlBytes)
 
-		log.Println("Uploading url: ", filename)
+		log.Println("Uploading email: ", filename)
 
 		// create result struct
 		jobResult := worker.JobResult{

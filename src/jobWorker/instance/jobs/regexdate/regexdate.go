@@ -59,7 +59,7 @@ func RegexDate(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnC
 		// create reader for bytes
 		reader := bytes.NewReader(urlBytes)
 
-		log.Println("Uploading url: ", filename)
+		log.Println("Uploading date: ", filename)
 
 		// create result struct
 		jobResult := worker.JobResult{
