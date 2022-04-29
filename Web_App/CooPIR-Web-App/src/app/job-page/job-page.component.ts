@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { CookieService } from 'ngx-cookie-service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-job-page',
@@ -16,8 +17,8 @@ export class JobPageComponent implements OnInit {
       route: '/login'
     },
     {
-      label: 'Case',
-      icon: 'assignment',
+      label: 'Back to Case',
+      icon: 'keyboard_tab',
       route: '/case'
     }
   ];
@@ -95,6 +96,16 @@ export class JobPageComponent implements OnInit {
     this.http.post("http://localhost:8080/api/v1/jobs/new", '', {params: params, observe: 'response'})
     .subscribe(response =>{
       console.log("Response from job start post: ", response);
+      if(response.status === 200)
+      {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Your job has started',
+          timer: 1500,
+          timerProgressBar: true
+        })
+      }
     })
   }
   ngOnInit(): void

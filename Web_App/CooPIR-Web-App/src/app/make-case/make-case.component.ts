@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-make-case',
@@ -56,6 +57,17 @@ export class MakeCaseComponent implements OnInit {
     this.http.post("http://localhost:8080/api/v1/case/new", '', {observe: 'response', params: params})
     .subscribe(response => {
       console.log("New Case Response: ", response);
+    }, error => {
+      if(error.status === 200)
+      {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Your case has been created',
+          timer: 1500,
+          timerProgressBar: true
+        })
+      }
     })
   }
   ngOnInit(): void {

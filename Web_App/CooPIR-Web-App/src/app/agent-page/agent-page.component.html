@@ -22,30 +22,41 @@
 
 <h1>Current Agents: </h1>
 
-<div>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <label for="jobName">Job Name:</label>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="text" id="jobName">
-
-    <br><br>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <label for="jobtype">Job Type:</label>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <select name="jobtype" id="jobtype">
-       <!-- <option *ngFor="let item of joblist; let i=index" [value]="item.jobtype">{{item.jobtype}}</option> -->
-    </select>  
+<head>
+    <!--Style for the table of cases is defined-->
+    <style>
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
     
-    <br><br>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <label for="fileforjob">File :</label>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <select name="fileforjob" id="fileforjob">
-        <!--<option *ngFor="let item of caseFiles; let i=index" [value]="item.fileuuid">{{item.filename}}</option> -->
-    </select> 
-
+    td, th {
+      border: 1px solid #545050;
+      text-align: left;
+      padding: 8px;
+    }
     
-
-    <br><br>
-    <button (click)="launchAgent()" class="btn btn-primary btn-lg mr-2">Launch Job</button>
-</div>
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+    </style>
+    </head>
+    <!--Table to display the cases-->
+    <body>
+    <table name="valid-cases" id="valid-cases">
+        <!--Bolded text that defines the categories-->
+        <tr>
+            <th>Agent Name</th>
+            <th>OS Running</th>
+            <th>Arch</th>
+        </tr>
+        <!--Each case is placed in the table-->
+        <!--The first item is ignored because it is just a placeholder-->
+          <tr *ngFor="let item of agentList; let i=index">
+             <td>{{item.name}}</td>
+             <td>{{item.os}}</td>
+             <td>{{item.arch}}</td>
+          </tr>
+     </table> 
+     </body>

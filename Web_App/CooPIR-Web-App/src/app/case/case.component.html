@@ -27,7 +27,7 @@
   }
   #mynetwork {
       width: 1700px;
-      height: 300px;
+      height: 800px;
       border: 1px solid
       lightgray;
   }
@@ -85,6 +85,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;
 <label for="relations">What does it relate to: </label>
 &nbsp;&nbsp;&nbsp;&nbsp;
+<!--select-->
 <select name="relations" id="relations">
   <option *ngFor="let item of fileList; let i=index" [value]="item.uuid">{{item.name}}</option> 
 </select> 
