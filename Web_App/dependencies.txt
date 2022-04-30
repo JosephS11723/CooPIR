@@ -9,3 +9,4 @@ npm install vis-util
 npm install vis-data
 npm install vis --save
 npm install @types/vis --save-dev
+npm i ng2-search-filter --save

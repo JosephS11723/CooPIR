@@ -19,6 +19,9 @@ export class CaseComponent implements OnInit {
   fileName = '';
   doc = ""
 
+  searchTerm: any;
+  term!: any;
+
   //nodes:any;
   menuItems = [
     {
@@ -35,19 +38,25 @@ export class CaseComponent implements OnInit {
       label: 'Jobs',
       icon: 'assignment',
       route: '/jobs'
+    },
+    {
+      label: 'Map',
+      icon: 'map',
+      route: '/map'
     }
   ];
 
-  fileList = [
-    {
-      name: '',
-      uuid: '',
-      created: '',
-      md5: '',
-      relations: '',
-      route: ''
-    }
-  ];
+  fileList = new Array<any>();
+//  fileList = [
+ //   {
+//      name: '',
+//      uuid: '',
+//      created: '',
+//      md5: '',
+//      relations: '',
+//      route: ''
+//    }
+//  ];
   constructor(private http: HttpClient, private cookieService:CookieService,  private router: Router) { }
 
 
@@ -106,27 +115,27 @@ export class CaseComponent implements OnInit {
                 //console.log("Edges: ", edges);
 
                 //display the map
-                var container = document.getElementById("mynetwork");
-                var data = {
-                  nodes: nodes,
-                  edges: edges,
-                };
-                var options = {
-                  nodes: {
-                    shape: "dot",
-                    scaling: {
-                      customScalingFunction: function(min:any, max:any, total:any, value:any) {
-                        return value / total;
-                      },
-                      min: 0,
-                      max: 150,
-                    },
-                  },
-                };
-                if(container != null)
-                {
-                  var network = new Vis.Network(container, data, options);
-                }
+                //var container = document.getElementById("mynetwork");
+                //var data = {
+                //  nodes: nodes,
+                //  edges: edges,
+                //};
+                //var options = {
+                //  nodes: {
+                //    shape: "dot",
+                //    scaling: {
+                //      customScalingFunction: function(min:any, max:any, total:any, value:any) {
+                //        return value / total;
+                //      },
+                //      min: 0,
+                //      max: 150,
+                //    },
+                //  },
+                //};
+                //if(container != null)
+               // {
+               //   var network = new Vis.Network(container, data, options);
+               // }
 
                 //push file and its info to be displayed by the table
                 //console.log("This is the selected file's name: ", fileInfo.file.filename.split("/").pop());
@@ -263,18 +272,6 @@ export class CaseComponent implements OnInit {
       .append('relations', relations + ":contains")
       
       .append('tags', "testtag");
-
-      if(relations != '')
-      {
-        console.log("Adding relation", relations);
-        params.append('relations', relations + ":contains")
-        .append('relations', relations + ":used");
-
-      }
-      else
-      {
-        console.log("Relations is null");
-      }
       
       
       const formData = new FormData();
@@ -302,52 +299,18 @@ export class CaseComponent implements OnInit {
           });
 
       
-      this.fileList.push(
-        {
-        name: this.fileName,
-        uuid: '',
-        created: '',
-        md5: '',
-        relations: relations,
-        route: ''
-        });
+    //  this.fileList.push(
+    //    {
+    //    name: this.fileName,
+    //    uuid: '',
+    //    created: '',
+    //    md5: '',
+    //    relations: relations,
+    //    route: ''
+    //    });
         //refresh the page so the new file shows up
         //window.location.reload();
     }
-  }
-
-  checkForUploadSuccess(filename: any): void
-  {
-    const params = new HttpParams()
-    .append('uuid', this.cookieService.get("currentUUID"));
-    var retrievedFiles:any;
-    this.http.get("http://localhost:8080/api/v1/case/files", {params: params, observe: 'response'})
-    .subscribe(response => {
-      console.log("Here are the files: ", response);
-      if(response.body != null)
-      {
-        retrievedFiles = response.body;
-      }
-      console.log("Case files: ", retrievedFiles.files);
-      for(var index = 0; index < retrievedFiles.files.length; index++)
-      {
-        var fileParams = new HttpParams()
-        .append('caseUUID', this.cookieService.get("currentUUID"))
-        .append('fileUUID', retrievedFiles.files[index]);
-        let fileInfo: any;
-        //get the name for the file 
-        this.http.get("http://localhost:8080/api/v1/file/info", {params: fileParams, observe: 'response'})
-        .subscribe(response => {
-          //console.log("Here is the job file info: ", response.body);
-          fileInfo = response.body;
-          var fileNameCheck = fileInfo.file.filename.split("/").pop();
-          
-        });
-        
-      }
-    
-
-    });
   }
 
   emptyClick(): void

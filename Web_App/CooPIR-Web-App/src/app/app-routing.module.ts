@@ -8,6 +8,7 @@ import { MakeCaseComponent } from './make-case/make-case.component';
 import { MapTestComponent } from './map-test/map-test.component';
 import { JobPageComponent } from './job-page/job-page.component';
 import { AgentPageComponent } from './agent-page/agent-page.component';
+import { MapPageComponent } from './map-page/map-page.component';
 
 const routes: Routes = [
   { path: 'home', component:HomeComponent },
@@ -18,6 +19,7 @@ const routes: Routes = [
   { path: 'testMap', component:MapTestComponent},
   { path: 'jobs', component:JobPageComponent},
   { path: 'agents', component:AgentPageComponent},
+  { path: 'map', component:MapPageComponent},
   { path: '**', component:LoginComponent}
 ];
 
