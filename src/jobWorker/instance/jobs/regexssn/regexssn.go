@@ -2,10 +2,10 @@ package regexssn
 
 import (
 	"bytes"
+	"errors"
 	"log"
 	"os"
 	reg "regexp"
-	"time"
 
 	"github.com/JosephS11723/CooPIR/src/jobWorker/config"
 	"github.com/JosephS11723/CooPIR/src/jobWorker/golib/dbtypes"
@@ -19,7 +19,7 @@ import (
 var regExpression *reg.Regexp = commonregex.SSNRegex
 
 // ParseURLs parses the urls in a file
-func RegexSSN(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnChan chan string) {
+func RegexSSN(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnChan chan string) error {
 	// get information
 	caseUUID := job.CaseUUID
 	fileUUID := job.Files[0]
@@ -27,15 +27,9 @@ func RegexSSN(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnCh
 	// get reader for file
 	file, err := os.OpenFile(config.WorkDir+"/"+caseUUID+"/"+fileUUID, os.O_RDONLY, 0755)
 
-	for err != nil {
-		// log error
-		log.Println(err)
-
-		// sleep for 5 seconds
-		time.Sleep(time.Duration(5) * time.Second)
-
-		// get reader for file
-		file, err = os.OpenFile(config.WorkDir+"./"+caseUUID+"/"+fileUUID, os.O_RDONLY, 0755)
+	if err != nil {
+		log.Println("Error opening file:", err)
+		return errors.New("could not open file")
 	}
 
 	defer file.Close()
@@ -110,5 +104,5 @@ func RegexSSN(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnCh
 		<-returnChan
 	}
 
-	return
+	return nil
 }

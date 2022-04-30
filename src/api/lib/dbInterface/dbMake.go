@@ -398,11 +398,11 @@ func MakeJob(new_job dbtypes.NewJob) (string, error) {
 //creates a new job from a NewJob structure
 func MoveFinishedJob(jobUUID string) (string, error) {
 
-	err := ModifyJobStatus(jobUUID, dbtypes.Finished)
+	//err := ModifyJobStatus(jobUUID, dbtypes.Finished)
 
-	if err != nil {
-		log.Panicln("ERROR: could not modify job status from current to 'Finished'")
-	}
+	//if err != nil {
+		//log.Panicln("ERROR: could not modify job status from current to 'Finished'")
+	//}
 
 	doc, err := FindDocByFilter("Jobs", "JobQueue", bson.M{"jobuuid": jobUUID})
 

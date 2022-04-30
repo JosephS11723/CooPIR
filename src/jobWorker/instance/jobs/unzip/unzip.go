@@ -11,7 +11,7 @@ import (
 )
 
 // Unzip attempts to unzip a file and upload its artifacts to seaweed
-func Unzip(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnChan chan string) {
+func Unzip(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnChan chan string) error {
 	// get information
 	caseUUID := job.CaseUUID
 	fileUUID := job.Files[0]
@@ -20,7 +20,7 @@ func Unzip(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnChan 
 	r, err := zip.OpenReader(config.WorkDir + "/" + caseUUID + "/" + fileUUID)
 	if err != nil {
 		log.Println(err)
-		return
+		return err
 	}
 	defer r.Close()
 
@@ -95,27 +95,5 @@ func Unzip(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnChan 
 		rc.Close()
 	}
 
-	// send empty update and close
-	/*jobResult := worker.JobResult{
-		ResultType: resultTypes.ModifyFile,
-		JobUUID:    job.JobUUID,
-		CaseUUID:   job.CaseUUID,
-		Tags:       []string{},
-		Name:       "",
-		Relations:  []string{},
-		Done:       true,
-		FileUUID:   fileUUID,
-	}
-
-	// create container
-	container := worker.ResultContainer{
-		JobResult:  jobResult,
-		FileReader: nil,
-	}
-
-	// send to result channel
-	resultChan <- container
-
-	// void output
-	<-returnChan*/
+	return nil
 }

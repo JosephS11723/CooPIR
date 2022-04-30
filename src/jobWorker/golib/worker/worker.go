@@ -21,6 +21,7 @@ import (
 
 	"github.com/JosephS11723/CooPIR/src/jobWorker/config"
 	"github.com/JosephS11723/CooPIR/src/jobWorker/golib/dbtypes"
+	"github.com/JosephS11723/CooPIR/src/jobWorker/golib/resultTypes"
 	"github.com/JosephS11723/CooPIR/src/jobWorker/golib/seaweed"
 )
 
@@ -90,7 +91,7 @@ var (
 )
 
 // JobFunc is the function type that is called when a job is performed
-type JobFunc func(*dbtypes.Job, chan ResultContainer, chan string)
+type JobFunc func(*dbtypes.Job, chan ResultContainer, chan string) error
 
 // ResultContainer contains the JobResult and the io.reader for any files to be uploaded
 type ResultContainer struct {
@@ -423,7 +424,46 @@ func (j *JobWorker) workerRoutine() {
 				continue
 			} else {
 				// perform the job
-				j.jobList[job.JobType](&job, j.JobResultQueue, j.ReturnChan)
+				err := j.jobList[job.JobType](&job, j.JobResultQueue, j.ReturnChan)
+
+				// if there is an error, log it and send an error message for the job
+				if err != nil {
+					// send error message
+					log.Println("[ERROR workerRoutine]: Error performing job:", err)
+
+					// send error message
+					j.JobResultQueue <- ResultContainer{
+						JobResult: JobResult{
+							JobUUID:    job.JobUUID,
+							ResultType: resultTypes.Error,
+							Tags:       []string{},
+							Relations:  []string{},
+							Name:       err.Error(),
+							FileUUID:   "na",
+							CaseUUID:   job.CaseUUID,
+							Done:       true,
+						},
+						FileReader: nil,
+					}
+				} else {
+					// send done message with no content
+					j.JobResultQueue <- ResultContainer{
+						JobResult: JobResult{
+							JobUUID:    job.JobUUID,
+							ResultType: resultTypes.Done,
+							Tags:       []string{},
+							Relations:  []string{},
+							Name:       "na",
+							FileUUID:   "na",
+							CaseUUID:   job.CaseUUID,
+							Done:       true,
+						},
+						FileReader: nil,
+					}
+				}
+
+				// void result
+				<-j.ReturnChan
 			}
 
 		case <-j.doneChan:
