@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-agent-page',
@@ -23,10 +24,10 @@ export class AgentPageComponent implements OnInit {
   ];
 
 
-  constructor(private http: HttpClient) { }
+  constructor(private cookieService:CookieService, private http: HttpClient) { }
 
   getAgents(): void
-  {;
+  {
     //var retrievedAgents: any;
     var retrievedAgents: any;
     var jsonTest = new Map<string, JSON>();
@@ -56,7 +57,8 @@ export class AgentPageComponent implements OnInit {
           {
             name: testAgent.name,
             os: testAgent.os,
-            arch: testAgent.arch
+            arch: testAgent.arch,
+            uuid: testAgent.uuid
           }
         )
         console.log("Agent name: ", testAgent.name);
@@ -70,10 +72,18 @@ export class AgentPageComponent implements OnInit {
   }
 
 
-  launchAgent(): void 
-  {
+ getAgentLogs(uuid:any): void 
+ {
+  const params = new HttpParams()
+  .append('task', 'getlogs')
+  .append('uuid', uuid)
+  .append('caseuuid', this.cookieService.get("currentUUID"));
 
-  }
+  this.http.post("http://localhost:8080/api/v1/agent/task", '', {observe: 'response', params:params})
+  .subscribe(response => {
+    console.log("Response from agent get log: ", response);
+  });
+}
   
   ngOnInit(): void 
   {

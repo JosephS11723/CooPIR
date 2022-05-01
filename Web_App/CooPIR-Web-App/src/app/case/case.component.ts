@@ -63,8 +63,8 @@ export class CaseComponent implements OnInit {
   getFiles(): void
   {
     //var nodes = [{id: '', value: 0, label: 'fake'}];
-    var nodes = new Array<any>();
-    console.log("Empty node list: ", nodes);
+    //var nodes = new Array<any>();
+    //console.log("Empty node list: ", nodes);
     //var edges = [{from: 'df', to: 'df', value: 0}];
     var edges = [{}];
     
@@ -98,7 +98,7 @@ export class CaseComponent implements OnInit {
 
                 //push file into nodes to be displayed by the map
                 //nodes.push({ id: fileInfo.file.filename.split("/").pop(), value: 1, label: fileInfo.file.filename.split("/").pop()});
-                nodes.push({ id: fileInfo.file.uuid, value: 1, label: fileInfo.file.filename.split("/").pop()});               
+                //nodes.push({ id: fileInfo.file.uuid, value: 1, label: fileInfo.file.filename.split("/").pop()});               
                 var relations = fileInfo.file.relations;
                 
                 if(relations != '')
@@ -147,6 +147,7 @@ export class CaseComponent implements OnInit {
                   relations: '',
                   route: '/case'
                 });
+                this.fileList.sort((a, b) => a.name.localeCompare(b.name));
             });
           
           }

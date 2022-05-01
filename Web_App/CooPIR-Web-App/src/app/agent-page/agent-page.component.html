@@ -20,7 +20,6 @@
     <router-outlet></router-outlet>
 </mat-toolbar>
 
-<h1>Current Agents: </h1>
 
 <head>
     <!--Style for the table of cases is defined-->
@@ -49,14 +48,14 @@
         <tr>
             <th>Agent Name</th>
             <th>OS Running</th>
-            <th>Arch</th>
+            <th>Logs</th>
         </tr>
         <!--Each case is placed in the table-->
         <!--The first item is ignored because it is just a placeholder-->
           <tr *ngFor="let item of agentList; let i=index">
              <td>{{item.name}}</td>
-             <td>{{item.os}}</td>
-             <td>{{item.arch}}</td>
+             <td>{{item.os}} - {{item.arch}}</td>
+             <td><button (click)="getAgentLogs(item.uuid)" class="btn btn-primary btn-lg mr-2" style="width:100%">Get Logs</button></td>
           </tr>
      </table> 
      </body>

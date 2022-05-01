@@ -24,8 +24,8 @@ export class JobPageComponent implements OnInit {
   ];
   joblist = new Array<any>();
   caseFiles = new Array<any>();
+  //public caseFiles: CaseFiles[] = [];
   constructor(private cookieService:CookieService, private http: HttpClient) { }
-
 
   getJobs(): void 
   {
@@ -34,11 +34,11 @@ export class JobPageComponent implements OnInit {
     this.http.get("http://localhost:8080/api/v1/jobs/types")
     .subscribe(response => {
       jobs = response
-      console.log("Response: ", response);
-      console.log("Job response", jobs.jobtypes);
+      //console.log("Response: ", response);
+      //console.log("Job response", jobs.jobtypes);
       this.joblist = jobs.jobtypes
-      console.log("Here is the joblist: ", this.joblist);
-      console.log("Here is the job type: ", this.joblist[0].jobtype);
+      //console.log("Here is the joblist: ", this.joblist);
+      //console.log("Here is the job type: ", this.joblist[0].jobtype);
     });
 
     //get the files the job could be associated with
@@ -47,12 +47,12 @@ export class JobPageComponent implements OnInit {
     var retrievedFiles:any;
     this.http.get("http://localhost:8080/api/v1/case/files", {params: params, observe: 'response'})
     .subscribe(response => {
-      console.log("Here are the files: ", response);
+      //console.log("Here are the files: ", response);
       if(response.body != null)
       {
         retrievedFiles = response.body;
       }
-      console.log("Case files: ", retrievedFiles.files);
+      //console.log("Case files: ", retrievedFiles.files);
       for(var index = 0; index < retrievedFiles.files.length; index++)
       {
         var fileParams = new HttpParams()
@@ -68,6 +68,8 @@ export class JobPageComponent implements OnInit {
             filename: fileInfo.file.filename.split("/").pop(),
             fileuuid: fileInfo.file.uuid
           });
+          //sort the list alphabetically 
+          this.caseFiles.sort((a, b) => a.filename.localeCompare(b.filename));
         });
         //this.caseFiles.push(retrievedFiles.files[index]);
       }
@@ -108,6 +110,9 @@ export class JobPageComponent implements OnInit {
       }
     })
   }
+
+
+
   ngOnInit(): void
   {
     this.getJobs();

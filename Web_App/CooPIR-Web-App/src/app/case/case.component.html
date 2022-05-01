@@ -36,6 +36,22 @@
 
 -->
 
+<!--File uploader-->
+<h2>Add a file:</h2>
+<input type="file" id="uploader" class="file-input"
+(change)="onFileSelected($event)" #fileUpload>
+<button type="submit" id="submit_file" class="btn btn-primary btn-lg mr-2" (click)="submitFile($event)" disabled>Submit File</button>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<label for="relations">What does it relate to: </label>
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!--select-->
+<select name="relations" id="relations">
+  <option *ngFor="let item of fileList; let i=index" [value]="item.uuid">{{item.name}}</option> 
+</select> 
+<br><br><br>
+
+<!--Search bar-->
 <div class="search">
   <input type="text" [(ngModel)]="term" class="searchTerm" placeholder="Search for a file">
 </div>
@@ -80,7 +96,7 @@
      </body>
 
 
-<!--File uploader-->
+<!--File uploader
 <br><br>
 <input type="file" id="uploader" class="file-input"
 (change)="onFileSelected($event)" #fileUpload>
@@ -88,11 +104,12 @@
 &nbsp;&nbsp;&nbsp;&nbsp;
 <label for="relations">What does it relate to: </label>
 &nbsp;&nbsp;&nbsp;&nbsp;
-<!--select-->
+
+
 <select name="relations" id="relations">
   <option *ngFor="let item of fileList; let i=index" [value]="item.uuid">{{item.name}}</option> 
 </select> 
-
+-->
 <!--Doc viewer stuff-->
 <ngx-doc-viewer
   [url]="doc"
