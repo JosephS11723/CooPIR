@@ -48,13 +48,13 @@ func AuthenticationMiddleware(c *gin.Context) {
 
 	// if the identity is not a string, return unauthorized
 	if identity.(string) == "" {
-		c.AbortWithError(http.StatusUnauthorized, errors.New("Invalid identity"))
+		c.AbortWithError(http.StatusUnauthorized, errors.New("invalid identity"))
 		return
 	}
 
 	// if the identity is an empty string, return unauthorized
 	if identity.(string) == "" {
-		c.AbortWithError(http.StatusUnauthorized, errors.New("Invalid identity"))
+		c.AbortWithError(http.StatusUnauthorized, errors.New("invalid identity"))
 		return
 	}
 
