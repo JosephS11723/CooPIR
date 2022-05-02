@@ -60,7 +60,7 @@ func RegexDate(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnC
 			ResultType: resultTypes.CreateFile,
 			JobUUID:    job.JobUUID,
 			CaseUUID:   job.CaseUUID,
-			Tags:       []string{"url"},
+			Tags:       []string{"date"},
 			Name:       filename,
 			Done:       false,
 			FileUUID:   filename,

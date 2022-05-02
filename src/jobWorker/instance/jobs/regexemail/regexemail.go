@@ -60,7 +60,7 @@ func RegexEmail(job *dbtypes.Job, resultChan chan worker.ResultContainer, return
 			ResultType: resultTypes.CreateFile,
 			JobUUID:    job.JobUUID,
 			CaseUUID:   job.CaseUUID,
-			Tags:       []string{"url"},
+			Tags:       []string{"email address"},
 			Name:       filename,
 			Done:       false,
 			FileUUID:   filename,

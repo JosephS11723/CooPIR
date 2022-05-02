@@ -60,7 +60,7 @@ func RegexIPv4(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnC
 			ResultType: resultTypes.CreateFile,
 			JobUUID:    job.JobUUID,
 			CaseUUID:   job.CaseUUID,
-			Tags:       []string{"url"},
+			Tags:       []string{"ipv4"},
 			Name:       filename,
 			Done:       false,
 			FileUUID:   filename,

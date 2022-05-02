@@ -53,14 +53,14 @@ func RegexSSN(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnCh
 		// create reader for bytes
 		reader := bytes.NewReader(urlBytes)
 
-		log.Println("Uploading url: ", filename)
+		log.Println("Uploading ssn: ", filename)
 
 		// create result struct
 		jobResult := worker.JobResult{
 			ResultType: resultTypes.CreateFile,
 			JobUUID:    job.JobUUID,
 			CaseUUID:   job.CaseUUID,
-			Tags:       []string{"url"},
+			Tags:       []string{"social security number"},
 			Name:       filename,
 			Done:       false,
 			FileUUID:   filename,
