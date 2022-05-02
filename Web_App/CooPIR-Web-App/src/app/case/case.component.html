@@ -19,15 +19,14 @@
     <router-outlet></router-outlet>
 </mat-toolbar>
 
-
 <!--Map stuff-->
-<style>
+<!--<style>
   body {
       font: 10pt arial;
   }
   #mynetwork {
       width: 1700px;
-      height: 300px;
+      height: 800px;
       border: 1px solid
       lightgray;
   }
@@ -35,7 +34,27 @@
 
 <div id="mynetwork"></div>
 
+-->
 
+<!--File uploader-->
+<h2>Add a file:</h2>
+<input type="file" id="uploader" class="file-input"
+(change)="onFileSelected($event)" #fileUpload>
+<button type="submit" id="submit_file" class="btn btn-primary btn-lg mr-2" (click)="submitFile($event)" disabled>Submit File</button>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<label for="relations">What does it relate to: </label>
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!--select-->
+<select name="relations" id="relations">
+  <option *ngFor="let item of fileList; let i=index" [value]="item.uuid">{{item.name}}</option> 
+</select> 
+<br><br><br>
+
+<!--Search bar-->
+<div class="search">
+  <input type="text" [(ngModel)]="term" class="searchTerm" placeholder="Search for a file">
+</div>
 
 <head>
     <!--Style for the table of files is defined-->
@@ -68,16 +87,16 @@
         </tr>
         <!--Each case is placed in the table-->
         <!--The first item is ignored because it is just a placeholder-->
-          <tr *ngFor="let item of fileList; let i=index" [routerLink]="item.route">
-             <td *ngIf="i != 0"><button id="item.name" (click)="getFileInfo(item.uuid, item.name)" class="btn btn-primary btn-lg mr-2" style="width:100%">{{item.name}}</button></td>
-             <td *ngIf="i != 0">{{item.created}}</td>
-             <td *ngIf="i != 0">{{item.md5}}</td>
+          <tr *ngFor="let item of fileList | filter:term; let i=index " [routerLink]="item.route">
+             <td><button id="item.name" (click)="getFileInfo(item.uuid, item.name)" class="btn btn-primary btn-lg mr-2" style="width:100%">{{item.name}}</button></td>
+             <td>{{item.created}}</td>
+             <td>{{item.md5}}</td>
           </tr>
      </table> 
      </body>
 
 
-<!--File uploader-->
+<!--File uploader
 <br><br>
 <input type="file" id="uploader" class="file-input"
 (change)="onFileSelected($event)" #fileUpload>
@@ -85,10 +104,12 @@
 &nbsp;&nbsp;&nbsp;&nbsp;
 <label for="relations">What does it relate to: </label>
 &nbsp;&nbsp;&nbsp;&nbsp;
+
+
 <select name="relations" id="relations">
   <option *ngFor="let item of fileList; let i=index" [value]="item.uuid">{{item.name}}</option> 
 </select> 
-
+-->
 <!--Doc viewer stuff-->
 <ngx-doc-viewer
   [url]="doc"

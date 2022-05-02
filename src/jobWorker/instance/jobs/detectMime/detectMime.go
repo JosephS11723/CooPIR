@@ -2,9 +2,9 @@ package detectMime
 
 import (
 	"bufio"
+	"errors"
 	"log"
 	"os"
-	"time"
 
 	"github.com/JosephS11723/CooPIR/src/jobWorker/config"
 	"github.com/JosephS11723/CooPIR/src/jobWorker/golib/dbtypes"
@@ -14,7 +14,7 @@ import (
 )
 
 // DetermineMimeType determines the mime type of a file
-func DetermineMimeType(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnChan chan string) {
+func DetermineMimeType(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnChan chan string) error {
 	// create directory for the job
 	//os.Mkdir(job.JobUUID, 0755)
 
@@ -45,15 +45,9 @@ func DetermineMimeType(job *dbtypes.Job, resultChan chan worker.ResultContainer,
 	// get reader for file
 	file, err := os.OpenFile(config.WorkDir+"/"+caseUUID+"/"+fileUUID, os.O_RDONLY, 0755)
 
-	for err != nil {
-		// log error
-		log.Println(err)
-
-		// sleep for 5 seconds
-		time.Sleep(time.Duration(5) * time.Second)
-
-		// get reader for file
-		file, err = os.OpenFile(config.WorkDir+"./"+caseUUID+"/"+fileUUID, os.O_RDONLY, 0755)
+	if err != nil {
+		log.Println("Error opening file:", err)
+		return errors.New("error opening file")
 	}
 
 	defer file.Close()
@@ -62,11 +56,8 @@ func DetermineMimeType(job *dbtypes.Job, resultChan chan worker.ResultContainer,
 	mimeType, err := getMimeTypeFromReader(bufio.NewReader(file))
 
 	for err != nil {
-		// log error
-		log.Println(err)
-
-		// get the mime type
-		mimeType, err = getMimeTypeFromReader(bufio.NewReader(file))
+		log.Println("Error getting mime type:", err)
+		return errors.New("error getting mime type")
 	}
 
 	// create job result
@@ -76,19 +67,21 @@ func DetermineMimeType(job *dbtypes.Job, resultChan chan worker.ResultContainer,
 		Tags:       []string{"mimetype:" + mimeType},
 		Relations:  []string{},
 		Name:       job.Name,
-		Done:       true,
+		Done:       false,
 		FileUUID:   fileUUID,
 		CaseUUID:   caseUUID,
 	}
 
 	// add to job container and send job result to job result queue
 	resultChan <- worker.ResultContainer{
-		JobResult:	jobResult,
+		JobResult:  jobResult,
 		FileReader: nil,
 	}
 
 	// void return value
 	<-returnChan
+
+	return nil
 }
 
 func getMimeTypeFromReader(reader *bufio.Reader) (string, error) {

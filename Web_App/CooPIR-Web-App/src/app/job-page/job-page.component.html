@@ -30,7 +30,7 @@
     <input type="text" id="jobName">
 
     <br><br>
-    &nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <label for="jobtype">Job Type:</label>
     &nbsp;&nbsp;&nbsp;&nbsp;
     <select name="jobtype" id="jobtype">
@@ -38,11 +38,11 @@
     </select>  
     
     <br><br>
-    &nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <label for="fileforjob">File :</label>
     &nbsp;&nbsp;&nbsp;&nbsp;
     <select name="fileforjob" id="fileforjob">
-        <option *ngFor="let item of caseFiles; let i=index" [value]="item.fileuuid">{{item.filename}}</option> 
+        <option *ngFor="let item of caseFiles" [value]="item.fileuuid">{{item.filename}}</option> 
     </select> 
 
     

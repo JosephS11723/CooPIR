@@ -396,6 +396,31 @@ func SubmitWork(c *gin.Context) {
 			}
 		}
 
+	// if error, the job has failed. update the job status to errors and return
+	case "error":
+		// get job status
+		err := dbInterface.ModifyJobStatus(jobUUID, dbtypes.JobError)
+
+		if err != nil {
+			c.JSON(
+				http.StatusInternalServerError,
+				gin.H{"error": err.Error()},
+			)
+			return
+		}
+
+	case "done":
+		// modify job status to done
+		err := dbInterface.ModifyJobStatus(jobUUID, dbtypes.Finished)
+
+		if err != nil {
+			c.JSON(
+				http.StatusInternalServerError,
+				gin.H{"error": err.Error()},
+			)
+			return
+		}
+
 	default:
 		c.JSON(
 			http.StatusBadRequest,

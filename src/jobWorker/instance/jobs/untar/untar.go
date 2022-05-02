@@ -2,6 +2,7 @@ package untar
 
 import (
 	"archive/tar"
+	"errors"
 	"io"
 	"log"
 	"os"
@@ -13,7 +14,7 @@ import (
 )
 
 // Unzip attempts to unzip a file and upload its artifacts to seaweed
-func Untar(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnChan chan string) {
+func Untar(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnChan chan string) error {
 	// get information
 	caseUUID := job.CaseUUID
 	fileUUID := job.Files[0]
@@ -22,13 +23,12 @@ func Untar(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnChan 
 	reader, err := os.Open(config.WorkDir + "/" + caseUUID + "/" + fileUUID)
 	if err != nil {
 		log.Println("Error opening file:", err)
-		return
+		return errors.New("error opening file")
 	}
 	defer reader.Close()
 
 	// create tarreader
 	tarReader := tar.NewReader(reader)
-
 
 	// for each file in the tar
 	for {
@@ -37,7 +37,7 @@ func Untar(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnChan 
 			break
 		} else if err != nil {
 			log.Println(err)
-			return
+			return err
 		}
 
 		filename := f.Name
@@ -101,27 +101,5 @@ func Untar(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnChan 
 		<-returnChan
 	}
 
-	// send empty update and close
-	/*jobResult := worker.JobResult{
-		ResultType: resultTypes.ModifyFile,
-		JobUUID:    job.JobUUID,
-		CaseUUID:   job.CaseUUID,
-		Tags:       []string{},
-		Name:       "",
-		Relations:  []string{},
-		Done:       true,
-		FileUUID:   fileUUID,
-	}
-
-	// create container
-	container := worker.ResultContainer{
-		JobResult:  jobResult,
-		FileReader: nil,
-	}
-
-	// send to result channel
-	resultChan <- container
-
-	// void output
-	<-returnChan*/
+	return nil
 }

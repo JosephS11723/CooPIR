@@ -25,6 +25,10 @@ import { MakeCaseComponent } from './make-case/make-case.component';
 import { MapTestComponent } from './map-test/map-test.component';
 import { JobPageComponent } from './job-page/job-page.component';
 import { AgentPageComponent } from './agent-page/agent-page.component';
+import { MapPageComponent } from './map-page/map-page.component';
+import { Ng2SearchPipeModule } from 'ng2-search-filter';
+import { FormsModule } from '@angular/forms';
+
 
 
 @NgModule({
@@ -37,7 +41,8 @@ import { AgentPageComponent } from './agent-page/agent-page.component';
     MakeCaseComponent,
     MapTestComponent,
     JobPageComponent,
-    AgentPageComponent
+    AgentPageComponent,
+    MapPageComponent
   ],
   imports: [
     BrowserModule,
@@ -52,6 +57,8 @@ import { AgentPageComponent } from './agent-page/agent-page.component';
     MatDividerModule,
     MatListModule,
     NgxDocViewerModule,
+    Ng2SearchPipeModule,
+    FormsModule
   ],
   providers: [
     CookieService,

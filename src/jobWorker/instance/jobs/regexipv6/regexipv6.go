@@ -1,4 +1,4 @@
-package regexurls
+package regexipv6
 
 import (
 	"bytes"
@@ -16,10 +16,10 @@ import (
 	"github.com/mingrammer/commonregex"
 )
 
-var urlRegex *reg.Regexp = commonregex.LinkRegex
+var regExpression *reg.Regexp = commonregex.IPv6Regex
 
 // ParseURLs parses the urls in a file
-func RegexUrls(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnChan chan string) error {
+func RegexIPv6(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnChan chan string) error {
 	// get information
 	caseUUID := job.CaseUUID
 	fileUUID := job.Files[0]
@@ -35,7 +35,7 @@ func RegexUrls(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnC
 	defer file.Close()
 
 	// get the urls from the file
-	urls := regex.FindByReader(urlRegex, file, 1024)
+	urls := regex.FindByReader(regExpression, file, 1024)
 
 	log.Println(urls)
 
@@ -53,14 +53,14 @@ func RegexUrls(job *dbtypes.Job, resultChan chan worker.ResultContainer, returnC
 		// create reader for bytes
 		reader := bytes.NewReader(urlBytes)
 
-		log.Println("Uploading url: ", filename)
+		log.Println("Uploading ipv6: ", filename)
 
 		// create result struct
 		jobResult := worker.JobResult{
 			ResultType: resultTypes.CreateFile,
 			JobUUID:    job.JobUUID,
 			CaseUUID:   job.CaseUUID,
-			Tags:       []string{"url"},
+			Tags:       []string{"ipv6"},
 			Name:       filename,
 			Done:       false,
 			FileUUID:   filename,
