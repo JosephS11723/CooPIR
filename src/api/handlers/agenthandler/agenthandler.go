@@ -88,9 +88,13 @@ func AgentHandler(con *gin.Context) {
 	// create a channel for this client in the map
 	ChanMap[clientInfo.UUID] = make(chan Work, 100)
 
+	// memory shenanigans?
+	clientUUID := clientInfo.UUID
+
 	// defer closing the channel
-	defer delete(ChanMap, clientInfo.UUID)
-	defer delete(Agents, clientInfo.UUID)
+	defer delete(ChanMap, clientUUID)
+	defer delete(Agents, clientUUID)
+	defer log.Println("Client disconnected:", clientUUID)
 
 	// TODO: THIS IS WHERE THE CONNECTION WOULD LOITER UNTIL WE HAVE WORK TO DO
 	// TEST CODE: add a work item to the channel
