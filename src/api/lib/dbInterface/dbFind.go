@@ -8,6 +8,7 @@ import (
 	// _ "sync"
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
+	"github.com/gin-gonic/gin"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -575,4 +576,16 @@ func FindJobTypes(dbname string, collection string) ([]bson.M, error) {
 
 	// return list of documents
 	return docList, nil
+}
+
+//retrieves logs by
+func GetCaseLogs(c *gin.Context, caseuuid string) ([]bson.M, error) {
+
+	docs, err := FindDocsByFilter("Logs", "Logs", bson.M{"uuid": caseuuid})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return docs, nil
 }
