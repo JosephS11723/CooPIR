@@ -23,7 +23,9 @@ export class MapPageComponent implements OnInit {
     }
   ];
   nodes = new Array<any>();
+  //nodes = new Vis.DataSet();
   edges = new Array<any>();
+  //edges = new Vis.DataSet();
   constructor(private http: HttpClient, private cookieService:CookieService) { }
 
 
@@ -59,6 +61,7 @@ export class MapPageComponent implements OnInit {
           .subscribe(response => {
             fileInfo = response.body;
 
+            //this.nodes.add({ id: fileInfo.file.uuid, value: 10, label: fileInfo.file.filename.split("/").pop()}); 
             this.nodes.push({ id: fileInfo.file.uuid, value: 10, label: fileInfo.file.filename.split("/").pop()});               
             var relations = fileInfo.file.relations;
 
@@ -66,10 +69,14 @@ export class MapPageComponent implements OnInit {
             {
               for(var index = 1; index < relations.length; index++)
               {
+                //this.edges.add({from: fileInfo.file.uuid, to: relations[index].split(":")[0], value: 1})
                 this.edges.push({from: fileInfo.file.uuid, to: relations[index].split(":")[0], value: 1})
               }
+              //this.edges.add({from: fileInfo.file.uuid, to: relations[0].split(":")[0], value: 1});
               this.edges.push({from: fileInfo.file.uuid, to: relations[0].split(":")[0], value: 1});
             }
+            //console.log("redrawing network")
+    
           
             //Swal.close();
             //display the map
@@ -103,6 +110,10 @@ export class MapPageComponent implements OnInit {
                 barnesHut: {
                   gravitationalConstant: -100000
                 }
+              },
+              layout:
+              {
+                improvedLayout: false
               }
             };
             if(container != null)
@@ -156,11 +167,11 @@ export class MapPageComponent implements OnInit {
 
   ngOnInit(): void 
   {
-    console.log("Gathering info");
+    //console.log("Gathering info");
     this.getMapInfo();
-    console.log("Map info gathered");
-    console.log("Displaying map");
-    this.buildMap();
+    //console.log("Map info gathered");
+    //console.log("Displaying map");
+    //this.buildMap();
   }
 
 }

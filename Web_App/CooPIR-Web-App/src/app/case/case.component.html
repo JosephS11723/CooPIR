@@ -47,6 +47,7 @@
 
 <!--select-->
 <select name="relations" id="relations">
+  <option [value]=""></option>
   <option *ngFor="let item of fileList; let i=index" [value]="item.uuid">{{item.name}}</option> 
 </select> 
 <br><br><br>
