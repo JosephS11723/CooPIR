@@ -66,7 +66,7 @@ export class CaseComponent implements OnInit {
     //var nodes = new Array<any>();
     //console.log("Empty node list: ", nodes);
     //var edges = [{from: 'df', to: 'df', value: 0}];
-    var edges = [{}];
+    //var edges = [{}];
     
     const params = new HttpParams()
     .append('uuid', this.cookieService.get("currentUUID"));
@@ -105,11 +105,11 @@ export class CaseComponent implements OnInit {
                 {
                   //console.log("Pushing edge");
                   //console.log("File relation: ", relations[0]);
-                  for(var index = 1; index < relations.length; index++)
-                  {
-                    edges.push({from: fileInfo.file.uuid, to: relations[index].split(":")[0], value: 1})
-                  }
-                  edges.push({from: fileInfo.file.uuid, to: relations[0].split(":")[0], value: 1});
+                 // for(var index = 1; index < relations.length; index++)
+                 // {
+                 //   edges.push({from: fileInfo.file.uuid, to: relations[index].split(":")[0], value: 1})
+                 // }
+                  //edges.push({from: fileInfo.file.uuid, to: relations[0].split(":")[0], value: 1});
                 }
                 //console.log("Nodes: ", nodes);
                 //console.log("Edges: ", edges);
@@ -210,15 +210,15 @@ export class CaseComponent implements OnInit {
 
 
 
-    var testFile2: any;
-    testFile2 = this.http.get("http://localhost:8080/api/v1/file/" + uuid  + "/" + this.cookieService.get("currentUUID"), {responseType: 'blob'});
+    //var testFile2: any;
+    //testFile2 = this.http.get("http://localhost:8080/api/v1/file/" + uuid  + "/" + this.cookieService.get("currentUUID"), {responseType: 'blob'});
     //console.log("Here is the testFile2: ", testFile2);
 
-    var testFile: any;
-    testFile = this.http.get("http://localhost:8080/api/v1/file/" + uuid  + "/" + this.cookieService.get("currentUUID"), {observe: 'response'})
-    .subscribe( response => {
+    //var testFile: any;
+    //testFile = this.http.get("http://localhost:8080/api/v1/file/" + uuid  + "/" + this.cookieService.get("currentUUID"), {observe: 'response'})
+    //.subscribe( response => {
       //console.log("Response to file download: ", response);
-    });
+    //});
 
    // console.log("Here is the testFile: ", testFile);
 
