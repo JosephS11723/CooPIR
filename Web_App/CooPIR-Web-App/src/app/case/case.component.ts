@@ -71,6 +71,7 @@ export class CaseComponent implements OnInit {
 
   getFiles(): void
   {
+    this.fileList.length = 0;
     console.log("Tag list: ", this.tagList)
     //var nodes = [{id: '', value: 0, label: 'fake'}];
     //var nodes = new Array<any>();
@@ -386,8 +387,8 @@ export class CaseComponent implements OnInit {
     console.log("Here are the selected items: ", this.selectedItemsList)
     if(this.selectedItemsList.length == 0)
     {
-      //this.getFiles();
-      window.location.reload();
+      this.getFiles();
+      //window.location.reload();
     }
     else
     {
