@@ -352,11 +352,11 @@ export class CaseComponent implements OnInit {
         .subscribe(response => {
             console.log("logging file post respose");
             console.log(response);
-            //window.location.reload();
+            window.location.reload();
           }, error => {
             console.log("logging file post error");
             console.log(error);
-            //window.location.reload();
+            window.location.reload();
           });
 
       
