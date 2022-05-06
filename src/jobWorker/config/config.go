@@ -14,7 +14,7 @@ var ApiName string = "api-server"
 var ApiPort string = "8080"
 
 // GetJobInterval is the interval between getting jobs
-var GetJobInterval int = 10
+var GetJobInterval int = 2
 
 // SubmitResultInterval is the interval between submitting results
 var SubmitResultInterval int = 0

@@ -312,7 +312,8 @@ func SubmitWork(c *gin.Context) {
 		fileUUID = c.Query("fileuuid")
 
 		// log
-		dbInterface.MakeCaseLog(c, logtypes.LogDefaultCaseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.WorkerFileModify,
+		// TODO: make this the worker uuid
+		dbInterface.MakeCaseLog(c, logtypes.LogDefaultCaseUUID, "WORKER", dbtypes.Info, logtypes.WorkerFileModify,
 			map[string]interface{}{
 				"jobuuid":   jobUUID,
 				"fileuuid":  fileUUID,
@@ -334,7 +335,8 @@ func SubmitWork(c *gin.Context) {
 
 		if err != nil {
 			// log
-			dbInterface.MakeCaseLog(c, logtypes.LogDefaultCaseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.WorkerFileModifyFailure,
+			// TODO: worker uuid
+			dbInterface.MakeCaseLog(c, logtypes.LogDefaultCaseUUID, "WORKER", dbtypes.Info, logtypes.WorkerFileModifyFailure,
 				map[string]interface{}{
 					"jobuuid":   jobUUID,
 					"fileuuid":  fileUUID,
@@ -363,7 +365,8 @@ func SubmitWork(c *gin.Context) {
 		}
 
 		// log
-		dbInterface.MakeCaseLog(c, logtypes.LogDefaultCaseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.WorkerFileUpload,
+		//TODO: make this the worker uuid
+		dbInterface.MakeCaseLog(c, logtypes.LogDefaultCaseUUID, "WORKER", dbtypes.Info, logtypes.WorkerFileUpload,
 			map[string]interface{}{
 				"jobuuid":   jobUUID,
 				"fileuuid":  fileUUID,
@@ -426,7 +429,8 @@ func SubmitWork(c *gin.Context) {
 		err := dbInterface.ModifyJobStatus(jobUUID, dbtypes.JobError)
 
 		// log
-		dbInterface.MakeCaseLog(c, logtypes.LogDefaultCaseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.WorkerResultError,
+		// TODO: make this the worker uuid
+		dbInterface.MakeCaseLog(c, logtypes.LogDefaultCaseUUID, "WORKER", dbtypes.Info, logtypes.WorkerResultError,
 			map[string]interface{}{
 				"jobuuid": jobUUID,
 			})
@@ -462,7 +466,8 @@ func SubmitWork(c *gin.Context) {
 	if done == "true" {
 
 		// log
-		dbInterface.MakeCaseLog(c, logtypes.LogDefaultCaseUUID, c.MustGet("identity").(string), dbtypes.Info, logtypes.WorkerResultDone,
+		// TODO: make this the worker uuid
+		dbInterface.MakeCaseLog(c, logtypes.LogDefaultCaseUUID, "WORKER", dbtypes.Info, logtypes.WorkerResultDone,
 			map[string]interface{}{
 				"jobuuid": jobUUID,
 			})
