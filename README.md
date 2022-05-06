@@ -19,7 +19,7 @@
   an incident.
 
 ## Quick Start
-
+  **MUST HAVE DOCKER INSTALLED**
   Run runCompose.sh or runCompose.bat depending on the OS to build the docker containers.
   To run the dev web application, run the webAppServeWithReload.bat which allows for automatic reload when changes are made to the web application files.
 
@@ -31,16 +31,16 @@
 
 ### API
 
-  The API is the intermediary interface that connects all the services together and handles all traffic to and from the server and the services.
+  The API is the intermediary interface that connects all the services together and handles all traffic to and from the server and the services. It has a job server and job worker that can process and filter information that could help users find specific information about a file and its contents.
 
 ### File Storage
 
-  SeaweedFS is used as the file storage which allows for practically unlimited distributed storage.
+  SeaweedFS is used as the file storage which allows for practically unlimited distributed storage and encrypted storing of files and data.
 
 ### MongoDB
 
-  MongoDB is used for the database which contains all the user data and case data.
+  MongoDB is the database used by CooPIR to store a variety of data, including logs, case metadata, and user login information.
 
 ### Web Interface
 
-  Using Angular, CooPIR can be used via a web application which allows users to create, modify, and view cases within a web browser.
+  Using Angular, CooPIR can be used via a web application which allows users to create, modify, and view cases within a web browser. It also contains a relations map which can show relations between files and allows for downloading of files
