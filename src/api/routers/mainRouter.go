@@ -7,6 +7,7 @@ import (
 	"github.com/JosephS11723/CooPIR/src/api/handlers/iodb"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/iojobs"
 	"github.com/JosephS11723/CooPIR/src/api/handlers/ioseaweed"
+	"github.com/JosephS11723/CooPIR/src/api/handlers/logs"
 	authmw "github.com/JosephS11723/CooPIR/src/api/middleware/authentication"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -70,6 +71,9 @@ func InitMainRouter() *gin.Engine {
 	v1.GET("/case/make", iodb.GetUserMakeCase)
 	v1.GET("/file/info", iodb.GetFileInfo)
 	v1.GET("/case/files", iodb.GetCaseFiles)
+
+	// get logs path
+	v1.GET("/logs", logs.GetCaseLogs)
 
 	// Authentication
 	v1.POST("/auth/renew", authentication.RenewToken)

@@ -802,6 +802,33 @@ def SendAgentWork():
     except Exception as e:
         error(e)
 
+def GetLogsTest():
+    '''Get logs'''
+    try:
+        # print function name
+        print(inspect.getframeinfo(inspect.currentframe()).function, end=" ", flush=True)
+
+        # create query
+        query = {
+            "caseuuid":caseuuid,
+        }
+
+        # request ping page
+        r = s.get(
+            url=apiBasePath + "/logs",
+            params = query
+        )
+
+        # check if good request
+        if r.status_code != 200:
+            error(r.status_code)
+        else:
+            success()
+            print(r.content, end="")
+            
+    except Exception as e:
+        error(e)
+
 tests = [
     loginTest,
     pingTest,
@@ -823,6 +850,7 @@ tests = [
     uploadZipTest2,
     createZipJobTest,
     SendAgentWork,
+    GetLogsTest,
     ]
 def runAllTests():
     for test in tests:

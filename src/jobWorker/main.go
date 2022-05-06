@@ -10,12 +10,14 @@ import (
 	"syscall"
 
 	"github.com/JosephS11723/CooPIR/src/jobWorker/golib/worker"
+	"github.com/JosephS11723/CooPIR/src/jobWorker/instance/jobs/coopirLogParse"
 	"github.com/JosephS11723/CooPIR/src/jobWorker/instance/jobs/detectMime"
 	"github.com/JosephS11723/CooPIR/src/jobWorker/instance/jobs/regexdate"
 	"github.com/JosephS11723/CooPIR/src/jobWorker/instance/jobs/regexemail"
 	"github.com/JosephS11723/CooPIR/src/jobWorker/instance/jobs/regexipv4"
 	"github.com/JosephS11723/CooPIR/src/jobWorker/instance/jobs/regexipv6"
 	"github.com/JosephS11723/CooPIR/src/jobWorker/instance/jobs/regexssn"
+
 	//"github.com/JosephS11723/CooPIR/src/jobWorker/instance/jobs/regexurls"
 	"github.com/JosephS11723/CooPIR/src/jobWorker/instance/jobs/untar"
 	"github.com/JosephS11723/CooPIR/src/jobWorker/instance/jobs/unzip"
@@ -33,6 +35,7 @@ func main() {
 	worker := worker.NewJobWorker(runtime.NumCPU())
 
 	// add a job that can be done
+	worker.AddJobWithFunction("CoopirLogParse", coopirLogParse.CoopirLogParse)
 	worker.AddJobWithFunction("Determine-MimeType", detectMime.DetermineMimeType)
 	worker.AddJobWithFunction("RegexDate", regexdate.RegexDate)
 	worker.AddJobWithFunction("RegexEmail", regexemail.RegexEmail)
