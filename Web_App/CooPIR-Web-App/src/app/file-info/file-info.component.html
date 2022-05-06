@@ -18,3 +18,47 @@
     </mat-menu>
     <router-outlet></router-outlet>
 </mat-toolbar>
+
+
+<head>
+    <!--Style for the table of files is defined-->
+    <style>
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    td, th {
+      border: 1px solid #545050;
+      text-align: left;
+      padding: 8px;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+    </style>
+    </head>
+    <!--Table to display the cases-->
+    <body>
+    <table name="valid-cases" id="valid-cases">
+        <!--Bolded text that defines the categories-->
+        <tr>
+            <th>File Info</th>
+         
+        </tr>
+        <!--Each case is placed in the table-->
+          <tr *ngFor="let item of infoList ; let i=index ">
+            <td>{{item.key}}</td>
+            <td *ngIf="item.key=='relations'; else notRelation" (click)="passTheSalt(item.info)">{{item.info}}</td>
+            <ng-template #notRelation>{{item.info}}</ng-template>
+          </tr>
+     </table> 
+     </body>
+
+     <br>
+     <button (click)="downloadFile('newFile.txt')" class="btn btn-primary btn-lg mr-2">Download File</button>
+     <!--
+     <a [routerLink]="" (click)="passTheSalt()">Click me</a>
+     -->

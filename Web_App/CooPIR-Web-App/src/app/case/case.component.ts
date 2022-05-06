@@ -43,11 +43,6 @@ export class CaseComponent implements OnInit {
       label: 'Map',
       icon: 'map',
       route: '/map'
-    },
-    {
-      label: 'File info',
-      icon: 'map',
-      route: '/fileinfo'
     }
   ];
 
@@ -381,9 +376,34 @@ export class CaseComponent implements OnInit {
     }
   }
 
+  goToFileInfo(fileuuid:any)
+  {
+    for(var index=0; index < this.fileList.length; index++)
+    {
+      if(this.fileList[index].uuid == fileuuid)
+      {
+        this.cookieService.set('fileName', this.fileList[index].name)
+      }
+    }
+
+
+    this.cookieService.set('fileUUID', fileuuid)
+    this.router.navigateByUrl('/fileinfo', { replaceUrl: true});
+  }
+
   emptyClick(): void
   {
     console.log("Button function");
+  }
+
+  getLogs()
+  {
+    var params = new HttpParams()
+    .append('caseuuid', this.cookieService.get("currentUUID"))
+    this.http.get("http://localhost:8080/api/v1/logs/", {observe: 'response', params:params})
+    .subscribe(response => {
+      console.log("Here are the logs: ", response)
+    })
   }
 
   changeSelection()

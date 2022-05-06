@@ -61,6 +61,12 @@
 <select name="tags" id="tag">
   <option *ngFor="let item of tagList; let i=index" [value]="item">{{item}}</option> 
 </select> -->
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+<!--
+<button (click)="getLogs()">Case Logs</button>
+-->
+
 <br><br><br>
 
 
@@ -138,7 +144,7 @@ input {
         <!--Each case is placed in the table-->
           <tr *ngFor="let item of fileList | filter:term ; let i=index " [routerLink]="item.route">
             
-            <td><button id="item.name" (click)="getFileInfo(item.uuid, item.name)" class="btn btn-primary btn-lg mr-2" style="width:100%">{{item.name}}</button></td>
+            <td><button id="item.name" (click)="goToFileInfo(item.uuid)" class="btn btn-primary btn-lg mr-2" style="width:100%">{{item.name}}</button></td>
             <td>{{item.created}}</td>
             <td>{{item.md5}}</td>
             
