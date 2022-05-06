@@ -56,6 +56,9 @@ type JobWorker struct {
 
 	// doneChan is a channel that allows blocked workers to unblock obtaining a job
 	doneChan chan bool
+
+	// client is the HTTP client used to communicate with the api
+	client *http.Client
 }
 
 // JobResult is the struct that wraps the information sent to the api
@@ -124,6 +127,11 @@ func NewJobWorker(maxWorkers int) *JobWorker {
 
 	// set the max workers
 	j.MaxWorkers = maxWorkers
+
+	// create the http client
+	j.client = &http.Client{
+		Jar: http.DefaultClient.Jar,
+	}
 
 	// return the new JobWorker
 	return &j
@@ -222,9 +230,6 @@ func (j *JobWorker) Stop() error {
 
 // SubmitJob submits a job result to the api
 func (j *JobWorker) SubmitJob(result JobResult, r io.Reader) error {
-	// create a new http client
-	client := &http.Client{}
-
 	// if name field on jobresult is blank, set it to the jobuuid
 	if result.Name == "" {
 		result.Name = result.JobUUID
@@ -277,7 +282,7 @@ func (j *JobWorker) SubmitJob(result JobResult, r io.Reader) error {
 			}
 
 			// send the request
-			resp, err = client.Do(req)
+			resp, err = j.client.Do(req)
 		}
 
 		// if there is an error, log it and continue

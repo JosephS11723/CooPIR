@@ -78,6 +78,9 @@ func InitMainRouter() *gin.Engine {
 	// group for job server requests
 	v2 := r.Group("/api/v1/jobs")
 
+	// use authentication middleware
+	v2.Use(authmw.AuthenticationMiddleware)
+
 	// get status of a job
 	v2.GET("/status", iojobs.GetStatus)
 
@@ -93,7 +96,7 @@ func InitMainRouter() *gin.Engine {
 	// submit work
 	v2.POST("/:jobuuid/result", iojobs.SubmitWork)
 
-	v2.POST("/worker/new", iojobs.CreateWorker)
+	//v2.POST("/worker/new", iojobs.CreateWorker)
 
 	// get job types based on available work
 	v2.GET("/types", iojobs.GetAvailableJobTypes)
@@ -103,6 +106,9 @@ func InitMainRouter() *gin.Engine {
 
 	// login
 	v3.POST("/login", authentication.Login)
+
+	// worker registration
+	v3.POST("/worker/new", iojobs.CreateWorker)
 
 	// log collection agent path
 	v4 := r.Group("/api/v1/agent")
