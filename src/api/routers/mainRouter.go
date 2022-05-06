@@ -82,9 +82,6 @@ func InitMainRouter() *gin.Engine {
 	// group for job server requests
 	v2 := r.Group("/api/v1/jobs")
 
-	// use authentication middleware
-	v2.Use(authmw.AuthenticationMiddleware)
-
 	// get status of a job
 	v2.GET("/status", iojobs.GetStatus)
 
