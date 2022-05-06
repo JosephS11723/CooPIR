@@ -43,6 +43,11 @@ export class CaseComponent implements OnInit {
       label: 'Map',
       icon: 'map',
       route: '/map'
+    },
+    {
+      label: 'File info',
+      icon: 'map',
+      route: '/fileinfo'
     }
   ];
 
@@ -213,6 +218,7 @@ export class CaseComponent implements OnInit {
 
   getFileInfo(uuid: any, name: any): void
   {
+    this.cookieService.set('fileUUID', uuid);
     this.http.get("http://localhost:8080/api/v1/file/" + uuid  + "/" + this.cookieService.get("currentUUID"), {observe: 'response'})
     .subscribe(response =>
       {

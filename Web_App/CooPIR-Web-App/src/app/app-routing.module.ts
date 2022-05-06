@@ -9,6 +9,7 @@ import { MapTestComponent } from './map-test/map-test.component';
 import { JobPageComponent } from './job-page/job-page.component';
 import { AgentPageComponent } from './agent-page/agent-page.component';
 import { MapPageComponent } from './map-page/map-page.component';
+import { FileInfoComponent } from './file-info/file-info.component';
 
 const routes: Routes = [
   { path: 'home', component:HomeComponent },
@@ -20,6 +21,7 @@ const routes: Routes = [
   { path: 'jobs', component:JobPageComponent},
   { path: 'agents', component:AgentPageComponent},
   { path: 'map', component:MapPageComponent},
+  { path: 'fileinfo', component:FileInfoComponent},
   { path: '**', component:LoginComponent}
 ];
 
