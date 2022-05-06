@@ -1,0 +1,102 @@
+{
+  "logs": [
+    {
+      "content": null,
+      "level": 1,
+      "time": 1651806460062,
+      "type": "CreateCase",
+      "user": "00000000-0000-0000-0000-000000000001",
+      "uuid": "85ec092d-6671-4e14-b560-b75d8eb28198"
+    },
+    {
+      "content": null,
+      "level": 1,
+      "time": 1651806460624,
+      "type": "FileUploadAttempt",
+      "user": "00000000-0000-0000-0000-000000000001",
+      "uuid": "85ec092d-6671-4e14-b560-b75d8eb28198"
+    },
+    {
+      "content": {
+        "fileUUID": "4b9a30a5-d54b-43bb-81ad-d0ef10578fb7"
+      },
+      "level": 1,
+      "time": 1651806460764,
+      "type": "FileUpload",
+      "user": "00000000-0000-0000-0000-000000000001",
+      "uuid": "85ec092d-6671-4e14-b560-b75d8eb28198"
+    },
+    {
+      "content": null,
+      "level": 1,
+      "time": 1651806461340,
+      "type": "FileUploadAttempt",
+      "user": "00000000-0000-0000-0000-000000000001",
+      "uuid": "85ec092d-6671-4e14-b560-b75d8eb28198"
+    },
+    {
+      "content": {
+        "error": "file already exists",
+        "fileUUID": "4b9a30a5-d54b-43bb-81ad-d0ef10578fb7"
+      },
+      "level": 1,
+      "time": 1651806461426,
+      "type": "FileUploadFailure",
+      "user": "00000000-0000-0000-0000-000000000001",
+      "uuid": "85ec092d-6671-4e14-b560-b75d8eb28198"
+    },
+    {
+      "content": null,
+      "level": 1,
+      "time": 1651806461977,
+      "type": "FileUploadAttempt",
+      "user": "00000000-0000-0000-0000-000000000001",
+      "uuid": "85ec092d-6671-4e14-b560-b75d8eb28198"
+    },
+    {
+      "content": {
+        "error": "file already exists",
+        "fileUUID": "4b9a30a5-d54b-43bb-81ad-d0ef10578fb7"
+      },
+      "level": 1,
+      "time": 1651806462067,
+      "type": "FileUploadFailure",
+      "user": "00000000-0000-0000-0000-000000000001",
+      "uuid": "85ec092d-6671-4e14-b560-b75d8eb28198"
+    },
+    {
+      "content": "4b9a30a5-d54b-43bb-81ad-d0ef10578fb7",
+      "level": 1,
+      "time": 1651806462611,
+      "type": "FileDownloadAttempt",
+      "user": "00000000-0000-0000-0000-000000000001",
+      "uuid": "85ec092d-6671-4e14-b560-b75d8eb28198"
+    },
+    {
+      "content": "4b9a30a5-d54b-43bb-81ad-d0ef10578fb7",
+      "level": 1,
+      "time": 1651806462632,
+      "type": "FileDownload",
+      "user": "00000000-0000-0000-0000-000000000001",
+      "uuid": "85ec092d-6671-4e14-b560-b75d8eb28198"
+    },
+    {
+      "content": null,
+      "level": 1,
+      "time": 1651806467667,
+      "type": "FileUploadAttempt",
+      "user": "00000000-0000-0000-0000-000000000001",
+      "uuid": "85ec092d-6671-4e14-b560-b75d8eb28198"
+    },
+    {
+      "content": {
+        "fileUUID": "e2067625-8b69-4c2d-94e9-25506bfb7b1e"
+      },
+      "level": 1,
+      "time": 1651806467872,
+      "type": "FileUpload",
+      "user": "00000000-0000-0000-0000-000000000001",
+      "uuid": "85ec092d-6671-4e14-b560-b75d8eb28198"
+    }
+  ]
+}
