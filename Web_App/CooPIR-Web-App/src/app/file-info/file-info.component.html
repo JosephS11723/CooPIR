@@ -1,0 +1,64 @@
+<mat-toolbar fxLayout="row" color="primary">
+    <span fxFlex>Case Files</span>
+    <button mat-button *ngFor="let item of menuItems" fxHide.xs [routerLink]="item.route">
+        <mat-icon class="mr">{{item.icon}}</mat-icon>
+        {{item.label}}
+    </button>
+    <button mat-icon-button [matMenuTriggerFor]="dropMenu" fxHide fxShow.xs>
+        <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #dropMenu="matMenu">
+        <ng-container *ngFor="let item of menuItems">
+            <button mat-menu-item [routerLink]="item.route">
+                <mat-icon class="mr">{{item.icon}}</mat-icon>
+                {{item.label}}
+            </button>
+            <mat-divider></mat-divider>
+        </ng-container>
+    </mat-menu>
+    <router-outlet></router-outlet>
+</mat-toolbar>
+
+
+<head>
+    <!--Style for the table of files is defined-->
+    <style>
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    td, th {
+      border: 1px solid #545050;
+      text-align: left;
+      padding: 8px;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+    </style>
+    </head>
+    <!--Table to display the cases-->
+    <body>
+    <table name="valid-cases" id="valid-cases">
+        <!--Bolded text that defines the categories-->
+        <tr>
+            <th>File Info</th>
+         
+        </tr>
+        <!--Each case is placed in the table-->
+          <tr *ngFor="let item of infoList ; let i=index ">
+            <td>{{item.key}}</td>
+            <td *ngIf="item.key=='relations'; else notRelation" (click)="passTheSalt(item.info)">{{item.info}}</td>
+            <ng-template #notRelation>{{item.info}}</ng-template>
+          </tr>
+     </table> 
+     </body>
+
+     <br>
+     <button (click)="downloadFile('newFile.txt')" class="btn btn-primary btn-lg mr-2">Download File</button>
+     <!--
+     <a [routerLink]="" (click)="passTheSalt()">Click me</a>
+     -->

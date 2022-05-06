@@ -79,3 +79,20 @@ var LogoutFailure string = "LogoutFailure"
 var LoginAttempt string = "LoginAttempt"
 var Login string = "Login"
 var LoginFailure string = "LoginFailure"
+
+// worker events
+var WorkerStart string = "WorkerStart"
+var WorkerStop string = "WorkerStop"
+
+var WorkerFileUpload string = "WorkerFileUpload"
+var WorkerFileUploadFailure string = "WorkerFileUploadFailure"
+
+var WorkerFileModify string = "WorkerFileModify"
+var WorkerFileModifyFailure string = "WorkerFileModifyFailure"
+
+var WorkerResult string = "WorkerResult"
+var WorkerResultAttempt string = "WorkerResultAttempt"
+var WorkerResultFailure string = "WorkerResultFailure"
+
+var WorkerResultError string = "WorkerResultError"
+var WorkerResultDone string = "WorkerResultDone"

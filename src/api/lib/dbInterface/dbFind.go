@@ -3,11 +3,14 @@ package dbInterface
 import (
 	// "io"
 	"context"
+	"encoding/json"
+	"io"
 	"log"
 
 	// _ "sync"
 
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
+	"github.com/gin-gonic/gin"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -575,4 +578,96 @@ func FindJobTypes(dbname string, collection string) ([]bson.M, error) {
 
 	// return list of documents
 	return docList, nil
+}
+
+//retrieves logs by
+func GetCaseLogs(c *gin.Context, caseuuid string, w *io.PipeWriter) error {
+	return FindLogsByFilter(c, w, "Logs", "Logs", bson.M{"uuid": caseuuid})
+}
+
+// FindDocsByFilter finds multiple logs in a collection by a filter
+// returns a reader the caller must close
+func FindLogsByFilter(c *gin.Context, w *io.PipeWriter, dbname string, collection string, filter bson.M) error {
+	// connect to db
+	client, ctx, cancel, err := dbConnect()
+
+	// defer closing db connection
+	defer dbClose(client, ctx, cancel)
+
+	if err != nil {
+		return err
+	}
+
+	// get collection
+	coll := client.Database(dbname).Collection(collection)
+
+	// run find function and get cursor
+	cur, err := coll.Find(ctx, filter)
+
+	if err != nil {
+		return err
+	}
+
+	log.Println("GETTING THIS STUFF")
+
+	// first
+	var first bool = true
+
+	// iterate through the documents
+	for cur.Next(context.Background()) {
+		if first {
+			// write "{" to writer
+			_, err = (*w).Write([]byte("{\"logs\":["))
+			if err != nil {
+				return err
+			}
+			first = false
+		} else {
+			// add comma to writer
+			_, err = (*w).Write([]byte(","))
+			if err != nil {
+				return err
+			}
+		}
+
+		// decode cur into a interface
+		var doc bson.M
+		err := cur.Decode(&doc)
+
+		if err != nil {
+			return err
+		}
+		// log.Println("[DEBUG] internal result: ", doc)
+
+		// remove _id from doc
+		delete(doc, "_id")
+
+		// convert doc to json string
+		docJSON, err := json.Marshal(doc)
+
+		if err != nil {
+			return err
+		}
+
+		// write doc to writer
+		_, err = (*w).Write(docJSON)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	// write "}" to writer
+	_, err = (*w).Write([]byte("]}"))
+
+	if err != nil {
+		return err
+	}
+
+	log.Println("DONE")
+
+	// send eof to writer
+	(*w).CloseWithError(io.EOF)
+
+	return err
 }

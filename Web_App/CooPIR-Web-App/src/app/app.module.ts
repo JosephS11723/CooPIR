@@ -28,6 +28,7 @@ import { AgentPageComponent } from './agent-page/agent-page.component';
 import { MapPageComponent } from './map-page/map-page.component';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { FormsModule } from '@angular/forms';
+import { FileInfoComponent } from './file-info/file-info.component';
 
 
 
@@ -42,7 +43,8 @@ import { FormsModule } from '@angular/forms';
     MapTestComponent,
     JobPageComponent,
     AgentPageComponent,
-    MapPageComponent
+    MapPageComponent,
+    FileInfoComponent
   ],
   imports: [
     BrowserModule,

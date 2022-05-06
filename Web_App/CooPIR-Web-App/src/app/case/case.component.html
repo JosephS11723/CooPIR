@@ -45,16 +45,71 @@
 <label for="relations">What does it relate to: </label>
 &nbsp;&nbsp;&nbsp;&nbsp;
 
-<!--select-->
+<!--add a relation to the uploaded file-->
 <select name="relations" id="relations">
   <option [value]=""></option>
   <option *ngFor="let item of fileList; let i=index" [value]="item.uuid">{{item.name}}</option> 
 </select> 
+
+
+<!--Add a tag-->
+&nbsp;&nbsp;&nbsp;&nbsp;
+<label for="tag">Enter a tag: </label>
+&nbsp;&nbsp;
+<input type="text" id="tag">
+<!--
+<select name="tags" id="tag">
+  <option *ngFor="let item of tagList; let i=index" [value]="item">{{item}}</option> 
+</select> -->
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+<!--
+<button (click)="getLogs()">Case Logs</button>
+-->
+
 <br><br><br>
+
+
+<style>
+label {
+    font: 1rem 'Fira Sans', sans-serif;
+}
+
+input {
+    margin: .4rem;
+}
+</style>
+<!--Checkbox-->
+<fieldset>
+  <legend>Search by tag:</legend>
+
+  <div *ngFor="let item of tagList">
+    <input type="checkbox" [(ngModel)]="item.isChecked" (change)="changeSelection()" id="item">
+    <label for="item">{{item.label}}</label>
+  </div>
+
+  <!--
+  <div>
+    <input type="checkbox" id="malware" name="malware">
+    <label for="malware">malware</label>
+  </div>
+
+  <div>
+    <input type="checkbox" id="IP" name="IP">
+    <label for="IP">IP</label>
+  </div>
+
+  <div>
+    <input type="checkbox" id="other" name="other">
+    <label for="other">other</label>
+  </div> -->
+</fieldset>
+
+
 
 <!--Search bar-->
 <div class="search">
-  <input type="text" [(ngModel)]="term" class="searchTerm" placeholder="Search for a file">
+  <input type="text" [(ngModel)]="term" class="searchTerm" placeholder="Search by file name...">
 </div>
 
 <head>
@@ -87,11 +142,12 @@
             <th>MD5</th>
         </tr>
         <!--Each case is placed in the table-->
-        <!--The first item is ignored because it is just a placeholder-->
-          <tr *ngFor="let item of fileList | filter:term; let i=index " [routerLink]="item.route">
-             <td><button id="item.name" (click)="getFileInfo(item.uuid, item.name)" class="btn btn-primary btn-lg mr-2" style="width:100%">{{item.name}}</button></td>
-             <td>{{item.created}}</td>
-             <td>{{item.md5}}</td>
+          <tr *ngFor="let item of fileList | filter:term ; let i=index " [routerLink]="item.route">
+            
+            <td><button id="item.name" (click)="goToFileInfo(item.uuid)" class="btn btn-primary btn-lg mr-2" style="width:100%">{{item.name}}</button></td>
+            <td>{{item.created}}</td>
+            <td>{{item.md5}}</td>
+            
           </tr>
      </table> 
      </body>
@@ -112,10 +168,6 @@
 </select> 
 -->
 <!--Doc viewer stuff-->
-<ngx-doc-viewer
-  [url]="doc"
-  viewer="google"
-  style="width:100%;height:50vh;"
-></ngx-doc-viewer>
+
 
 

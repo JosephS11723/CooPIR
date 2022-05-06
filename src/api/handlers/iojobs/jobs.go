@@ -8,6 +8,7 @@ import (
 	"github.com/JosephS11723/CooPIR/src/api/lib/coopirutil"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbInterface"
 	"github.com/JosephS11723/CooPIR/src/api/lib/dbtypes"
+	"github.com/JosephS11723/CooPIR/src/api/lib/logtypes"
 	"github.com/JosephS11723/CooPIR/src/api/lib/seaweedInterface"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -308,11 +309,19 @@ func SubmitWork(c *gin.Context) {
 
 	//since this is modifying a particular existing file, then get the fileuuid query param
 	case "modifyFile":
-
 		fileUUID = c.Query("fileuuid")
 
-		if fileUUID == "" {
+		// log
+		// TODO: make this the worker uuid
+		dbInterface.MakeCaseLog(c, logtypes.LogDefaultCaseUUID, "WORKER", dbtypes.Info, logtypes.WorkerFileModify,
+			map[string]interface{}{
+				"jobuuid":   jobUUID,
+				"fileuuid":  fileUUID,
+				"tags":      tags,
+				"relations": relations,
+			})
 
+		if fileUUID == "" {
 			c.JSON(
 				http.StatusBadRequest,
 				gin.H{"error": "no fileuuid provided"},
@@ -325,6 +334,15 @@ func SubmitWork(c *gin.Context) {
 		err := dbInterface.ModifyJobTagsAndRelations(fileUUID, caseUUID, tags, relations)
 
 		if err != nil {
+			// log
+			// TODO: worker uuid
+			dbInterface.MakeCaseLog(c, logtypes.LogDefaultCaseUUID, "WORKER", dbtypes.Info, logtypes.WorkerFileModifyFailure,
+				map[string]interface{}{
+					"jobuuid":   jobUUID,
+					"fileuuid":  fileUUID,
+					"tags":      tags,
+					"relations": relations,
+				})
 			log.Println("Could not modify tags and relations for file", err)
 			c.JSON(
 				http.StatusInternalServerError,
@@ -346,10 +364,19 @@ func SubmitWork(c *gin.Context) {
 			log.Panicln(err)
 		}
 
+		// log
+		//TODO: make this the worker uuid
+		dbInterface.MakeCaseLog(c, logtypes.LogDefaultCaseUUID, "WORKER", dbtypes.Info, logtypes.WorkerFileUpload,
+			map[string]interface{}{
+				"jobuuid":   jobUUID,
+				"fileuuid":  fileUUID,
+				"tags":      tags,
+				"relations": relations,
+			})
+
 		fileUUID, hashes, err = seaweedInterface.POSTFileJob(caseUUID, filestream)
 
 		if err != nil {
-
 			if err.Error() == "file already exists" {
 				// delete file
 				seaweedInterface.DELETEFile(fileUUID, caseUUID)
@@ -401,6 +428,13 @@ func SubmitWork(c *gin.Context) {
 		// get job status
 		err := dbInterface.ModifyJobStatus(jobUUID, dbtypes.JobError)
 
+		// log
+		// TODO: make this the worker uuid
+		dbInterface.MakeCaseLog(c, logtypes.LogDefaultCaseUUID, "WORKER", dbtypes.Info, logtypes.WorkerResultError,
+			map[string]interface{}{
+				"jobuuid": jobUUID,
+			})
+
 		if err != nil {
 			c.JSON(
 				http.StatusInternalServerError,
@@ -430,6 +464,13 @@ func SubmitWork(c *gin.Context) {
 	}
 
 	if done == "true" {
+
+		// log
+		// TODO: make this the worker uuid
+		dbInterface.MakeCaseLog(c, logtypes.LogDefaultCaseUUID, "WORKER", dbtypes.Info, logtypes.WorkerResultDone,
+			map[string]interface{}{
+				"jobuuid": jobUUID,
+			})
 
 		jobUUID, err = dbInterface.MoveFinishedJob(jobUUID)
 
