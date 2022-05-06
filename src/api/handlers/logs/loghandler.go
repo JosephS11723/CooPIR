@@ -1,6 +1,7 @@
 package logs
 
 import (
+	"io"
 	"log"
 	"net/http"
 
@@ -24,25 +25,19 @@ func GetCaseLogs(c *gin.Context) {
 		return
 	}
 
+	// create reader and writer to send to client
+	reader, writer := io.Pipe()
+
+	// defer close reader
+	defer reader.Close()
+
 	// get logs from db
-	logs, err := dbInterface.GetCaseLogs(caseUUID)
+	go dbInterface.GetCaseLogs(c, caseUUID, writer)
 
-	if err != nil {
-		c.JSON(
-			http.StatusInternalServerError,
-			gin.H{
-				"error": err.Error(),
-			},
-		)
-		log.Println(err.Error())
-		return
-	}
+	// send datafromreader
+	c.DataFromReader(http.StatusOK, 99999999, "application/json", reader, nil)
 
-	// return logs
-	c.JSON(
-		http.StatusOK,
-		gin.H{
-			"logs": logs,
-		},
-	)
+	// status 200
+	c.Status(http.StatusOK)
+	return
 }
