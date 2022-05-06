@@ -29,7 +29,7 @@ export class MapPageComponent implements OnInit {
   constructor(private http: HttpClient, private cookieService:CookieService) { }
 
 
-  getMapInfo(): void 
+  getMapInfo(): void
   {
     //Swal.fire({
     //  icon: 'info',
@@ -50,19 +50,20 @@ export class MapPageComponent implements OnInit {
       if(response.body != null)
       {
         retrievedFiles = response.body;
-        for(var index = 0; index < retrievedFiles.files.length; index++)
-        {
+        retrievedFiles.files.forEach(async file => {
+        //for(var index = 0; index < retrievedFiles.files.length; index++)
+
           var fileParams = new HttpParams()
           .append('caseUUID', this.cookieService.get("currentUUID"))
-          .append('fileUUID', retrievedFiles.files[index]);
+          .append('fileUUID', file);
           let fileInfo: any;
 
-          this.http.get("http://localhost:8080/api/v1/file/info", {params: fileParams, observe: 'response'})
+          await this.http.get("http://localhost:8080/api/v1/file/info", {params: fileParams, observe: 'response'})
           .subscribe(response => {
             fileInfo = response.body;
 
-            //this.nodes.add({ id: fileInfo.file.uuid, value: 10, label: fileInfo.file.filename.split("/").pop()}); 
-            this.nodes.push({ id: fileInfo.file.uuid, value: 10, label: fileInfo.file.filename.split("/").pop()});               
+            //this.nodes.add({ id: fileInfo.file.uuid, value: 10, label: fileInfo.file.filename.split("/").pop()});
+            this.nodes.push({ id: fileInfo.file.uuid, value: 10, label: fileInfo.file.filename.split("/").pop()});
             var relations = fileInfo.file.relations;
 
             if(relations != '')
@@ -76,8 +77,8 @@ export class MapPageComponent implements OnInit {
               this.edges.push({from: fileInfo.file.uuid, to: relations[0].split(":")[0], value: 1});
             }
             //console.log("redrawing network")
-    
-          
+
+
             //Swal.close();
             //display the map
             var container = document.getElementById("mynetwork");
@@ -104,7 +105,7 @@ export class MapPageComponent implements OnInit {
                   min: 0,
                   max: 150,
                 },
-              },                
+              },
               physics: {
                 enabled: true,
                 barnesHut: {
@@ -123,13 +124,13 @@ export class MapPageComponent implements OnInit {
             }
 
           })
-        }
+        })
       }
     })
-    
+
   }
 
-  buildMap(): void 
+  buildMap(): void
   {
     console.log("Nodes: ", this.nodes);
     console.log("Eges: ", this.edges);
@@ -162,10 +163,10 @@ export class MapPageComponent implements OnInit {
        var network = new Vis.Network(container, data, options);
        console.log("Map is ready")
      }
-     
+
   }
 
-  ngOnInit(): void 
+  ngOnInit(): void
   {
     //console.log("Gathering info");
     this.getMapInfo();
